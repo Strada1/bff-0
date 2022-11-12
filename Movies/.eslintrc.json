@@ -1,0 +1,32 @@
+{
+    "env": {
+        "browser": false,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "overrides": [
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "plugins": [
+        "react",
+        "@typescript-eslint"
+    ],
+    "rules": {
+        "@typescript-eslint/no-var-requires": 0,
+        "indent": ["error", 4, {
+            "ignoredNodes": ["JSXElement"],
+            "SwitchCase": 1
+        }],
+        "quotes": [2, "single", "avoid-escape"],
+        "semi": [2, "never"],
+        "no-extra-semi": 1
+    }
+}

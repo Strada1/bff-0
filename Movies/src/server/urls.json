@@ -1,0 +1,9 @@
+{
+    "DATA_BASE": "mongodb://localhost:27017/main",
+    "PORT": 3000,
+    "ROUTES": {
+        "BASE":  "/",
+        "MOVIES": "/movies",
+        "CATEGORIES": "/categories"
+    }
+}
