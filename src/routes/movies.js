@@ -20,7 +20,7 @@ router
         director,
       });
 
-      response.status(200).send(movie);
+      response.status(201).send(movie);
     } catch (error) {
       response.status(400).send(error);
     }
