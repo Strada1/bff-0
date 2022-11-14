@@ -1,5 +1,5 @@
-const Movie = require('./models/Movie.js');
-const Category = require('./models/Category.js');
+const Movie = require('../models/Movie.js');
+const Category = require('../models/Category.js');
 
 function addRoutes(app) {
   app.get('/', async (req, res) => {

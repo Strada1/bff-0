@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const PORT = 3001;
-const addRoutes = require('./routes.js');
+const addRoutes = require('./routes/routes.js');
 
 const start = async () => {};
 

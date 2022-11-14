@@ -4,8 +4,8 @@
   "description": "bdf day 3 lesson",
   "main": "index.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js"
   },
   "author": "semastep96",
   "license": "ISC",
