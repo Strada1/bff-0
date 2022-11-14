@@ -7,7 +7,7 @@ const MovieSchema = new mongoose.Schema(
         duration: Number,
         category: {
             type: 'ObjectId',
-            ref: 'categories'
+            ref: 'Category'
         }
     },
     {
