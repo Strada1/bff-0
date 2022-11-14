@@ -7,16 +7,14 @@ class DataBase {
         mongoose.connect(this.url, {useNewUrlParser: true, useUnifiedTopology: true});
     }
 
-    movieSchema() {
-        return new mongoose.Schema({
-            title: String,
-            year: Number,
-            rating: Number,
-        });
-    }
+    movieSchema = new mongoose.Schema({
+        title: String,
+        year: Number,
+        rating: Number,
+    });
 
     movie() {
-        return mongoose.model('Movie', this.movieSchema());
+        return mongoose.model('Movie', this.movieSchema);
     }
 }
 
