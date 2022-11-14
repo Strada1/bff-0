@@ -26,6 +26,10 @@ app.listen(port, () => {
 app.use(express.json());
 
 app.post('/movies', async (req, res) => {
-  await Movie.create(req.body); // добавляем документ
-  return res.status(201).send('movie created'); // возвращаем ответ
+  try {
+    await Movie.create(req.body); // добавляем документ
+    return res.status(201).send('movie created'); // возвращаем ответ
+  } catch (e) {
+    return res.status(e.code).send('bad request');
+  }
 });
