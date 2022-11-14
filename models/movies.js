@@ -4,7 +4,7 @@ const MovieSchema = new db.Schema({
   title: String,
   year: Number,
   rating: Number,
-  category: String,
+  category: {type: db.Types.ObjectId, ref: 'categories'},
   duration: String,
   director: String
 })
