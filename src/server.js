@@ -10,5 +10,3 @@ app.use(Movies, Categories);
 app.listen(PORT, () => {
   console.log(`server running at ${SERVER_URL}:${PORT}`);
 });
-
-module.exports = app;
