@@ -1,4 +1,5 @@
-const db = require('../ext/db')
+import db from '../ext/db.js'
+
 const MovieSchema = new db.Schema({
   title: String,
   year: Number,
@@ -8,4 +9,6 @@ const MovieSchema = new db.Schema({
   director: String
 })
 
-module.exports = db.model('Movie', MovieSchema)
+const movieModel = db.model('Movie', MovieSchema)
+
+export default movieModel

@@ -1,6 +1,7 @@
-const express = require('express')
+import express from 'express'
+import Movie from '../models/movies.js'
+
 const router = express.Router()
-const Movie = require('../models/movies')
 router.post('/', async (req, res) => {
   try {
     await Movie.create(req.body)
@@ -11,4 +12,4 @@ router.post('/', async (req, res) => {
   }
 })
 
-module.exports = router
+export default router

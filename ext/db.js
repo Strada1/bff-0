@@ -1,5 +1,6 @@
-const url = 'mongodb://localhost:27017/main'
-const db = require('mongoose')
-db.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
+import mongoose from 'mongoose'
 
-module.exports = db
+const url = 'mongodb://localhost:27017/main'
+mongoose.connect(url, {useNewUrlParser: true, useUnifiedTopology: true})
+
+export default mongoose

@@ -1,6 +1,9 @@
-const db = require('../ext/db')
+import db from '../ext/db.js'
+
 const CategoriesSchema = new db.Schema({
   title: String
 })
 
-module.exports = db.model('Category', CategoriesSchema)
+const categoriesModel = db.model('Category', CategoriesSchema)
+
+export default categoriesModel

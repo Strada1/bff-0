@@ -1,9 +1,9 @@
-const express = require('express')
+import express from 'express'
 const app = express()
 const port = 3000
-const root = require('./routes/index')
-const moviesRoutes = require('./routes/movies')
-const categoriesRoutes = require('./routes/categories')
+import root from './routes/index.js'
+import moviesRoutes from './routes/movies.js'
+import categoriesRoutes from './routes/categories.js'
 
 app.use(express.json())
 app.use('/', root)
