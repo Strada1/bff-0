@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { ROUTES } = require('../settings');
 const Movie = require('../models/Movie');
 const Category = require('../models/Category');
 
 router
-  .route(`/${ROUTES.MOVIES}`)
+  .route('/movies')
   .get(async (request, response) => {
     response.send('get movies');
   })

@@ -1,10 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { ROUTES } = require('../settings');
 const Category = require('../models/Category');
 
 router
-  .route(`/${ROUTES.CATEGORIES}`)
+  .route('/categories')
   .get(async (request, response) => {
     response.send('get categories');
   })
