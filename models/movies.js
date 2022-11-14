@@ -1,11 +1,11 @@
-const db = require("../ext/db");
+const db = require('../ext/db')
 const MovieSchema = new db.Schema({
   title: String,
   year: Number,
   rating: Number,
   category: String,
   duration: String,
-  director: String,
-});
+  director: String
+})
 
-module.exports = db.model("Movie", MovieSchema);
+module.exports = db.model('Movie', MovieSchema)

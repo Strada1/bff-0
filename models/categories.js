@@ -1,6 +1,6 @@
-const db = require("../ext/db");
+const db = require('../ext/db')
 const CategoriesSchema = new db.Schema({
-  title: String,
-});
+  title: String
+})
 
-module.exports = db.model("Category", CategoriesSchema);
+module.exports = db.model('Category', CategoriesSchema)
