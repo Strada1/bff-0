@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { ROUTES } = require('../settings');
 const Movie = require('../models/Movie');
+const Category = require('../models/Category');
 
 router
   .route(`/${ROUTES.MOVIES}`)
@@ -22,7 +23,8 @@ router
 
       response.status(201).send(movie);
     } catch (error) {
-      response.status(400).send(error);
+      console.log(error);
+      response.status(400).send({});
     }
   })
   .put(async (request, response) => {

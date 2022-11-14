@@ -18,7 +18,8 @@ router
 
       return response.status(201).send(result);
     } catch (error) {
-      response.status(400).send(error);
+      console.log(error);
+      response.status(400).send({});
     }
   })
   .put(async (request, response) => {
