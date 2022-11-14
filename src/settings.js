@@ -5,4 +5,3 @@ const PORT = 3010;
 module.exports.DB_URL = DB_URL;
 module.exports.SERVER_URL = SERVER_URL;
 module.exports.PORT = PORT;
-module.exports.ROUTES = ROUTES;
