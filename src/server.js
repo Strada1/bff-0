@@ -1,10 +1,16 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const Movies = require('./routes/movies');
 const Categories = require('./routes/categories');
-const { SERVER_URL, PORT } = require('./settings');
+const { SERVER_URL, PORT, ALLOWED_ORIGINS } = require('./settings');
 
-app.use(express.json());
+app.use(
+  cors({
+    origin: ALLOWED_ORIGINS,
+  }),
+  express.json()
+);
 app.use(Movies, Categories);
 
 app.listen(PORT, () => {
