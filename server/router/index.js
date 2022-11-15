@@ -11,6 +11,14 @@ router.post("/movies", (req, res, next) => {
         next(err);
     }
 });
+router.put("/movies", (req, res, next) => {
+    try {
+    } catch (err) {}
+});
+router.delete("/movies", (req, res, next) => {
+    try {
+    } catch (err) {}
+});
 router.post("/categories", (req, res, next) => {
     try {
         movieModel.create(req.body);
@@ -21,6 +29,7 @@ router.post("/categories", (req, res, next) => {
 });
 router.get("/data", (req, res) => {
     res.json({text: "Hello World!"});
+    return res.status(200).send("everything works fine");
 });
 
 module.exports = router;
