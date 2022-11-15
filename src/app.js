@@ -1,24 +1,16 @@
 const express = require('express');
-const {Routes} = require('./routes');
+const {movieRouter} = require('./routes');
+const {connected} = require('./db');
 
-class Server extends Routes{
-    port = 3000;
-    app = express();
+const port = 3000;
+const app = express();
 
-    run() {
-        this.connectedDb();
-        this.app.use(express.json());
+connected('mongodb://localhost:27017/main')
 
-        this.home();
-        this.getMovies();
-        this.createMovie();
+app.use(express.json())
 
-        this.app.listen(this.port, () => {
-            console.log(`server run in ${this.port} port`)
-        })
-    }
-}
+app.use('/', movieRouter)
 
-const server = new Server();
-
-module.exports.server = server;
+app.listen(port, () => {
+    console.log(`server run in ${port} port`)
+})
