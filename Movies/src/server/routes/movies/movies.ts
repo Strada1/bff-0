@@ -1,15 +1,12 @@
-import mongoose from 'mongoose'
 import { app } from '../..'
 import { ROUTES } from '../../urls.json'
-import * as schemas from '../../../schemas'
+import { Movie } from '../../../models'
 
 app.post(ROUTES.MOVIES, async (req, res) => {
-    console.log('post')
     try {
-        const Movie = mongoose.model('Movie', schemas.Movies)
         Movie.create(req.body)
     } catch (error) {
-        res.status(400).send(error)
+        res.status(500).send(error)
 
         return
     }

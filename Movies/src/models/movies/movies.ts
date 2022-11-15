@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-export const Movies =  new mongoose.Schema({ // определяем схему
+export const MoviesSchema =  new mongoose.Schema({ // определяем схему
     title: String,
     category: String,
     duration: Number,
@@ -8,3 +8,6 @@ export const Movies =  new mongoose.Schema({ // определяем схему
     year: Number,
     rating: Number,
 })
+
+
+export const Movie = mongoose.model('Movie', MoviesSchema)

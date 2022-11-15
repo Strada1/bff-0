@@ -1,14 +1,12 @@
-import mongoose from 'mongoose'
 import { app } from '../..'
 import { ROUTES } from '../../urls.json'
-import * as schemas from '../../../schemas'
+import { Categories } from '../../../models'
 
 app.post(ROUTES.CATEGORIES, (req, res) => {
     try {
-        const Categories = mongoose.model('Categories', schemas.Categories)
         Categories.create(req.body)
     } catch (error) {
-        res.status(400).send(error)
+        res.status(500).send(error)
 
         return
     }

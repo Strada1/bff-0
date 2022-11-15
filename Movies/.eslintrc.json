@@ -27,6 +27,18 @@
         }],
         "quotes": [2, "single", "avoid-escape"],
         "semi": [2, "never"],
-        "no-extra-semi": 1
+        "no-extra-semi": 1,
+        "no-console": 1,
+        "quote-props": [1, "as-needed"],
+        "comma-spacing": 1,
+        "comma-style": [2, "last"],
+        "no-shadow-restricted-names": 2,
+        "no-undef": 2,
+        "no-undef-init": 0,
+        "no-undefined": 0,
+        "no-unused-vars": ["error", { "ignoreRestSiblings": true }],
+        "unused-imports/no-unused-vars": "off",
+        "no-use-before-define": 0,
+        "no-useless-constructor": "off"
     }
 }
