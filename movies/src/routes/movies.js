@@ -1,19 +1,19 @@
 const express = require('express')
 const Movie = require('../models/Movie')
 
-const movies = express.Router()
+const router = express.Router()
 
-movies.get('/', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
-        const response = await Movie.collection.find().toArray()
-        return res.status(200).send(response)
+        const movies = await Movie.find()
+        return res.status(200).send(movies)
     } catch (e) {
         console.log(e)
-        return res.status(500).send('bad request')
+        return res.status(500).send('can not get movies')
     }
 })
 
-movies.post('/', async (req, res) => {
+router.post('/', async (req, res) => {
     try {
         const movie = await Movie.create(req.body)
         return res.status(201).send(movie)
@@ -23,4 +23,26 @@ movies.post('/', async (req, res) => {
     }
 })
 
-module.exports = movies
+router.delete('/:movieId', async (req, res) => {
+    try {
+        //
+        console.log(req.params)
+        return res.send(req.params)
+    } catch (e) {
+        console.log(e)
+        return res.status(500).send('can not delete movie')
+    }
+})
+
+router.patch('/:movieId', async (req, res) => {
+    try {
+        //
+        console.log(req.params)
+        return res.send(req.params)
+    } catch (e) {
+        console.log(e)
+        return res.status(500).send('can not patch movie')
+    }
+})
+
+module.exports = router

@@ -7,8 +7,8 @@ const MovieSchema = new mongoose.Schema(
         duration: Number,
         category: {
             type: 'ObjectId',
-            ref: 'Category'
-        }
+            ref: 'Category',
+        },
     },
     {
         versionKey: false,
