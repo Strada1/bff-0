@@ -1,14 +1,14 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose'); // ОДМ (Объектное Моделирование Данных)
 
-const MovieSchema = new mongoose.Schema({
+const MovieSchema = new mongoose.Schema({ // определяем схему
   title: {
     type: String,
     required: true,
   },
-  categories: [String],
+  category: { type: 'ObjectId', ref: 'Category' },
   year: Number,
   duration: Number,
   director: String,
 });
 
-module.exports = mongoose.model('Movie', MovieSchema);
+module.exports = mongoose.model('Movie', MovieSchema); // создаем модель по схеме
