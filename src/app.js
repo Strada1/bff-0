@@ -11,7 +11,8 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: allowedOrigins
+  origin: allowedOrigins,
+  "methods": "GET,HEAD,PUT,POST,DELETE",
 }));
 
 app.use(express.json());
