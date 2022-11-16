@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
     return res.status(201).send('category created')
   } catch (error) {
     console.log(error)
-    return res.status(400).send("category isn't create")
+    return res.status(400).send("category didn't create")
   }
 })
 
