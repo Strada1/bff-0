@@ -9,6 +9,7 @@ const MovieSchema = new mongoose.Schema(
             type: 'ObjectId',
             ref: 'Category',
         },
+        comments: Array,
     },
     {
         versionKey: false,
