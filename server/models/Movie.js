@@ -12,6 +12,10 @@ const MovieSchema = new mongoose.Schema({
   year: Number,
   duration: Number,
   director: String,
+  comments: [{
+    type: 'ObjectId',
+    ref: 'Comment',
+  }],
 });
 
 module.exports = mongoose.model('Movie', MovieSchema);
