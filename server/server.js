@@ -16,7 +16,7 @@ app.use(cors({
   origin: allowedOrigins
 }));
 app.use(express.json());
-app.use('/', router);
+app.use('/api', router);
 
 app.listen(PORT, () => {
   console.log(`Web server listening on port ${PORT}`);
