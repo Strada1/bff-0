@@ -13,7 +13,6 @@ router.post('/', async (req, res) => {
       return res.status(404).send('movie not found');
     }
     const comment = await Comment.create(req.body);
-    await movie.updateOne({ comments: [...movie.comments, comment._id] });
     return res.status(201).json(comment);
   } catch (error) {
     return res.status(500).send('Server error: ' + error.message);

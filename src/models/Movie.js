@@ -7,7 +7,6 @@ const MovieSchema = mongoose.Schema({
   year: Number,
   duration: Number,
   director: String,
-  comments: [{ type: ObjectId, ref: 'Comment'}]
 });
 
 const Movie = mongoose.model('Movie', MovieSchema);
