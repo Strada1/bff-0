@@ -8,7 +8,7 @@ router.post('/', async (req, res) => {
     return res.status(201).send('category created');
   } catch (error) {
     console.log(error);
-    return res.status(500).send('failed to add category');
+    return res.status(500).send('failed to add category\nerror: ' + error.message);
   }
 });
 

@@ -6,7 +6,7 @@ function addRoutes(app) {
     try {
       return res.status(200).send('Test Movies app');
     } catch (error) {
-      return res.status(500).send('Server error');
+      return res.status(500).send('Server error: ' + error.message);
     }
   });
 
