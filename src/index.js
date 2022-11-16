@@ -1,10 +1,13 @@
 const express = require('express');
-const { routerApp } = require('./routers/router');
+const cors = require('cors');
+const { ALLOWED_ORIGINS } = require('./utils');
+const { router } = require('./router');
 
 const app = express();
 
+app.use(cors({ origin: ALLOWED_ORIGINS }));
 app.use(express.json());
-app.use(routerApp);
+app.use(router);
 
 app.listen(3000, () => {
   console.log(`Example app listening on port 3000`);
