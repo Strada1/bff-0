@@ -10,6 +10,7 @@
   "author": "semastep96",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^8.27.0",
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1"
   },
