@@ -1,5 +1,6 @@
 const movies = require('./movies.js');
 const categories = require('./catogories.js');
+const comments = require('./comments.js');
 
 function addRoutes(app) {
   app.get('/', async (req, res) => {
@@ -13,6 +14,8 @@ function addRoutes(app) {
   app.use('/movies', movies);
 
   app.use('/categories', categories);
+
+  app.use('/comments', comments);
 }
 
 module.exports = addRoutes;

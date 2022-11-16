@@ -1,3 +1,4 @@
+const Comment = require('../models/Comment');
 const Movie = require('../models/Movie.js');
 const { Router } = require('express');
 const router = Router();
@@ -16,7 +17,12 @@ router.post('/', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    await Movie.findByIdAndDelete(req.params.id);
+    const deleted = await Movie.findByIdAndDelete(req.params.id);
+    await Comment.deleteMany({
+      _id: {
+        $in: deleted.comments,
+      },
+    });
     return res.status(200).send(`movie deleted`);
   } catch (error) {
     return res
@@ -30,7 +36,7 @@ router.put('/:id', async (req, res) => {
     const movie = await Movie.findByIdAndUpdate(req.params.id, req.body);
 
     if (!movie) {
-      return res.status(404).send(`Movie id:"${req.params.id}" - Not found`)
+      return res.status(404).send(`Movie id:"${req.params.id}" - Not found`);
     }
 
     return res.status(200).send('movie updated successfully');
