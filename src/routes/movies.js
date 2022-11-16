@@ -23,7 +23,7 @@ router.delete('/:id', async (req, res) => {
         $in: deleted.comments,
       },
     });
-    return res.status(200).send(`movie deleted`);
+    return res.status(200).send('movie deleted');
   } catch (error) {
     return res
       .status(500)
