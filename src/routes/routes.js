@@ -9,10 +9,10 @@ function addRoutes(app) {
   app.post('/movies', async (req, res) => {
     try {
       await Movie.create(req.body);
-      return res.status(201).send('movie created'); // возвращаем ответ
+      return res.status(201).send('movie created');
     } catch (error) {
       console.log(error);
-      return res.status(400).send('failed to create movie');
+      return res.status(500).send('failed to create movie');
     }
   });
 
@@ -22,7 +22,7 @@ function addRoutes(app) {
       return res.status(201).send('category created');
     } catch (error) {
       console.log(error);
-      return res.status(400).send('failed to add category');
+      return res.status(500).send('failed to add category');
     }
   });
 }
