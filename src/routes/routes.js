@@ -1,30 +1,18 @@
-const Movie = require('../models/Movie.js');
-const Category = require('../models/Category.js');
+const movies = require('./movies.js');
+const categories = require('./catogories.js');
 
 function addRoutes(app) {
   app.get('/', async (req, res) => {
-    return res.status(200).send('Test Movies app');
-  });
-
-  app.post('/movies', async (req, res) => {
     try {
-      await Movie.create(req.body);
-      return res.status(201).send('movie created');
+      return res.status(200).send('Test Movies app');
     } catch (error) {
-      console.log(error);
-      return res.status(500).send('failed to create movie');
+      return res.status(500).send('Server error');
     }
   });
 
-  app.post('/categories', async (req, res) => {
-    try {
-      await Category.create(req.body);
-      return res.status(201).send('category created');
-    } catch (error) {
-      console.log(error);
-      return res.status(500).send('failed to add category');
-    }
-  });
+  app.use('/movies', movies);
+
+  app.use('/categories', categories);
 }
 
 module.exports = addRoutes;
