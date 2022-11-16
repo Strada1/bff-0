@@ -8,25 +8,36 @@ router.post('/', async (req, res) => {
     return res.status(201).send('movie created');
   } catch (error) {
     console.log(error);
-    return res.status(500).send('failed to create movie\nerror: ' + error.message);
+    return res
+      .status(500)
+      .send('failed to create movie\nerror: ' + error.message);
   }
 });
 
 router.delete('/:id', async (req, res) => {
   try {
-    console.log('delete movie ' + req.params.id)
-    return res.status(202).send(`movie deleted`);
+    await Movie.findByIdAndDelete(req.params.id);
+    return res.status(200).send(`movie deleted`);
   } catch (error) {
-    return res.status(500).send('failed to delete movie\nerror: ' + error.message);
+    return res
+      .status(500)
+      .send('failed to delete movie\nerror: ' + error.message);
   }
 });
 
 router.put('/:id', async (req, res) => {
   try {
-    console.log('update movie ' + req.params.id)
+    const movie = await Movie.findByIdAndUpdate(req.params.id, req.body);
+
+    if (!movie) {
+      return res.status(404).send(`Movie id:"${req.params.id}" - Not found`)
+    }
+
     return res.status(200).send('movie updated successfully');
   } catch (error) {
-    return res.status(500).send('failed to update movie\nerror: ' + error.message);
+    return res
+      .status(500)
+      .send('failed to update movie\nerror: ' + error.message);
   }
 });
 
