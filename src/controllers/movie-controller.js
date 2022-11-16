@@ -3,16 +3,32 @@ const { Movie } = require('../models');
 
 class Controller {
   create = async ( req, res ) => {
-    const movieJSON = req.body;
-    const movie = await Movie.create(movieJSON);
+    const newMovie = req.body;
+    const movie = await Movie.create(newMovie);
+
     return res.status(201).send(movie);
   };
 
   get = async ( req, res ) => {
-    const { id } = req.params;
-    const movie = await Movie.findById(id);
+    const { movieId } = req.params;
+    const movie = await Movie.findById(movieId);
 
-    return res.status(200).send(JSON.stringify(movie));
+    return res.status(200).send(movie);
+  };
+
+  update = async ( req, res ) => {
+    const { movieId } = req.params;
+    const newMovie = req.body;
+    const movie = await Movie.findByIdAndUpdate(movieId, newMovie, { new: true });
+
+    return res.status(200).send(movie);
+  };
+
+  delete = async ( req, res ) => {
+    const { movieId } = req.params;
+    await Movie.findByIdAndDelete(movieId);
+
+    return res.status(200).send();
   };
 }
 

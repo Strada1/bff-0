@@ -3,13 +3,9 @@ const { Router } = require('express');
 
 const movieRouter = Router();
 
-movieRouter.get('/', movieController.get);
 movieRouter.post('/', movieController.create);
-movieRouter.delete('/', ( req, res ) => {
-  return res.status(201).send('Movie deleted successfully');
-});
-movieRouter.put('/', ( req, res ) => {
-  return res.status(201).send('Movie changed successfully');
-});
+movieRouter.get('/:movieId', movieController.get);
+movieRouter.put('/:movieId', movieController.update);
+movieRouter.delete('/:movieId', movieController.delete);
 
 module.exports = { movieRouter };
