@@ -18,7 +18,7 @@ router
       const id = req.params.id
       const updatedMovie = await Movies.findByIdAndUpdate(id, req.body)
       if (!updatedMovie) {
-        return res.status(403).send('movie not found')
+        return res.status(404).send('movie not found')
       }
       return res.status(201).send('changed movie')
     } catch (error) {
@@ -30,7 +30,7 @@ router
       const id = req.params.id
       const deletedMovie = await Movies.findByIdAndDelete(id)
       if (!deletedMovie) {
-        return res.status(403).send('movie not found')
+        return res.status(404).send('movie not found')
       }
       deletedMovie.comments
         .map(item => item.toString())
