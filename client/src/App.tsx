@@ -7,11 +7,26 @@ function App() {
 
     async function get() {
         try {
-            let response = await fetch("http://localhost:3000/data");
+            let response = await fetch("http://localhost:3000/api/data");
             let hello = await response.json();
             console.log(hello);
         } catch (err) {
             alert(err); // TypeError: failed to fetch
+        }
+    }
+    async function updateMovie() {
+        try {
+            let response = await fetch("http://localhost:3000/api/movies/6374f96d4797a6ad2c33f663", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({"title": "Начало"})
+            });
+            let result = await response.json();
+            console.log(result);
+        } catch (err) {
+            console.log(err); // TypeError: failed to fetch
         }
     }
 
@@ -37,6 +52,7 @@ function App() {
                 </p>
             </div>
             <p className="read-the-docs">Click on the Vite and React logos to learn more</p>
+            <button onClick={updateMovie}>Обновить фильм по id</button>
         </div>
     );
 }

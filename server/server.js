@@ -1,8 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const mongoose = require("mongoose");
-const router = require("./router");
+const MoviesRoute = require("./routes/movies");
+const CategoryRoute = require("./routes/category");
+const CommentRoute = require("./routes/comment");
+const connectDB = require("./db");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,15 +16,14 @@ app.use(
     })
 );
 
-app.use(express.json()); // в express есть встроенный модуль
-app.use("/api", router);
+app.use(express.json());
+app.use("/api", MoviesRoute);
+app.use("/api", CategoryRoute);
+app.use("/api", CommentRoute);
 
-const start = async () => {
+const start = () => {
     try {
-        mongoose.connect(process.env.DB_URL, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+        connectDB();
         app.listen(PORT, () => console.log(`Server started on PORT = ${PORT}`));
     } catch (e) {
         console.log(e);
