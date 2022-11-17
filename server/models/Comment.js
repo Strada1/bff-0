@@ -9,6 +9,10 @@ const CommentScheme = new mongoose.Schema({
     type: String,
     required: true,
   },
+  date: {
+    type: Date,
+    default: Date.now,
+  },
   movie: {
     type: 'ObjectId',
     ref: 'Category',

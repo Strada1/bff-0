@@ -32,18 +32,20 @@ router.post('/movies', async (req, res) => {
 router.delete('/movies/:movieId', async (req, res) => {
   try {
     const { movieId } = req.params;
-    const result = await Movie.findByIdAndDelete(movieId);
+    const movie = await Movie.findByIdAndDelete(movieId);
 
-    if (!result) {
+    if (!movie) {
       return res.status(404).send(
-        getGeneratedResponse(false, result, {
+        getGeneratedResponse(false, movie, {
           message: 'No document for this id'
         })
       );
     }
 
+    const { deletedCount } = await Comment.deleteMany({ movie: movieId });
+
     return res.status(200).send(
-      getGeneratedResponse(true, result)
+      getGeneratedResponse(true, movie, { deleteCountComments: deletedCount })
     );
   } catch (err) {
     console.log('Error: ', err.message);
@@ -54,8 +56,8 @@ router.delete('/movies/:movieId', async (req, res) => {
 router.put('/movies/:movieId', async (req, res) => {
   try {
     const { movieId } = req.params;
-    const update = req.body;
 
+    const update = req.body;
     const movie = await Movie.findByIdAndUpdate(movieId, update, {
       new: true,
     });
@@ -105,10 +107,8 @@ router.post('/movies/:movieId/comments', async (req, res) => {
 
     const comment = await Comment.create({ movie: movieId, ...req.body });
 
-    const { comments: listCommentsObjectId } = movie;
-    listCommentsObjectId.push(comment._id)
-
-    await Movie.findByIdAndUpdate(movieId, { comments: listCommentsObjectId });
+    movie.comments.push(comment._id);
+    await movie.save();
 
     return res.status(201).send(
       getGeneratedResponse(true, comment, { movie })

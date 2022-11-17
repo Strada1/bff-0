@@ -1,13 +1,11 @@
-function getGeneratedResponse (
+function getGeneratedResponse(
   success = true,
-  response = null,
-  // message = '',
+  data = null,
   options = null
 ) {
   return {
     success,
-    response,
-    // message,
+    data,
     ...options,
   };
 }
