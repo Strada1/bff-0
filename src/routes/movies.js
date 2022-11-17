@@ -1,12 +1,16 @@
-const Comment = require('../models/Comment');
-const Movie = require('../models/Movie.js');
 const { Router } = require('express');
+const {
+  createMovie,
+  deleteMovie,
+  upgradeMovie,
+} = require('../services/movieServices');
+const { deleteAllMovieComments } = require('../services/commentServices');
 const router = Router();
 
 router.post('/', async (req, res) => {
   try {
-    await Movie.create(req.body);
-    return res.status(201).send('movie created');
+    const movie = await createMovie(req.body);
+    return res.status(201).json(movie);
   } catch (error) {
     console.log(error);
     return res
@@ -17,12 +21,8 @@ router.post('/', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const deleted = await Movie.findByIdAndDelete(req.params.id);
-    await Comment.deleteMany({
-      _id: {
-        $in: deleted.comments,
-      },
-    });
+    const deleted = await deleteMovie(req.params.id);
+    await deleteAllMovieComments(deleted._id);
     return res.status(200).send('movie deleted');
   } catch (error) {
     return res
@@ -33,7 +33,7 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const movie = await Movie.findByIdAndUpdate(req.params.id, req.body);
+    const movie = await upgradeMovie(req.params.id, req.body);
 
     if (!movie) {
       return res.status(404).send(`Movie id:"${req.params.id}" - Not found`);
