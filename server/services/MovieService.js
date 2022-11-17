@@ -1,31 +1,34 @@
 const Movie = require('../models/Movie');
 
 class MovieService {
-  async getOne(id) {
-    const movie = await Movie.findById(id);
-    return movie;
+  async getMovie(id) {
+    return Movie.findById(id);
   }
 
-  async getAll() {
-    const movies = await Movie.find();
-    return movies;
+  async getMovies(filter) {
+    if (filter) {
+      return Movie.find(filter);
+    }
+    return Movie.find();
   }
 
-  async create(data) {
-    const movie = await Movie.create(data);
-    return movie;
+  async createMovie({ title, category, year, duration, director }) {
+    return Movie.create({ title, category, year, duration, director });
   }
 
-  async delete(id) {
-    const result = await Movie.findByIdAndDelete(id);
-    return result;
+  async deleteMovie(id) {
+    return Movie.findByIdAndDelete(id);
   }
 
-  async update(id, data) {
-    const movie = await Movie.findByIdAndUpdate(id, data, {
+  async updateMovie(id, updatedFieldsMovie) {
+    return Movie.findByIdAndUpdate(id, updatedFieldsMovie, {
       new: true,
     });
-    return movie;
+  }
+
+  async changeMovieAndSave(movie, callback) {
+    callback(movie);
+    movie.save();
   }
 }
 
