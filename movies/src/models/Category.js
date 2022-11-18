@@ -2,7 +2,7 @@ const mongoose = require('../db')
 
 const CategorySchema = new mongoose.Schema(
     {
-        category: String,
+        name: String,
     },
     {
         versionKey: false,

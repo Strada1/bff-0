@@ -20,38 +20,10 @@ const updateMovie = (movieId, data) => {
     return Movie.findByIdAndUpdate({ _id: movieId }, data, { new: true })
 }
 
-const addComment = (movieId, comment) => {
-    return Movie.updateOne(
-        { _id: movieId },
-        { $push: { comments: comment } },
-        { new: true }
-    )
-}
-
-const deleteComment = (movieId, commentId) => {
-    return Movie.updateOne(
-        { _id: movieId },
-        { $pull: { comments: commentId } },
-        { new: true }
-    )
-}
-
-const updateComment = (movieId, commentId, text) => {
-    console.log(text)
-    return Movie.updateOne(
-        { _id: movieId, 'comments._id': commentId },
-        { set: { 'comments.$': text } },
-        { new: true }
-    )
-}
-
 module.exports = {
     getMovies,
     getMovie,
     createMovie,
     deleteMovie,
     updateMovie,
-    addComment,
-    deleteComment,
-    updateComment,
 }

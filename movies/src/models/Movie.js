@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const mongoose = require('../db')
 
 const MovieSchema = new mongoose.Schema(
@@ -6,10 +7,9 @@ const MovieSchema = new mongoose.Schema(
         year: Number,
         duration: Number,
         category: {
-            type: 'ObjectId',
+            type: ObjectId,
             ref: 'Category',
         },
-        comments: [{ text: String }],
     },
     {
         versionKey: false,
