@@ -1,1 +1,1 @@
-require('./server/route.js')
+require('./server/server')
