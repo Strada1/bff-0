@@ -1,7 +1,7 @@
 const Comment = require('../models/Comment');
 
-const createComment = ({ name, text, movie }) => {
-  return Comment.create({ name, text, movie });
+const createComment = ({ user, text, movie }) => {
+  return Comment.create({ user, text, movie });
 };
 
 const deleteComment = (id) => {
