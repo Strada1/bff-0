@@ -4,10 +4,10 @@ const MovieSchema = new db.Schema({
   title: String,
   year: Number,
   rating: Number,
-  category: {type: db.Types.ObjectId, ref: 'categories'},
-  duration: String,
-  director: String,
-  comments: [{type: db.Types.ObjectId, ref: 'comments'}]
+  category: {type: 'ObjectId', ref: 'Category'},
+  duration: Number,
+  director: {type: 'ObjectId', ref: 'Director'},
+  comments: [{type: 'ObjectId', ref: 'Comment'}]
 })
 
 const movieModel = db.model('Movie', MovieSchema)

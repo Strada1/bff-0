@@ -4,6 +4,7 @@ import root from './routes/index.js'
 import moviesRoutes from './routes/movies.js'
 import categoriesRoutes from './routes/categories.js'
 import commentsRoutes from './routes/comments.js'
+import directorsRoutes from './routes/directors.js'
 
 const app = express()
 const port = 3000
@@ -19,11 +20,12 @@ app.use('/', root)
 app.use('/movies', moviesRoutes)
 app.use('/categories', categoriesRoutes)
 app.use('/comments', commentsRoutes)
+app.use('/directors', directorsRoutes)
 app.use(function (err, req, res, next) {
   console.error(err.stack)
   res.status(500).send('bad request')
 })
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`server is working on port ${port}`)
 })

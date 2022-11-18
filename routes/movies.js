@@ -1,10 +1,12 @@
 import express from 'express'
 import {
+  getAllMovies,
+  getMovie,
   createMovie,
   updateMovie,
-  deleteMovie,
-  deleteAllComments
-} from '../helpers/services.js'
+  deleteMovie
+} from '../helpers/movies.js'
+import {deleteAllComments} from '../helpers/comments.js'
 
 const router = express.Router()
 
@@ -13,6 +15,26 @@ router
     try {
       await createMovie(req.body)
       return res.status(201).send('movie created')
+    } catch (error) {
+      return next(error)
+    }
+  })
+  .get('/', async (req, res, next) => {
+    try {
+      const allMovies = await getAllMovies()
+      return res.status(201).send(allMovies)
+    } catch (error) {
+      return next(error)
+    }
+  })
+  .get('/:id', async (req, res, next) => {
+    try {
+      const id = req.params.id
+      const movie = await getMovie(id)
+      if (!movie) {
+        res.status(404).send('movie not found')
+      }
+      return res.status(201).send(movie)
     } catch (error) {
       return next(error)
     }
