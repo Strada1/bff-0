@@ -1,9 +1,9 @@
-const { Category } = require('../models');
+const { categoryService } = require('../services');
 
 class Controller {
   create = async ( req, res ) => {
-    const categoryJSON = req.body;
-    const category = await Category.create(categoryJSON);
+    const newCategory = req.body;
+    const category = await categoryService.create(newCategory);
 
     return res.status(201).send(category);
   };

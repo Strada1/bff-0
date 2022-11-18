@@ -1,4 +1,4 @@
-const { movieController } = require('./movie-controller');
-const { categoryController } = require('./category-controller');
+const { movieController } = require('./movie');
+const { categoryController } = require('./category');
 
 module.exports = { movieController, categoryController };

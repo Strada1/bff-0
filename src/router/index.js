@@ -1,5 +1,5 @@
-const { movieRouter } = require('./movie-routes');
-const { categoryRouter } = require('./category-routes');
+const { movieRouter } = require('./movie');
+const { categoryRouter } = require('./category');
 const { Router } = require('express');
 
 const router = Router();
