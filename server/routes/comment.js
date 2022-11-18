@@ -4,6 +4,6 @@ const router = new Router();
 const CommentController = require("../Controllers/comment");
 
 // создать новый комментарий
-router.post("/comment", CommentController.createNewComment);
+router.post("/movies/:movieId/comment", CommentController.createNewComment);
 
 module.exports = router;

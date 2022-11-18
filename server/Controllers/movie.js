@@ -1,10 +1,11 @@
 const mongoose = require("mongoose");
 
-const movieModel = require("../models/movie");
+const MovieModel = require("../models/movie");
+const movieService = require("../Service/movieService");
 
 module.exports = {
     getAllMovies: (req, res) => {
-        movieModel.find({}, function (err, result) {
+        MovieModel.find({}, function (err, result) {
             if (err) {
                 console.log(err.message);
                 res.send(err);
@@ -14,9 +15,9 @@ module.exports = {
         });
     },
 
-    findMovieById: (req, res) => {
+    findMovieById: async (req, res) => {
         const id = req.params.id;
-        movieModel.findById(id, function (err, result) {
+        MovieModel.findById(id, function (err, result) {
             if (err) {
                 console.log(err.message);
                 if (err instanceof mongoose.CastError) {
@@ -33,8 +34,8 @@ module.exports = {
 
     createNewMovie: async (req, res, next) => {
         try {
-            const movie = await movieModel.create(req.body);
-            return res.status(201).send({code: 201, message: "movie created", movie});
+            const result = await movieService.createNewMovie(req.body);
+            return res.status(201).send({code: 201, message: "movie created", movie: result});
         } catch (err) {
             console.log(err);
             if (err.name === "ValidationError") {
@@ -50,7 +51,7 @@ module.exports = {
             const updates = req.body;
             const options = {new: true};
 
-            const movie = await movieModel.findByIdAndUpdate(id, updates, options);
+            const movie = await movieService.updateMovie(id, updates, options);
 
             if (!movie) {
                 return res.status(404).send("Movie does not exist");
@@ -70,7 +71,7 @@ module.exports = {
         try {
             const id = req.params.id;
 
-            const movie = await movieModel.findByIdAndDelete(id);
+            const movie = movieService.deleteMovie(id);
 
             if (!movie) {
                 return res.status(404).send("Movie does not exist");
