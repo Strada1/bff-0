@@ -5,6 +5,7 @@ const CommentSchema = mongoose.Schema({
   user: String,
   text: String,
   createdAt: {type: Date, default: Date.now},
+  updatedAt: {type: Date},
   movie: { type: ObjectId, ref: 'Movie' },
 });
 

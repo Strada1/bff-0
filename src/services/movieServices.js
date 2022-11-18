@@ -8,7 +8,7 @@ const deleteMovie = (id) => {
   return Movie.findByIdAndDelete(id);
 };
 
-const upgradeMovie = (id, { title, category, year, duration, director }) => {
+const updateMovie = (id, { title, category, year, duration, director }) => {
   return Movie.findByIdAndUpdate(id, {
     title,
     category,
@@ -29,7 +29,7 @@ const findAllMovies = () => {
 module.exports = {
   createMovie,
   deleteMovie,
-  upgradeMovie,
+  updateMovie,
   findMovie,
   findAllMovies,
 };

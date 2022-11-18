@@ -2,7 +2,7 @@ const { Router } = require('express');
 const {
   createMovie,
   deleteMovie,
-  upgradeMovie,
+  updateMovie,
   findMovie,
   findAllMovies,
 } = require('../services/movieServices');
@@ -60,7 +60,7 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const movie = await upgradeMovie(req.params.id, req.body);
+    const movie = await updateMovie(req.params.id, req.body);
 
     if (!movie) {
       return res.status(404).send(`Movie id:"${req.params.id}" - Not found`);
