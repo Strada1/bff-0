@@ -19,11 +19,11 @@ const updateMovie = (id, { title, category, year, duration, director }) => {
 };
 
 const findMovie = (id) => {
-  return Movie.findById(id).lean().populate('category');
+  return Movie.findById(id).lean().populate('category director');
 };
 
 const findAllMovies = () => {
-  return Movie.find().lean().populate('category');
+  return Movie.find().lean().populate('category director');
 };
 
 module.exports = {

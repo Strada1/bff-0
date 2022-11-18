@@ -6,7 +6,7 @@ const MovieSchema = mongoose.Schema({
   category: { type: ObjectId, ref: 'Category' },
   year: Date,
   duration: Number,
-  director: String,
+  director: { type: ObjectId, ref: 'Director' },
 });
 
 const Movie = mongoose.model('Movie', MovieSchema);

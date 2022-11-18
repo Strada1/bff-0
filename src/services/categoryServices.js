@@ -18,7 +18,7 @@ const updateCategory = (id, { title }) => {
 
 const deleteCategory = (id) => {
   return Category.findByIdAndDelete(id);
-};
+}
 
 module.exports = {
   createCategory,
