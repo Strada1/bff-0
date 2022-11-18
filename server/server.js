@@ -4,6 +4,7 @@ const cors = require("cors");
 const MoviesRoute = require("./routes/movies");
 const CategoryRoute = require("./routes/category");
 const CommentRoute = require("./routes/comment");
+const DirectorRoute = require("./routes/director");
 const connectDB = require("./db");
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use("/api", MoviesRoute);
 app.use("/api", CategoryRoute);
 app.use("/api", CommentRoute);
+app.use("/api", DirectorRoute);
 
 const start = () => {
     try {

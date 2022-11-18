@@ -4,15 +4,17 @@ const MovieModel = require("../models/movie");
 const movieService = require("../Service/movieService");
 
 module.exports = {
-    getAllMovies: (req, res) => {
-        MovieModel.find({}, function (err, result) {
-            if (err) {
-                console.log(err.message);
-                res.send(err);
-            } else {
-                res.send(result);
-            }
-        });
+    getAllMovies: async (req, res) => {
+        const movies = await MovieModel.find({}).populate("director").populate("category");
+        res.send(movies);
+        // MovieModel.find({}, function (err, result) {
+        //     if (err) {
+        //         console.log(err.message);
+        //         res.send(err);
+        //     } else {
+        //         res.send(result);
+        //     }
+        // });
     },
 
     findMovieById: async (req, res) => {
@@ -29,7 +31,9 @@ module.exports = {
             } else {
                 res.send(result);
             }
-        });
+        })
+            .populate("category")
+            .populate("director");
     },
 
     createNewMovie: async (req, res, next) => {

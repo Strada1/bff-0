@@ -6,8 +6,9 @@ const MovieSchema = new Schema({
     year: Number,
     rating: Number,
     category: {type: Schema.Types.ObjectId, ref: "Category"},
+    // comments: [{type: Schema.Types.ObjectId, ref: "Comment"}],
     duration: Number,
-    director: String
+    director: {type: Schema.Types.ObjectId, ref: "Director"}
 });
 
 module.exports = model("Movie", MovieSchema);

@@ -7,6 +7,11 @@ module.exports = {
         return result;
     },
 
+    findMovieById: async id => {
+        const movie = await MovieModel.findById(id);
+        return movie;
+    },
+
     updateMovie: async (id, updates, options) => {
         const movie = await MovieModel.findByIdAndUpdate(id, updates, options);
 
