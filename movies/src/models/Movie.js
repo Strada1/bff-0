@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongodb');
+const { ObjectId } = require('mongodb')
 const mongoose = require('../db')
 
 const MovieSchema = new mongoose.Schema(
@@ -12,8 +12,12 @@ const MovieSchema = new mongoose.Schema(
         },
         director: {
             type: ObjectId,
-            ref: 'Director'
-        }
+            ref: 'Director',
+        },
+        comments: {
+            type: ObjectId,
+            ref: 'Comment',
+        },
     },
     {
         versionKey: false,
