@@ -15,7 +15,7 @@ const CommentScheme = new mongoose.Schema({
   },
   movie: {
     type: 'ObjectId',
-    ref: 'Category',
+    ref: 'Movie',
   },
 });
 
