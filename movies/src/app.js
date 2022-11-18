@@ -1,8 +1,8 @@
 const express = require('express')
 const cors = require('cors')
 const index = require('./routes/index')
-const movies = require('./routes/movies')
-const categories = require('./routes/categories')
+const movies = require('./routes/movie')
+const categories = require('./routes/category')
 const app = express()
 const port = 8080
 
