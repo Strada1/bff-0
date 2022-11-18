@@ -1,12 +1,21 @@
 const router = require('express').Router();
 
-const { Movie, Category, Comment } = require('../models/');
-const { MovieService, CategoryService, CommentService } = require('../services/');
+const {
+  getMovie,
+  getMovies,
+  createMovie,
+  updateMovie,
+  deleteMovie,
+  changeMovieAndSave
+} = require('../services/MovieServices');
+const { createCategory } = require('../services/CategoryServices');
+const { createComment, deleteAllCommentByIdFilm } = require('../services/CommentServices');
+
 const { getGeneratedResponse } = require('../utils/');
 
 router.get('/movies', async (req, res) => {
   try {
-    const movies = await MovieService.getMovies();
+    const movies = await getMovies();
 
     return res.status(200).send(
       getGeneratedResponse(true, movies)
@@ -19,7 +28,7 @@ router.get('/movies', async (req, res) => {
 
 router.post('/movies', async (req, res) => {
   try {
-    const movie = await MovieService.createMovie(req.body);
+    const movie = await createMovie(req.body);
 
     return res.status(201).send(
       getGeneratedResponse(true, movie)
@@ -33,7 +42,7 @@ router.post('/movies', async (req, res) => {
 router.delete('/movies/:movieId', async (req, res) => {
   try {
     const { movieId } = req.params;
-    const movie = await MovieService.deleteMovie(movieId);
+    const movie = await deleteMovie(movieId);
 
     if (!movie) {
       return res.status(404).send(
@@ -45,7 +54,7 @@ router.delete('/movies/:movieId', async (req, res) => {
 
     let deleteCountComments = 0;
     if (movie.comments.length > 0) {
-      deleteCountComments = await CommentService.deleteAllCommentByIdFilm(movieId);
+      deleteCountComments = await deleteAllCommentByIdFilm(movieId);
     }
 
     return res.status(200).send(
@@ -60,7 +69,7 @@ router.delete('/movies/:movieId', async (req, res) => {
 router.put('/movies/:movieId', async (req, res) => {
   try {
     const { movieId } = req.params;
-    const movie = await MovieService.updateMovie(movieId, req.body);
+    const movie = await updateMovie(movieId, req.body);
 
     if (!movie) {
       return res.status(404).send(
@@ -81,7 +90,7 @@ router.put('/movies/:movieId', async (req, res) => {
 
 router.post('/categories', async (req, res) => {
   try {
-    const category = await CategoryService.createCategory(req.body);
+    const category = await createCategory(req.body);
 
     return res.status(201).send(
       getGeneratedResponse(true, category)
@@ -95,7 +104,7 @@ router.post('/categories', async (req, res) => {
 router.post('/movies/:movieId/comments', async (req, res) => {
   try {
     const { movieId } = req.params;
-    const movie = await MovieService.getMovie(movieId);
+    const movie = await getMovie(movieId);
 
     if (!movie) {
       return res.status(404).send(
@@ -105,9 +114,9 @@ router.post('/movies/:movieId/comments', async (req, res) => {
       );
     }
 
-    const comment = await CommentService.createComment({ movieId, ...req.body });
+    const comment = await createComment({ movieId, ...req.body });
 
-    await MovieService.changeMovieAndSave(movie, () => {
+    await changeMovieAndSave(movie, () => {
       movie.comments.push(comment._id);
     });
 
