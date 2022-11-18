@@ -3,6 +3,7 @@ const {
     getCategories,
     createCategory,
     updateCategory,
+    deleteCategory,
 } = require('../services/categoryService')
 
 const router = express.Router()
@@ -29,11 +30,20 @@ router.post('/', async (req, res) => {
 
 router.patch('/:categoryId', async (req, res) => {
     try {
-        const id = req.params.categoryId
-        const category = await updateCategory(id, req.body)
+        const { categoryId } = req.params
+        const category = await updateCategory(categoryId, req.body)
         return res.status(200).send(`successfully updated: ${category}`)
     } catch (e) {
         return res.status(500).send('can not patch category')
+    }
+})
+
+router.delete('/:categoryId', async (req, res) => {
+    try {
+        const category = await deleteCategory(req.params.categoryId)
+        return res.status(200).send(`successfully deleted: ${category}`)
+    } catch (e) {
+        return res.status(500).send('can not delete category')
     }
 })
 

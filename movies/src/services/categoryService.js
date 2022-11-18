@@ -8,8 +8,17 @@ const createCategory = (data) => {
     return Category.create(data)
 }
 
-const updateCategory = (id, data) => {
-    return Category.findByIdAndUpdate(id, data, { new: true })
+const updateCategory = (categoryId, data) => {
+    return Category.findByIdAndUpdate({ _id: categoryId }, data, { new: true })
 }
 
-module.exports = { getCategories, createCategory, updateCategory }
+const deleteCategory = (categoryId) => {
+    return Category.findByIdAndDelete({ _id: categoryId })
+}
+
+module.exports = {
+    getCategories,
+    createCategory,
+    updateCategory,
+    deleteCategory,
+}
