@@ -19,7 +19,17 @@ const upgradeMovie = (id, { title, category, year, duration, director }) => {
 };
 
 const findMovie = (id) => {
-  return Movie.findById(id);
+  return Movie.findById(id).lean().populate('category');
 };
 
-module.exports = { createMovie, deleteMovie, upgradeMovie, findMovie };
+const findAllMovies = () => {
+  return Movie.find().lean().populate('category');
+};
+
+module.exports = {
+  createMovie,
+  deleteMovie,
+  upgradeMovie,
+  findMovie,
+  findAllMovies,
+};

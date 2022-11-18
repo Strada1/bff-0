@@ -3,16 +3,43 @@ const {
   createMovie,
   deleteMovie,
   upgradeMovie,
+  findMovie,
+  findAllMovies,
 } = require('../services/movieServices');
 const { deleteAllMovieComments } = require('../services/commentServices');
 const router = Router();
+
+router.get('/all', async (req, res) => {
+  try {
+    const movies = await findAllMovies();
+    return res.status(200).json(movies);
+  } catch (error) {
+    return res
+      .status(500)
+      .send('failed to find movies\nerror: ' + error.message);
+  }
+});
+
+router.get('/:id', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const movie = await findMovie(id);
+    if (!movie) {
+      return res.status(404).send(`Movie id:${id} - not found`);
+    }
+    return res.status(200).json(movie);
+  } catch (error) {
+    return res
+      .status(500)
+      .send(`failed to find movie ${id}\nerror: ` + error.message);
+  }
+});
 
 router.post('/', async (req, res) => {
   try {
     const movie = await createMovie(req.body);
     return res.status(201).json(movie);
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .send('failed to create movie\nerror: ' + error.message);
