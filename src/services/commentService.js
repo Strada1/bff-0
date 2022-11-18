@@ -1,8 +1,17 @@
 const Comment = require('../models/commentModel');
 
 const COMMENT = {
-  CREATE: ({ comment, movieId }) => {
-    return Comment.create({ comment, movieId });
+  GET: (id, callback) => {
+    return Comment.findById(id, callback);
+  },
+  DELETE: (id) => {
+    return Comment.findByIdAndDelete(id);
+  },
+  UPDATE: (id, update) => {
+    return Comment.findByIdAndUpdate(id, update);
+  },
+  CREATE: (commentObject) => {
+    return Comment.create(commentObject);
   },
 };
 

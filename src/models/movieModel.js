@@ -2,7 +2,7 @@ const { createModel } = require('../services/modelService');
 
 const MovieSchema = {
   title: String,
-  direction: String,
+  directorId: { type: 'ObjectId', ref: 'Director' },
   category: { type: 'ObjectId', ref: 'Category' },
   year: Number,
   rating: Number,
