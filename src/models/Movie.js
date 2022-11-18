@@ -4,7 +4,7 @@ const mongoose = require('../db.js');
 const MovieSchema = mongoose.Schema({
   title: String,
   category: { type: ObjectId, ref: 'Category' },
-  year: Number,
+  year: Date,
   duration: Number,
   director: String,
 });
