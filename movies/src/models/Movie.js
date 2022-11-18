@@ -10,6 +10,10 @@ const MovieSchema = new mongoose.Schema(
             type: ObjectId,
             ref: 'Category',
         },
+        director: {
+            type: ObjectId,
+            ref: 'Director'
+        }
     },
     {
         versionKey: false,
