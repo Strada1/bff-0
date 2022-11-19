@@ -3,12 +3,15 @@ const {Movie} = require("../schemas");
 function createMovie(options) {
     return Movie.create(options)
 }
-function findByIdAndDelete(id) {
-    return Movie.findByIdAndDelete(id)
+function findOneMovie(title) {
+    return Movie.findOne({title: title}).populate('category director').lean()
+}
+function findByIdAndDeleteMovie(id) {
+    return Movie.findByIdAndDelete(id).lean()
 }
 
-function findByIdAndUpdate(id, options) {
-    return Movie.findByIdAndUpdate(id, options)
+function findByIdAndUpdateMovie(id, options) {
+    return Movie.findByIdAndUpdate(id, options).lean()
 }
 
-module.exports = {createMovie, findByIdAndDelete, findByIdAndUpdate}
+module.exports = {createMovie, findOneMovie, findByIdAndDeleteMovie, findByIdAndUpdateMovie}

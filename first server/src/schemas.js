@@ -11,17 +11,24 @@ const MovieSchema = new mongoose.Schema({
     category: {type: 'ObjectId', ref: 'Category'},
     year: Number,
     duration: String,
-    director: String,
+    director: {type: 'ObjectId', ref: 'Director'},
 })
 
 const Movie = mongoose.model('Movie', MovieSchema)
 
 const CommentsSchema = new mongoose.Schema({
-    filmId: String,
+    film: {type: 'ObjectId', ref: 'Movie'},
     author: String,
     text: String,
 })
 
 const Comments = mongoose.model('Comments', CommentsSchema)
 
-module.exports = {Category, Movie, Comments}
+const DirectorSchema = new mongoose.Schema({
+    name: String,
+    age: Number,
+})
+
+const Director = mongoose.model('Director', DirectorSchema)
+
+module.exports = {Category, Movie, Comments, Director}

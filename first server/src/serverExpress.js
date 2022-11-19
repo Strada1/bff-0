@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const port = 3000
+const port = process.env.PORT
 require('./db')
 const cors = require('cors')
 
@@ -9,7 +9,7 @@ app.listen(port, async () => {
 })
 
 const allowedOrigins = [
-    'http://localhost:3000'
+    `http://localhost:${port}`
 ];
 
 app.use(cors({
