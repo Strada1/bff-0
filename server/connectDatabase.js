@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const URL = 'mongodb://localhost:27017/main';
+const URL = process.env.MONGO_CONNECTION_STRING;
 
 mongoose
   .connect(URL, { useNewUrlParser: true, useUnifiedTopology: true })
