@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const url = 'mongodb://127.0.0.1:27017/main';
+const url = process.env.MONGO_CONNECT_STRING;
 
 module.exports.connectDataBase = () => {
   mongoose.connect(url, {

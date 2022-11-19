@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '../server.env' });
 const express = require('express');
 const cors = require('cors');
 const { connectDataBase } = require('./database');
@@ -7,7 +8,7 @@ const director = require('./routes/movieDirector');
 const allowedOrigins = ['https://strada.one', 'http://localhost:3000'];
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 
 app.use(express.json());
 app.use('/movies', movies);
