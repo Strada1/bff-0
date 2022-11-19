@@ -7,8 +7,9 @@ import commentsRoutes from './routes/comments.js'
 import directorsRoutes from './routes/directors.js'
 
 const app = express()
-const port = 3000
-const allowedOrigins = ['http://localhost:3000']
+const port = process.env.PORT || 3000
+const domain = process.env.DOMAIN
+const allowedOrigins = [`http://${domain}:${port}`]
 
 app.use(
   cors({
@@ -21,7 +22,7 @@ app.use('/movies', moviesRoutes)
 app.use('/categories', categoriesRoutes)
 app.use('/comments', commentsRoutes)
 app.use('/directors', directorsRoutes)
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(500).send('bad request')
 })
