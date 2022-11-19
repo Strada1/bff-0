@@ -5,15 +5,18 @@ const MovieSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  category: {
-    type: 'ObjectId',
-    ref: 'Category',
-  },
   year: Number,
   duration: Number,
-  director: String,
+  director: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Director',
+  },
+  categories: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+  }],
   comments: [{
-    type: 'ObjectId',
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment',
   }],
 });
