@@ -1,11 +1,13 @@
+require('dotenv').config()
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const port = 3000;
+const port = process.env.PORT;
 const mongoose = require("mongoose");
-const url = "mongodb://localhost:27017/stradaDev";
+const url = process.env.BASE_URL
 const movies = require("../routes/movie");
 const categories = require("../routes/category");
+const directors = require("../routes/director");
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const allowedOrigins = [
@@ -22,6 +24,7 @@ app.use(
 
 app.use("/movies", movies);
 app.use("/categories", categories);
+app.use("/directors", directors);
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);

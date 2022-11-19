@@ -3,6 +3,8 @@ const router = express.Router();
 const {
   createCategory,
   findAllCategories,
+  CategoryModel,
+  updateMovie,
 } = require("../services/categoryService");
 
 router.get("/", async (req, res) => {
@@ -24,6 +26,24 @@ router.post("/add", async (req, res) => {
     return res
       .status(201)
       .send({ message: "Category created!", data: category });
+  } catch (err) {}
+});
+
+router.patch("/update/:id", async (req, res) => {
+  try {
+    const category = await updateMovie(req);
+    return res
+      .status(201)
+      .send({ message: "Category will be updated!", data: category });
+  } catch (err) {}
+});
+
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const category = await CategoryModel.findByIdAndDelete(req.params.id);
+    return res
+      .status(201)
+      .send({ message: "Category will be deleted!", data: category });
   } catch (err) {}
 });
 

@@ -1,20 +1,17 @@
 const MovieModel = require("../scheme/movieScheme");
 
-const createMovie = async (body) => {
-  const createdMovie = await MovieModel.create(body);
+const createMovie = (body) => {
+  const createdMovie = MovieModel.create(body);
   return createdMovie;
 };
 
-const updateMovie = async (req) => {
-  const updatedMovie = await MovieModel.findByIdAndUpdate(
-    req.params.id,
-    req.body
-  );
+const updateMovie = (req) => {
+  const updatedMovie = MovieModel.findByIdAndUpdate(req.params.id, req.body);
   return updatedMovie;
 };
 
-const findMovie = async (params, method) => {
-  const foundFilm = await MovieModel[method](params);
+const findMovie = (params, method) => {
+  const foundFilm = MovieModel[method](params);
   return foundFilm;
 };
 

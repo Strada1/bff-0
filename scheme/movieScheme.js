@@ -5,7 +5,10 @@ const MovieSchema = new mongoose.Schema(
     title: String,
     year: Number,
     duration: String,
-    director: String,
+    director: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Director'
+    },
     rating: Number,
     category: {
       type: mongoose.Schema.Types.ObjectId,
