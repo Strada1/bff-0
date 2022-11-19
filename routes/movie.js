@@ -1,21 +1,11 @@
-const Movie = require('./models/movie');
-const Comment = require('./models/comment');
-const Category = require('./models/category');
+const dbFnMovie = require('../db-functions/movie');
+const helpers = require('../helpers');
+const { errorHandler } = helpers;
 
 function addRoutes(app) {
-  app.post('/category', async (req, res) => {
-    try {
-      await Category.create(req.body);
-
-      return res.status(201).send('category created');
-    } catch (e) {
-      return errorHandler({ res, e });
-    }
-  });
-
   app.post('/movies', async (req, res) => {
     try {
-      await Movie.create(req.body);
+      await dbFnMovie.createMovie(req.body);
 
       return res.status(201).send('movie created');
     } catch (e) {
@@ -27,7 +17,7 @@ function addRoutes(app) {
     const movieId = req.params?.movieId;
 
     try {
-      await Movie.findByIdAndDelete(movieId);
+      await dbFnMovie.deleteMovie(movieId);
 
       return res.status(201).send('movie deleted');
     } catch (e) {
@@ -39,7 +29,7 @@ function addRoutes(app) {
     const movieId = req.params?.movieId;
 
     try {
-      await Movie.findByIdAndUpdate(movieId, req.body);
+      await dbFnMovie.updateMovie(movieId, req.body);
 
       return res.status(201).send('movie changed');
     } catch (e) {
@@ -47,22 +37,27 @@ function addRoutes(app) {
     }
   });
 
-  app.put('/movies/:movieId/comments', async (req, res) => {
-    const movieId = req.params?.movieId;
-    const comment = { ...req.body, movieId };
-
+  app.get('/movies', async (req, res) => {
     try {
-      await Comment.create(comment);
+      const movies = await dbFnMovie.getMovies();
 
-      return res.status(201).send('comment added');
+      return res.status(201).send(JSON.stringify(movies));
     } catch (e) {
       return errorHandler({ res, e });
     }
   });
-}
 
-function errorHandler({ res, e, status = 400 }) {
-  return res.status(status).send(e.message);
+  app.get('/movies/:movieId', async (req, res) => {
+    const movieId = req.params?.movieId;
+
+    try {
+      const movie = await dbFnMovie.getMovie(movieId);
+
+      return res.status(201).send(JSON.stringify(movie));
+    } catch (e) {
+      return errorHandler({ res, e });
+    }
+  });
 }
 
 module.exports = addRoutes;
