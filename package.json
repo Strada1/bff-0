@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js",
-    "checkLint": "npx eslint ./src" 
+    "checkLint": "npx eslint ./src"
   },
   "author": "semastep96",
   "license": "ISC",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "mongodb": "^4.11.0",
     "mongoose": "^6.7.2"

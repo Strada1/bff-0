@@ -1,4 +1,4 @@
-const DB_URL = 'mongodb://localhost:27017/main';
+const DB_URL = process.env.MONGO_URL;
 const mongoose = require('mongoose');
 
 mongoose.connect(DB_URL, {
