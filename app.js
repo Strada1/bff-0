@@ -1,16 +1,26 @@
 const express = require('express');
+const cors = require("cors");
+const dotenv = require('dotenv');
+
 const connectDataBase = require('./connectDataBase');
-const {PORT, URL} = require('./constant/constant')
-const movies = require("./router/movies");
-const categories = require("./router/categories");
+const {router} = require("./router/router");
+
+const { MONGO_CONNECTION_STRING, PORT } = dotenv.config().parsed
 
 const app = express();
 app.use(express.json());
 
-connectDataBase(URL);
+const allowedOrigins = [
+    ''
+];
 
-app.use('/api', movies);
-app.use('/api', categories);
+app.use(cors({
+    origin: allowedOrigins
+}));
+
+connectDataBase(MONGO_CONNECTION_STRING);
+
+app.use('/api', router);
 
 app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`)

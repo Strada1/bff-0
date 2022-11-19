@@ -1,53 +1,41 @@
-const Movies = require('express');
-const {PATH} = require('../constant/constant');
-const Movie = require('../models/MovieSchema');
+const Router = require("express");
+const { findMovies, createMovie, updateMovie, deleteMovie } = require("../services/movieService");
 
-const movies = new Movies();
+const movies = new Router();
 
-movies.get(PATH.MOVIES, async (req, res) => {
+movies.get('/movies', async (req, res) => {
     try {
-        const _movie = await Movie.find({});
-        return res.send(_movie);
+        const movies = await findMovies();
+        return res.status(200).send(movies);
     } catch (e) {
-        return res.status(500).send(e);
-    }
-})
-
-movies.post(PATH.MOVIES, async (req, res) => {
-    try {
-        const {title, year, rating} = req.body;
-
-        const _movie = await Movie.create({title, year, rating});
-
-        return res.send(_movie);
-    } catch (e) {
-        return res.status(500).send(e);
+        return res.status(500).send(e.message);
     }
 });
 
-
-movies.put(PATH.MOVIES, async (req, res) => {
+movies.post('/movies', async (req, res) => {
     try {
-        const {id, title, year, rating} = req.body;
-
-        const _movie = await Movie.findByIdAndUpdate(id, {title, year, rating}, {returnDocument: 'after'});
-
-        return res.send(_movie);
+        const movie = await createMovie(req.body);
+        return res.status(201).send(movie);
     } catch (e) {
-        return res.status(500).send(e);
+        return res.status(500).send(e.message);
     }
-})
+});
 
-
-movies.delete(PATH.MOVIES, async (req, res) => {
+movies.put('/movies', async (req, res) => {
     try {
-        const {id} = req.body;
-
-        const _movie = await Movie.findByIdAndDelete(id);
-
-        return res.send(_movie);
+        const movie = await updateMovie(req.body);
+        return res.status(200).send(movie);
     } catch (e) {
-        return res.status(500).send(e);
+        return res.status(500).send(e.message);
+    }
+});
+
+movies.delete('/movies', async (req, res) => {
+    try {
+        await deleteMovie(req.body);
+        return res.status(200).send('delete');
+    } catch (e) {
+        return res.status(500).send(e.message);
     }
 });
 

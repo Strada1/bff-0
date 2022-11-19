@@ -1,57 +1,41 @@
 const Router = require('express');
-const {PATH} = require('../constant/constant');
-const Category = require('../models/CategorySchema');
+const { createCategory, findCategories, updateCategory, deleteCategory } = require("../services/categoriesService");
 
 const categories = new Router();
 
-categories.get(PATH.CATEGORIES, async (req, res) => {
+categories.get('/categories', async (req, res) => {
     try {
-        const _category = await Category.find({});
-        return res.send(_category);
+        const category = await findCategories();
+        return res.status(200).send(category);
     } catch (e) {
-        console.log(e)
-        return res.status(500).send(e);
+        return res.status(500).send(e.message);
     }
 })
 
-categories.post(PATH.CATEGORIES, async (req, res) => {
+categories.post('/categories', async (req, res) => {
     try {
-        const {title} = req.body;
-
-        const _category = await Category.create({title});
-
-        return res.send(_category);
+        const category = await createCategory(req.body);
+        return res.status(201).send(category);
     } catch (e) {
-        console.log(e)
-        return res.status(500).send(e);
+        return res.status(500).send(e.message);
     }
 });
 
-
-categories.put(PATH.CATEGORIES, async (req, res) => {
+categories.put('/categories', async (req, res) => {
     try {
-        const {id, title} = req.body;
-
-        const _category = await Category.findByIdAndUpdate(id, {title}, {returnDocument: 'after'});
-
-        return res.send(_category);
+        const category = await updateCategory(req.body);
+        return res.status(200).send(category);
     } catch (e) {
-        console.log(e)
-        return res.status(500).send(e);
+        return res.status(500).send(e.message);
     }
 })
 
-
-categories.delete(PATH.CATEGORIES, async (req, res) => {
+categories.delete('/categories', async (req, res) => {
     try {
-        const {id} = req.body;
-
-        const _category = await Category.findByIdAndDelete(id);
-
-        return res.send(_category);
+        await deleteCategory(req.body);
+        return res.status(200).send('delete');
     } catch (e) {
-        console.log(e)
-        return res.status(500).send(e);
+        return res.status(500).send(e.message);
     }
 });
 
