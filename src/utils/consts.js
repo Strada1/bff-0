@@ -1,5 +1,5 @@
-const DB_URL = 'mongodb://localhost:27017/movies';
-const HOST = 3000;
+const HOST = process.env.HOST;
+
 const ALLOWED_ORIGINS = [ HOST ];
 
-module.exports = { DB_URL, HOST, ALLOWED_ORIGINS };
+module.exports = { ALLOWED_ORIGINS };

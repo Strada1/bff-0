@@ -1,3 +1,5 @@
+require('dotenv').config(); //first import
+
 const express = require('express');
 const cors = require('cors');
 const { ALLOWED_ORIGINS } = require('./utils');
