@@ -1,11 +1,14 @@
-const { Movie } = require('../models');
+const { Movie, Comment } = require('../models');
 
 class Service {
   create = ( { title, category, year, duration, director } ) => {
     return Movie.create({ title, category, year, duration, director });
   };
-  get = ( movieId ) => {
-    return Movie.findById(movieId);
+  get = () => {
+    return Movie.find().populate('comments');
+  };
+  getOne = ( movieId ) => {
+    return Movie.findById(movieId).populate('comments');
   };
   update = ( movieId, { title, category, year, duration, director } ) => {
     return Movie.findByIdAndUpdate(
@@ -17,17 +20,25 @@ class Service {
   delete = ( movieId ) => {
     return Movie.findByIdAndDelete(movieId);
   };
-  addComment = ( movieId, { text } ) => {
+  addComment = async ( movieId, { text } ) => {
+    const comment = await Comment.create({ movie: movieId, text });
     return Movie.findByIdAndUpdate(
       movieId,
-      { $push: { comments: { text } } },
+      { $push: { comments: comment._id } },
       { new: true },
     );
   };
-  deleteComment = ( movieId, commentId ) => {
+  updateComment = ( commentId, { text } ) => {
+    return Comment.findByIdAndUpdate(
+      commentId,
+      { text },
+    );
+  };
+  deleteComment = async ( movieId, commentId ) => {
+    const comment = await Comment.findByIdAndDelete(commentId);
     return Movie.findByIdAndUpdate(
       movieId,
-      { $pull: { comments: { _id: commentId } } },
+      { $pull: { comments: comment._id } },
       { new: true },
     );
   };

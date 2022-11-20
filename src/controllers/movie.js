@@ -8,8 +8,13 @@ class Controller {
     return res.status(201).send(movie);
   };
   get = async ( req, res ) => {
+    const movies = await movieService.get();
+
+    return res.status(200).send(movies);
+  };
+  getOne = async ( req, res ) => {
     const { movieId } = req.params;
-    const movie = await movieService.get(movieId);
+    const movie = await movieService.getOne(movieId);
 
     return res.status(200).send(movie);
   };
@@ -31,7 +36,14 @@ class Controller {
     const newComment = req.body;
     const movie = await movieService.addComment(movieId, newComment);
 
-    return res.status(200).send(movie);
+    return res.status(201).send(movie);
+  };
+  updateComment = async ( req, res ) => {
+    const { commentId } = req.params;
+    const newComment = req.body;
+    const comment = await movieService.updateComment(commentId, newComment);
+
+    return res.status(200).send(comment);
   };
   deleteComment = async ( req, res ) => {
     const { movieId, commentId } = req.params;
