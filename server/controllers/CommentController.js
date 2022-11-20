@@ -93,6 +93,10 @@ class CommentController {
         }));
       }
 
+      const movie = await MovieService.getMovie(comment.movie);
+      movie.comments = movie.comments.filter(item => item.toString() !== comment._id.toString());
+      movie.save();
+
       return res.status(200).send(getGeneratedResponse(true, comment));
     } catch (err) {
       console.log('Error: ', err.message);
