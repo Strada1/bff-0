@@ -1,29 +1,42 @@
-const url = 'mongodb://localhost:27017/main';
+require('dotenv').config();
+
+const url = process.env.MONGO_CONNECTION_URL;
 const mongoose = require('mongoose');
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
-const Movie = createMovieModel();
-const Category = createCategoryModel();
+const MovieSchema = new mongoose.Schema({
+	title: String,
+	category: { type: 'ObjectId', ref: 'Category' },
+	director: { type: 'ObjectId', ref: 'Director' },
+	year: Number,
+	duration: Number,
+	rating: Number,
+	comments: [
+		{
+			type: 'ObjectId',
+			ref: 'Comment',
+		},
+	],
+});
 
-module.exports.Movie = Movie;
-module.exports.Category = Category;
+const CategorySchema = new mongoose.Schema({
+	title: String,
+});
 
-function createMovieModel() {
-	const MovieSchema = new mongoose.Schema({
-		title: String,
-		category: String,
-		year: Number,
-		duration: Number,
-		rating: Number,
-	});
+const CommentSchema = new mongoose.Schema({
+	text: String,
+	movieId: {
+		ref: 'Movie',
+		type: 'ObjectId',
+	},
+});
 
-	return mongoose.model('Movie', MovieSchema);
-}
+const DirectorSchema = new mongoose.Schema({
+	name: String,
+	surname: String,
+});
 
-function createCategoryModel() {
-	const CategorySchema = new mongoose.Schema({
-		title: String,
-	});
-
-	return mongoose.model('Category', CategorySchema);
-}
+module.exports.Movie = mongoose.model('Movie', MovieSchema);
+module.exports.Category = mongoose.model('Category', CategorySchema);
+module.exports.Comment = mongoose.model('Comment', CommentSchema);
+module.exports.Director = mongoose.model('Director', DirectorSchema);
