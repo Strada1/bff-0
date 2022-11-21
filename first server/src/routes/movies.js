@@ -5,9 +5,10 @@ const {
     findByIdAndUpdateMovie,
     findOneMovie
 } = require("../services/movieService");
+const {validate} = require("../middlewares/validate");
 
 app.route('/movies')
-    .post(async (req, res) => {
+    .post(validate(['title', 'director']), async (req, res) => {
         try {
             await createMovie(req.body)
             return res.status(201).send('movie created')
