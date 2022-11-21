@@ -14,7 +14,7 @@ router.get('/categories', async (request, response) => {
     response.status(200).send(categories);
   } catch (error) {
     console.log(error);
-    response.status(500).send([]);
+    return response.status(500).send([]);
   }
 });
 
@@ -26,10 +26,10 @@ router.post('/categories', async (request, response) => {
       category,
     });
 
-    return response.status(201).send(result);
+    response.status(201).send(result);
   } catch (error) {
     console.log(error);
-    return response.status(500).send({});
+    response.status(500).send({});
   }
 });
 

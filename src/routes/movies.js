@@ -42,8 +42,6 @@ router.post('/movies', async (request, response) => {
       director: findedDirector._id,
     });
 
-    console.log(movie);
-
     response.status(201).send(movie);
   } catch (error) {
     console.log(error);

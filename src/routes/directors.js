@@ -48,6 +48,7 @@ router.delete('/directors/:directorId', async (request, response) => {
   try {
     const { directorId } = request.params;
     const deleted = await deleteDirector(directorId);
+
     response.status(204).send(deleted);
   } catch (error) {
     console.log(error);
