@@ -7,6 +7,7 @@ const {
   getMovies,
 } = require('../services/movieServices');
 const { deleteAllMovieComments } = require('../services/commentServices');
+const validate = require('../middlewares/validate');
 const router = Router();
 
 router.get('/', async (req, res) => {
@@ -35,16 +36,20 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
-  try {
-    const movie = await createMovie(req.body);
-    return res.status(201).json(movie);
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to create movie\nerror: ' + error.message);
+router.post(
+  '/',
+  validate(['title', 'category', 'year', 'director', 'duration']),
+  async (req, res) => {
+    try {
+      const movie = await createMovie(req.body);
+      return res.status(201).json(movie);
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to create movie\nerror: ' + error.message);
+    }
   }
-});
+);
 
 router.delete('/:id', async (req, res) => {
   try {

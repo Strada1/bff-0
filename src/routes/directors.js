@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const validate = require('../middlewares/validate');
 const {
   getDirectors,
   getDirector,
@@ -34,7 +35,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', validate(['firstName', 'lastName']), async (req, res) => {
   try {
     const director = await createDirector(req.body);
     return res.status(201).json(director);

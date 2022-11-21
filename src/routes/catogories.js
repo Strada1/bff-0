@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const validate = require('../middlewares/validate');
 const router = Router();
 const {
   createCategory,
@@ -34,7 +35,7 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', validate(['title']), async (req, res) => {
   try {
     const category = await createCategory(req.body);
     return res.status(201).json(category);

@@ -1,4 +1,5 @@
 const { Router } = require('express');
+const validate = require('../middlewares/validate');
 const {
   createComment,
   deleteComment,
@@ -46,11 +47,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', validate(['user', 'text', 'movie']), async (req, res) => {
   try {
-    if (!req.body?.movie) {
-      return res.status(400).send('please write movie id');
-    }
     const movie = await getMovie(req.body.movie);
     if (!movie) {
       return res.status(404).send('movie not found');
