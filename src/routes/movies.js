@@ -1,37 +1,78 @@
 const express = require('express');
 const router = express.Router();
-const Movie = require('../models/Movie');
+const {
+  getMovies,
+  createMovie,
+  updateMovie,
+  deleteMovie,
+} = require('../services/movieService');
+const { findDirector } = require('../services/directorService');
+const { findCategory } = require('../services/categoryService');
 
 router.get('/movies', async (request, response) => {
-  response.send('get movies');
+  try {
+    const movies = await getMovies().populate(['category', 'director']);
+
+    response.status(200).send(movies);
+  } catch (error) {
+    console.log(error);
+    response.status(500).send([]);
+  }
 });
 
 router.post('/movies', async (request, response) => {
   try {
     const { title, category, year, duration, director } = request.body;
+    const findedCategory = await findCategory({ category });
+    const findedDirector = await findDirector({ director });
 
-    const movie = await Movie.create({
+    if (!findedCategory) {
+      return response.status(400).send({ error: 'category not found' });
+    }
+
+    if (!findedDirector) {
+      return response.status(400).send({ error: 'director not found' });
+    }
+
+    const movie = await createMovie({
       title,
-      category,
       year,
       duration,
-      director,
+      category: findedCategory._id,
+      director: findedDirector._id,
     });
+
+    console.log(movie);
 
     response.status(201).send(movie);
   } catch (error) {
     console.log(error);
-    response.status(400).send({});
+    response.status(500).send({});
   }
 });
 
 router.put('/movies/:movieId', async (request, response) => {
-  response.send('put movies');
+  try {
+    const { movieId } = request.params;
+    const updated = await updateMovie(movieId, request.body);
+
+    response.status(200).send(updated);
+  } catch (error) {
+    console.log(error);
+    response.status(500).send({});
+  }
 });
 
 router.delete('/movies/:movieId', async (request, response) => {
-  const { movieId } = request.params;
-  response.send('delete movies');
+  try {
+    const { movieId } = request.params;
+    const deleted = await deleteMovie(movieId);
+
+    response.status(204).send(deleted);
+  } catch (error) {
+    console.log(error);
+    response.status(500).send({});
+  }
 });
 
 module.exports = router;

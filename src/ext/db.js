@@ -1,6 +1,9 @@
 const db = require('mongoose');
-const { DB_URL } = require('../settings');
+require('dotenv').config();
 
-db.connect(DB_URL, { useNewUrlParser: true, useUnifiedTopology: true });
+db.connect(process.env.DB_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 module.exports = db;

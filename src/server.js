@@ -3,16 +3,19 @@ const app = express();
 const cors = require('cors');
 const Movies = require('./routes/movies');
 const Categories = require('./routes/categories');
-const { SERVER_URL, PORT, ALLOWED_ORIGINS } = require('./settings');
+const Directors = require('./routes/directors');
+require('dotenv').config();
 
 app.use(
   cors({
-    origin: ALLOWED_ORIGINS,
+    origin: process.env.ALLOWED_ORIGINS,
   }),
   express.json()
 );
-app.use(Movies, Categories);
+app.use(Movies, Categories, Directors);
 
-app.listen(PORT, () => {
-  console.log(`server running at ${SERVER_URL}:${PORT}`);
+app.listen(process.env.PORT, () => {
+  console.log(
+    `server running at ${process.env.SERVER_URL}:${process.env.PORT}`
+  );
 });
