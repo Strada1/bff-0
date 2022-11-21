@@ -1,28 +1,28 @@
 const { Router } = require('express');
 const {
-  findAllDirectors,
-  findDirector,
+  getDirectors,
+  getDirector,
   createDirector,
   updateDirector,
   deleteDirector,
 } = require('../services/directorServices');
 const router = Router();
 
-router.get('/all', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const directors = await findAllDirectors();
+    const directors = await getDirectors();
     return res.status(200).json(directors);
   } catch (error) {
     return res
       .status(500)
-      .send('failed to find directors\nerror: ' + error.message);
+      .send('failed to get directors\nerror: ' + error.message);
   }
 });
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    const director = await findDirector(id);
+    const director = await getDirector(id);
     if (!director) {
       return res.status(404).send(`director id:${id} - not found`);
     }
@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
   } catch (error) {
     return res
       .status(500)
-      .send(`failed to find director ${id}\nerror: ` + error.message);
+      .send(`failed to get director ${id}\nerror: ` + error.message);
   }
 });
 

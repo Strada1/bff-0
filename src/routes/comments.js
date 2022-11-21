@@ -2,40 +2,39 @@ const { Router } = require('express');
 const {
   createComment,
   deleteComment,
-  findAllComments,
-  findComment,
-  findCommentsByMovie,
+  getComments,
+  getComment,
+  getCommentsByMovie,
   updateComment,
 } = require('../services/commentServices');
-const { findMovie } = require('../services/movieServices');
+const {
+  getMovie,
+  deleteCommentFromMovie,
+  addCommentInMovie,
+} = require('../services/movieServices');
 const router = Router();
 
-router.get('/all', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const comments = await findAllComments();
+    const movieId = req.query.movieId;
+    let comments = null;
+    if (movieId) {
+      comments = await getCommentsByMovie(movieId);
+    } else {
+      comments = await getComments();
+    }
     return res.status(200).json(comments);
   } catch (error) {
     return res
       .status(500)
-      .send('failed to find comments\nerror: ' + error.message);
-  }
-});
-
-router.get('/all/:movieId', async (req, res) => {
-  try {
-    const comments = await findCommentsByMovie(req.params.movieId);
-    return res.status(200).json(comments);
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to find comments\nerror: ' + error.message);
+      .send('failed to get comments\nerror: ' + error.message);
   }
 });
 
 router.get('/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    const comment = await findComment(id);
+    const comment = await getComment(id);
     if (!comment) {
       return res.status(404).send(`Comment id:${id} - not found`);
     }
@@ -43,7 +42,7 @@ router.get('/:id', async (req, res) => {
   } catch (error) {
     return res
       .status(500)
-      .send(`failed to find comment ${id}\nerror: ` + error.message);
+      .send(`failed to get comment ${id}\nerror: ` + error.message);
   }
 });
 
@@ -52,11 +51,12 @@ router.post('/', async (req, res) => {
     if (!req.body?.movie) {
       return res.status(400).send('please write movie id');
     }
-    const movie = await findMovie(req.body.movie);
+    const movie = await getMovie(req.body.movie);
     if (!movie) {
       return res.status(404).send('movie not found');
     }
     const comment = await createComment(req.body);
+    await addCommentInMovie(movie._id, comment.id);
     return res.status(201).json(comment);
   } catch (error) {
     return res.status(500).send('Server error: ' + error.message);
@@ -81,7 +81,11 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    await deleteComment(req.params.id);
+    const comment = await deleteComment(req.params.id);
+    if (!comment) {
+      return res.status(404).send(`Comment id:"${req.params.id}" - Not found`);
+    }
+    await deleteCommentFromMovie(comment.movie, comment.id);
     return res.status(200).send('Comment deleted');
   } catch (error) {
     return res

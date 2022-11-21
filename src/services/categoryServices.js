@@ -1,10 +1,10 @@
 const Category = require('../models/Category.js');
 
-const findAllCategories = () => {
+const getCategories = () => {
   return Category.find().lean();
 };
 
-const findCategory = (id) => {
+const getCategory = (id) => {
   return Category.findById(id).lean();
 };
 
@@ -22,8 +22,8 @@ const deleteCategory = (id) => {
 
 module.exports = {
   createCategory,
-  findAllCategories,
-  findCategory,
+  getCategories,
+  getCategory,
   updateCategory,
   deleteCategory,
 };

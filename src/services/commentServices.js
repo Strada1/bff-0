@@ -12,15 +12,15 @@ const deleteAllMovieComments = (movieId) => {
   return Comment.deleteMany({ movie: movieId });
 };
 
-const findAllComments = () => {
+const getComments = () => {
   return Comment.find().lean();
 };
 
-const findComment = (id) => {
+const getComment = (id) => {
   return Comment.findById(id).lean();
 };
 
-const findCommentsByMovie = (movieId) => {
+const getCommentsByMovie = (movieId) => {
   return Comment.find({ movie: movieId }).lean();
 };
 
@@ -37,8 +37,8 @@ module.exports = {
   createComment,
   deleteComment,
   deleteAllMovieComments,
-  findAllComments,
-  findComment,
-  findCommentsByMovie,
+  getComments,
+  getComment,
+  getCommentsByMovie,
   updateComment,
 };

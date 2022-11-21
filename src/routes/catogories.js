@@ -2,15 +2,15 @@ const { Router } = require('express');
 const router = Router();
 const {
   createCategory,
-  findAllCategories,
-  findCategory,
+  getCategories,
+  getCategory,
   updateCategory,
   deleteCategory,
 } = require('../services/categoryServices');
 
-router.get('/all', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const categories = await findAllCategories();
+    const categories = await getCategories();
     return res.status(200).json(categories);
   } catch (error) {
     return res
@@ -22,7 +22,7 @@ router.get('/all', async (req, res) => {
 router.get('/:id', async (req, res) => {
   const id = req.params.id;
   try {
-    const category = await findCategory(id);
+    const category = await getCategory(id);
     if (!category) {
       return res.status(404).send(`Category id:${id} - not found`);
     }

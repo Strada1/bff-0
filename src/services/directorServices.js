@@ -3,10 +3,10 @@ const Director = require('../models/Director');
 const createDirector = ({ firstName, lastName, birthDay }) => {
   return Director.create({ firstName, lastName, birthDay });
 };
-const findAllDirectors = () => {
+const getDirectors = () => {
   return Director.find().lean();
 };
-const findDirector = (id) => {
+const getDirector = (id) => {
   return Director.findById(id);
 };
 const updateDirector = (id, { firstName, lastName, birthDay }) => {
@@ -18,8 +18,8 @@ const deleteDirector = (id) => {
 
 module.exports = {
   createDirector,
-  findAllDirectors,
-  findDirector,
+  getDirectors,
+  getDirector,
   updateDirector,
   deleteDirector,
 };

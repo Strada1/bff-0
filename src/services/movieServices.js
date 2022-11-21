@@ -18,18 +18,29 @@ const updateMovie = (id, { title, category, year, duration, director }) => {
   });
 };
 
-const findMovie = (id) => {
-  return Movie.findById(id).lean().populate('category director');
+const getMovie = (id) => {
+  return Movie.findById(id).lean().populate('category director comments');
 };
 
-const findAllMovies = () => {
-  return Movie.find().lean().populate('category director');
+const getMovies = () => {
+  return Movie.find().lean().populate('category director comments');
+};
+
+const addCommentInMovie = (movieId, commentId) => {
+  console.log(movieId);
+  return Movie.findByIdAndUpdate(movieId, { $push: { comments: commentId } });
+};
+
+const deleteCommentFromMovie = (movieId, commentId) => {
+  return Movie.findByIdAndUpdate(movieId, { $pull: { comments: commentId } });
 };
 
 module.exports = {
   createMovie,
   deleteMovie,
   updateMovie,
-  findMovie,
-  findAllMovies,
+  getMovie,
+  getMovies,
+  addCommentInMovie,
+  deleteCommentFromMovie,
 };
