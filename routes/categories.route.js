@@ -4,8 +4,8 @@ const categoriesService = require('../services/categories.service');
 
 router.get('/', async (req, res) => {
   try {
-    const response = await categoriesService.getCategory();
-    return res.status(200).send(response);
+    const categories = await categoriesService.getCategory();
+    return res.status(200).send(categories);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
@@ -13,12 +13,12 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const movie = await categoriesService.createCategory([
+    const category = await categoriesService.createCategory([
       {
         category: req.body.category,
       },
     ]);
-    return res.status(201).send(movie);
+    return res.status(201).send(category);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
@@ -27,10 +27,10 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const categoryId = req.params.id;
-    const response = await categoriesService.updateCategory(categoryId, {
+    const category = await categoriesService.updateCategory(categoryId, {
       category: req.body.category,
     });
-    return res.status(200).send(response);
+    return res.status(200).send(category);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
@@ -38,8 +38,9 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const response = await categoriesService.deleteCategory(req.params.id);
-    return res.status(200).send(response);
+    const categoryId = req.params.id;
+    const category = await categoriesService.deleteCategory(categoryId);
+    return res.status(200).send(category);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }

@@ -4,8 +4,8 @@ const directorService = require('../services/directors.service');
 
 router.get('/', async (req, res) => {
   try {
-    const response = await directorService.getDirector();
-    return res.status(200).send(response);
+    const directors = await directorService.getDirector();
+    return res.status(200).send(directors);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
@@ -22,10 +22,10 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const idDirector = req.params.id;
-    const response = await directorService.updateDirector(idDirector, {
+    const director = await directorService.updateDirector(idDirector, {
       fullName: req.body.fullName,
     });
-    return res.status(201).send(response);
+    return res.status(201).send(director);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
@@ -34,8 +34,8 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const idDirector = req.params.id;
-    const response = await directorService.deleteDirector(idDirector);
-    return res.status(200).send(response);
+    const director = await directorService.deleteDirector(idDirector);
+    return res.status(200).send(director);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }

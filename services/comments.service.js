@@ -15,9 +15,29 @@ const getComments = () => {
 const deleteComments = (idComment) => {
   return Comments.findByIdAndDelete(idComment).lean();
 };
+
+const deleteCommentsByMovie = (idMovie) => {
+  return Comments.deleteMany({
+    idMovie: idMovie,
+  }).lean();
+};
+
+const createCommentByMovie = (idMovie, comment) => {
+  return Comments.create({
+    idMovie: idMovie,
+    description: comment,
+  });
+};
+
+const getCommentsByMovie = (idMovie) => {
+  return Comments.find({ idMovie: idMovie });
+};
 module.exports = {
   createComments,
   updateComments,
   getComments,
   deleteComments,
+  deleteCommentsByMovie,
+  createCommentByMovie,
+  getCommentsByMovie,
 };

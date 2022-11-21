@@ -5,8 +5,8 @@ const commentsService = require('../services/comments.service');
 
 router.get('/', async (req, res) => {
   try {
-    const response = await commentsService.getComments();
-    return res.status(200).send(response);
+    const comments = await commentsService.getComments();
+    return res.status(200).send(comments);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
@@ -14,11 +14,11 @@ router.get('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const response = await commentsService.updateComments(
-      req.params.id,
-      req.body
-    );
-    return res.status(201).send(response);
+    const idComment = req.params.id;
+    const comment = await commentsService.updateComments(idComment, {
+      description: req.body.description,
+    });
+    return res.status(201).send(comment);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
@@ -26,8 +26,9 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const response = await commentsService.deleteComments(req.params.id);
-    return res.status(200).send(response);
+    const idComment = req.params.id;
+    const comment = await commentsService.deleteComments(idComment);
+    return res.status(200).send(comment);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
