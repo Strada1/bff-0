@@ -1,18 +1,17 @@
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const useRoutes = require('./routes')
 const app = express()
-const port = 8080
+const port = process.env.PORT
 
 const allowedOrigins = [
-    'http://localhost:8080/movies',
-    'http://localhost:8080/categories',
-    'http://localhost:8080/comments',
+    `http://localhost:${port}`,
 ]
 
 app.use(
     cors({
-        origin: allowedOrigins,
+        origin: allowedOrigins
     })
 )
 
