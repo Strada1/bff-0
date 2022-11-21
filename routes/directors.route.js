@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const categoriesService = require('../services/categories.service');
+const directorService = require('../services/directors.service');
 
 router.get('/', async (req, res) => {
   try {
-    const response = await categoriesService.getCategory();
+    const response = await directorService.getDirector();
     return res.status(200).send(response);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
@@ -13,24 +13,19 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const movie = await categoriesService.createCategory([
-      {
-        category: req.body.category,
-      },
-    ]);
-    return res.status(201).send(movie);
+    const director = await directorService.createDirector(req.body);
+    return res.status(201).send(director);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
 });
-
 router.put('/:id', async (req, res) => {
   try {
-    const categoryId = req.params.id;
-    const response = await categoriesService.updateCategory(categoryId, {
-      category: req.body.category,
+    const idDirector = req.params.id;
+    const response = await directorService.updateDirector(idDirector, {
+      fullName: req.body.fullName,
     });
-    return res.status(200).send(response);
+    return res.status(201).send(response);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
   }
@@ -38,7 +33,8 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const response = await categoriesService.deleteCategory(req.params.id);
+    const idDirector = req.params.id;
+    const response = await directorService.deleteDirector(idDirector);
     return res.status(200).send(response);
   } catch (err) {
     return res.status(500).json({ error: err, code: 500 });
