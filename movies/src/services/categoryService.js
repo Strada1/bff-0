@@ -5,7 +5,7 @@ const getCategories = () => {
 }
 
 const createCategory = (data) => {
-    return Category.create(data).populate('movies')
+    return Category.create(data)
 }
 
 const updateCategory = (categoryId, data) => {

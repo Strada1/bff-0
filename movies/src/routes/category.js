@@ -3,8 +3,9 @@ const {
     getCategories,
     createCategory,
     updateCategory,
-    deleteCategory,
+    deleteCategory
 } = require('../services/categoryService')
+const { validate } = require('../middlewares')
 
 const router = express.Router()
 
@@ -18,7 +19,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', validate(['name']), async (req, res) => {
     try {
         const category = await createCategory(req.body)
         return res.status(201).send(category)

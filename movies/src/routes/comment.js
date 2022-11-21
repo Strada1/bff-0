@@ -3,8 +3,9 @@ const {
     getComments,
     createComment,
     deleteComment,
-    updateComment,
+    updateComment
 } = require('../services/commentService')
+const { validate } = require('../middlewares')
 
 const router = express.Router()
 
@@ -18,7 +19,7 @@ router.get('/:movieId', async (req, res) => {
     }
 })
 
-router.post('/:movieId', async (req, res) => {
+router.post('/:movieId', validate(['text', 'author']), async (req, res) => {
     try {
         const { movieId } = req.params
         const comment = await createComment({ ...req.body, movie: movieId })

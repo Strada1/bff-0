@@ -4,8 +4,9 @@ const {
     createMovie,
     deleteMovie,
     updateMovie,
-    getMovie,
+    getMovie
 } = require('../services/movieService')
+const { validate } = require('../middlewares')
 
 const router = express.Router()
 
@@ -27,7 +28,7 @@ router.get('/:movieId', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', validate(['title', 'year']), async (req, res) => {
     try {
         const movie = await createMovie(req.body)
         return res.status(201).send(`successfully created: ${movie}`)

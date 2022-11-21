@@ -3,8 +3,9 @@ const {
     getDirectors,
     createDirector,
     deleteDirector,
-    updateDirector,
+    updateDirector
 } = require('../services/directorService')
+const { validate } = require('../middlewares')
 const router = express.Router()
 
 router.get('/', async (req, res) => {
@@ -16,7 +17,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/', async (req, res) => {
+router.post('/', validate(['fullName']), async (req, res) => {
     try {
         const director = await createDirector(req.body)
         return res.status(201).send(`successfully created: ${director}`)
