@@ -6,11 +6,25 @@ const {
     updateComment
 } = require('../services/commentService')
 const { validate } = require('../middlewares')
+const { validationResult, body, param } = require('express-validator')
 
 const router = express.Router()
 
-router.get('/:movieId', async (req, res) => {
+const fieldValidators = [
+    body('author').matches(/[a-zA-Zа-яА-Я]/).optional().withMessage('author must contain only letters')
+]
+
+const paramValidators = [
+    param('movieId').isMongoId().optional().withMessage('movieId must be MongoId'),
+    param('commentId').isMongoId().optional().withMessage('commentId must be MongoId')
+]
+
+router.get('/:movieId', ...paramValidators, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const { movieId } = req.params
         const comments = await getComments(movieId)
         return res.status(200).send(comments)
@@ -19,8 +33,12 @@ router.get('/:movieId', async (req, res) => {
     }
 })
 
-router.post('/:movieId', validate(['text', 'author']), async (req, res) => {
+router.post('/:movieId', validate(['text', 'author']), ...paramValidators, ...fieldValidators, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const { movieId } = req.params
         const comment = await createComment({ ...req.body, movie: movieId })
         return res.status(201).send(`comment added successfully: ${comment}`)
@@ -29,8 +47,12 @@ router.post('/:movieId', validate(['text', 'author']), async (req, res) => {
     }
 })
 
-router.delete('/:commentId', async (req, res) => {
+router.delete('/:commentId', ...paramValidators, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const { commentId } = req.params
         const comment = await deleteComment(commentId)
         return res.status(200).send(`comment successfully deleted: ${comment}`)
@@ -39,8 +61,12 @@ router.delete('/:commentId', async (req, res) => {
     }
 })
 
-router.patch('/:commentId', async (req, res) => {
+router.patch('/:commentId', ...paramValidators, ...fieldValidators, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const { commentId } = req.params
         const comment = await updateComment(commentId, req.body)
         return res.status(200).send(`successfully updated: ${comment}`)

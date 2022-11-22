@@ -7,8 +7,8 @@ const getComment = (commentId) => {
     return Comment.findById({ _id: commentId }).lean().populate('movie')
 }
 
-const createComment = ({ text, author, movie }) => {
-    return Comment.create({ text, author, movie })
+const createComment = ({ text, author, movie, createdAt }) => {
+    return Comment.create({ text, author, movie, createdAt })
 }
 
 const deleteComment = (commentId) => {

@@ -6,7 +6,15 @@ const {
     updateDirector
 } = require('../services/directorService')
 const { validate } = require('../middlewares')
+const { validationResult, body, param } = require('express-validator')
+
 const router = express.Router()
+
+const fieldValidators = [
+    body('fullName').matches(/[a-zA-Zа-яА-Я]/).optional().withMessage('fullName must contain only letters'),
+]
+
+const paramValidator = param('directorId').isMongoId().withMessage('directorId must be MongoId')
 
 router.get('/', async (req, res) => {
     try {
@@ -17,8 +25,12 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/', validate(['fullName']), async (req, res) => {
+router.post('/', validate(['fullName']), ...fieldValidators, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const director = await createDirector(req.body)
         return res.status(201).send(`successfully created: ${director}`)
     } catch (e) {
@@ -27,8 +39,12 @@ router.post('/', validate(['fullName']), async (req, res) => {
     }
 })
 
-router.delete('/:directorId', async (req, res) => {
+router.delete('/:directorId', paramValidator, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const director = await deleteDirector(req.params.directorId)
         return res.status(200).send(`successfully deleted: ${director}`)
     } catch (e) {
@@ -36,8 +52,12 @@ router.delete('/:directorId', async (req, res) => {
     }
 })
 
-router.patch('/:directorId', async (req, res) => {
+router.patch('/:directorId', paramValidator, ...fieldValidators, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const { directorId } = req.params
         const director = await updateDirector(directorId, req.body)
         return res.status(200).send(`successfully updated: ${director}`)

@@ -6,8 +6,14 @@ const {
     deleteCategory
 } = require('../services/categoryService')
 const { validate } = require('../middlewares')
+const { validationResult, body, param } = require('express-validator')
 
 const router = express.Router()
+
+const fieldValidators = [
+    body('name').matches(/[a-zA-Zа-яА-Я]/).trim().optional().withMessage('name must contain only letters')
+]
+const paramValidator = param('categoryId').isMongoId().withMessage('categoryId must be MongoId')
 
 router.get('/', async (req, res) => {
     try {
@@ -19,8 +25,12 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/', validate(['name']), async (req, res) => {
+router.post('/', validate(['name']), ...fieldValidators, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const category = await createCategory(req.body)
         return res.status(201).send(category)
     } catch (e) {
@@ -29,8 +39,12 @@ router.post('/', validate(['name']), async (req, res) => {
     }
 })
 
-router.patch('/:categoryId', async (req, res) => {
+router.patch('/:categoryId', paramValidator, ...fieldValidators, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const { categoryId } = req.params
         const category = await updateCategory(categoryId, req.body)
         return res.status(200).send(`successfully updated: ${category}`)
@@ -39,8 +53,12 @@ router.patch('/:categoryId', async (req, res) => {
     }
 })
 
-router.delete('/:categoryId', async (req, res) => {
+router.delete('/:categoryId', paramValidator, async (req, res) => {
     try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
         const category = await deleteCategory(req.params.categoryId)
         return res.status(200).send(`successfully deleted: ${category}`)
     } catch (e) {
