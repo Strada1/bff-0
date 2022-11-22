@@ -1,11 +1,7 @@
+import {body} from 'express-validator'
+
 const validate = arr => {
-  return (req, res, next) => {
-    const isValid = arr.every(item => req.body[item])
-    if (!isValid) {
-      return res.status(418).send('validation error')
-    }
-    return next()
-  }
+  return arr.map(item => body(item, `${item} is empty`).not().isEmpty())
 }
 
 export default validate

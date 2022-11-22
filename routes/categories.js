@@ -1,4 +1,5 @@
 import express from 'express'
+import {validationResult} from 'express-validator'
 import {
   createCategory,
   getAllCategory,
@@ -8,12 +9,15 @@ import {
 import validate from '../helpers/validate.js'
 
 const router = express.Router()
-
 const requiredKeys = ['title']
 
 router
   .post('/', validate(requiredKeys), async (req, res, next) => {
     try {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+      }
       await createCategory(req.body)
       return res.status(201).send('category created')
     } catch (error) {
@@ -28,8 +32,12 @@ router
       return next(error)
     }
   })
-  .put('/:id', async (req, res, next) => {
+  .put('/:id', validate(requiredKeys), async (req, res, next) => {
     try {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+      }
       const id = req.params.id
       const category = await updateCategory(id, req.body)
       if (!category) {

@@ -1,4 +1,5 @@
 import express from 'express'
+import {validationResult} from 'express-validator'
 import {
   createDirector,
   getAllDirector,
@@ -13,6 +14,10 @@ const requiredKeys = ['name']
 router
   .post('/', validate(requiredKeys), async (req, res, next) => {
     try {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+      }
       await createDirector(req.body)
       return res.status(201).send('director created')
     } catch (error) {
@@ -27,8 +32,12 @@ router
       return next(error)
     }
   })
-  .put('/:id', async (req, res, next) => {
+  .put('/:id', validate(requiredKeys), async (req, res, next) => {
     try {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+      }
       const id = req.params.id
       const category = await updateDirector(id, req.body)
       if (!category) {

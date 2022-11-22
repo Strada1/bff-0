@@ -1,4 +1,5 @@
 import express from 'express'
+import {validationResult} from 'express-validator'
 import {findMovie} from '../helpers/movies.js'
 import {
   createComment,
@@ -14,6 +15,10 @@ const requiredKeys = ['author', 'text']
 router
   .post('/:id', validate(requiredKeys), async (req, res, next) => {
     try {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+      }
       const id = req.params.id
       const movieComment = await findMovie(id)
       if (!movieComment) {
@@ -42,8 +47,12 @@ router
       return next(error)
     }
   })
-  .put('/:id', async (req, res, next) => {
+  .put('/:id',validate(requiredKeys), async (req, res, next) => {
     try {
+			const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+      }
       const id = req.params.id
       const comment = await updateComments(id, req.body)
       if (!comment) {

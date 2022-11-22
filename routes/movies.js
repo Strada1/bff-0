@@ -1,4 +1,5 @@
 import express from 'express'
+import {validationResult} from 'express-validator'
 import {
   getAllMovies,
   getMovie,
@@ -23,6 +24,10 @@ const requiredKeys = [
 router
   .post('/', validate(requiredKeys), async (req, res, next) => {
     try {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+      }
       await createMovie(req.body)
       return res.status(201).send('movie created')
     } catch (error) {
@@ -49,8 +54,12 @@ router
       return next(error)
     }
   })
-  .put('/:id', async (req, res, next) => {
+  .put('/:id', validate(requiredKeys), async (req, res, next) => {
     try {
+      const errors = validationResult(req)
+      if (!errors.isEmpty()) {
+        return res.status(400).json({errors: errors.array()})
+      }
       const id = req.params.id
       const updatedMovie = await updateMovie(id, req.body)
       if (!updatedMovie) {
