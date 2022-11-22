@@ -1,5 +1,7 @@
 const { Router } = require('express');
+const { validationResult, query } = require('express-validator');
 const validate = require('../middlewares/validate');
+const validateParamId = require('../middlewares/validateParamId');
 const {
   createComment,
   deleteComment,
@@ -15,26 +17,39 @@ const {
 } = require('../services/movieServices');
 const router = Router();
 
-router.get('/', async (req, res) => {
-  try {
-    const movieId = req.query.movieId;
-    let comments = null;
-    if (movieId) {
-      comments = await getCommentsByMovie(movieId);
-    } else {
-      comments = await getComments();
+router.get(
+  '/',
+  query('movieId', 'movieId should be ObjectId').isMongoId(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const movieId = req.query.movieId;
+      let comments = null;
+      if (movieId) {
+        comments = await getCommentsByMovie(movieId);
+      } else {
+        comments = await getComments();
+      }
+      return res.status(200).json(comments);
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to get comments\nerror: ' + error.message);
     }
-    return res.status(200).json(comments);
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to get comments\nerror: ' + error.message);
   }
-});
+);
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateParamId(), async (req, res) => {
   const id = req.params.id;
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const comment = await getComment(id);
     if (!comment) {
       return res.status(404).send(`Comment id:${id} - not found`);
@@ -49,6 +64,11 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', validate(['user', 'text', 'movie']), async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const movie = await getMovie(req.body.movie);
     if (!movie) {
       return res.status(404).send('movie not found');
@@ -61,8 +81,13 @@ router.post('/', validate(['user', 'text', 'movie']), async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateParamId(), async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const comment = await updateComment(req.params.id, req.body);
 
     if (!comment) {
@@ -77,8 +102,13 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateParamId(), async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const comment = await deleteComment(req.params.id);
     if (!comment) {
       return res.status(404).send(`Comment id:"${req.params.id}" - Not found`);

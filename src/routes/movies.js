@@ -8,6 +8,8 @@ const {
 } = require('../services/movieServices');
 const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
+const { validationResult } = require('express-validator');
+const validateParamId = require('../middlewares/validateParamId');
 const router = Router();
 
 router.get('/', async (req, res) => {
@@ -21,9 +23,15 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateParamId(), async (req, res) => {
   const id = req.params.id;
+
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const movie = await getMovie(id);
     if (!movie) {
       return res.status(404).send(`Movie id:${id} - not found`);
@@ -41,6 +49,10 @@ router.post(
   validate(['title', 'category', 'year', 'director', 'duration']),
   async (req, res) => {
     try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
       const movie = await createMovie(req.body);
       return res.status(201).json(movie);
     } catch (error) {
@@ -51,9 +63,17 @@ router.post(
   }
 );
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateParamId(), async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    
     const deleted = await deleteMovie(req.params.id);
+    if (!deleted) {
+      return res.status(404).send('movie not found');
+    }
     await deleteAllMovieComments(deleted._id);
     return res.status(200).send('movie deleted');
   } catch (error) {
@@ -63,8 +83,13 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateParamId(), async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const movie = await updateMovie(req.params.id, req.body);
 
     if (!movie) {

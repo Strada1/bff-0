@@ -1,5 +1,7 @@
 const { Router } = require('express');
+const { validationResult } = require('express-validator');
 const validate = require('../middlewares/validate');
+const validateParamId = require('../middlewares/validateParamId');
 const {
   getDirectors,
   getDirector,
@@ -20,9 +22,14 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateParamId(), async (req, res) => {
   const id = req.params.id;
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const director = await getDirector(id);
     if (!director) {
       return res.status(404).send(`director id:${id} - not found`);
@@ -37,6 +44,11 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', validate(['firstName', 'lastName']), async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const director = await createDirector(req.body);
     return res.status(201).json(director);
   } catch (error) {
@@ -46,8 +58,13 @@ router.post('/', validate(['firstName', 'lastName']), async (req, res) => {
   }
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateParamId(), async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     const director = await updateDirector(req.params.id, req.body);
 
     if (!director) {
@@ -62,8 +79,13 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateParamId(), async (req, res) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
     await deleteDirector(req.params.id);
     return res.status(200).send('Director deleted');
   } catch (error) {
