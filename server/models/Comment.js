@@ -14,11 +14,7 @@ const CommentScheme = new mongoose.Schema({
     default: Date.now,
   },
   movie: {
-<<<<<<< HEAD
-    type: 'ObjectId',
-=======
     type: mongoose.Schema.Types.ObjectId,
->>>>>>> main
     ref: 'Movie',
   },
 });
