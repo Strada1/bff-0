@@ -7,6 +7,7 @@ const {
   findMovie,
   MovieModel,
 } = require("../services/movieServices");
+const { checkRequiredFields } = require("../middlewares/checkRequireFields");
 
 router.get("/", async (req, res) => {
   try {
@@ -21,16 +22,33 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.post("/add", async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const film = await createMovie(req.body);
+    const filmList = await MovieModel.findById(req.params.id)
+      .populate("category")
+      .populate("director");
     return res
       .status(201)
-      .send({ message: "Movie has succesfuly added", data: film });
+      .send({ message: "Movies film has loaded", data: filmList });
   } catch (err) {
     return res.status(500).send({ error: err.message });
   }
 });
+
+router.post(
+  "/add",
+  checkRequiredFields(["title", "year"]),
+  async (req, res) => {
+    try {
+      const film = await createMovie(req.body);
+      return res
+        .status(201)
+        .send({ message: "Movie has succesfuly added", data: film });
+    } catch (err) {
+      return res.status(500).send({ error: err.message });
+    }
+  }
+);
 
 router.patch("/update/:id", async (req, res) => {
   try {
