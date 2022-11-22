@@ -1,62 +1,35 @@
 const router = require('express').Router();
-
 const {
-  getMoviesHandler,
-  createMovieHandler,
-  deleteMovieHandler,
-  updateMovieHandler,
-} = require('../handlers/movieHandlers');
-const { createCategoryHandler } = require('../handlers/categoryHandlers');
-const {
-  createCommentHandler,
-  getCommentsHandler,
-  getCommentHandler,
-  updateCommentHandler,
-  deleteCommentHandler,
-  deleteAllCommentsHandler
-} = require('../handlers/commentHandlers');
-
-/*
-Movie
-- С + Создать фильм
-- R + Получить все фильмы | Получить фильм по id
-- U + Обновить фильм по id
-- D + Удалить фильм по id
-Category
-- С + Создать категорию
-- R Получить категорию
-- U Обновить категорию (поменять ей название)
-- D Удалить категорию (удалить категорию в коллекции и во всех фильмах из полей)
-Comments
-- C + Создать комментарий
-- R + Прочитать комментарии по id фильма | Прочитать комментарий (по его id)
-- U + Обновить комментарий (по его id)
-- D + Удалить комментарий (у фильма и в коллекции comments)
-Director
-- C
-- R
-- U
-- D
-*/
+  MovieController,
+  CategoryController,
+  CommentController,
+  DirectorController,
+} = require('../controllers/');
 
 // Movies
-router.post('/movies', createMovieHandler);
-router.get('/movies', getMoviesHandler);
-router.put('/movies/:movieId', updateMovieHandler);
-router.delete('/movies/:movieId', deleteMovieHandler);
-
-// Categories
-router.post('/categories', createCategoryHandler);
+router.post('/movies', MovieController.createMovie);
+router.get('/movies', MovieController.getMovies);
+router.get('/movies/:movieId', MovieController.getMovie);
+router.put('/movies/:movieId', MovieController.updateMovie);
+router.delete('/movies/:movieId', MovieController.deleteMovie);
 
 // Comments
-router.post('/movies/:movieId/comments', createCommentHandler);
-router.get('/movies/:movieId/comments', getCommentsHandler);
-router.get('/comments/:commentId', getCommentHandler);
-router.put('/comments/:commentId', updateCommentHandler);
-router.delete('/movies/:movieId/comments/:commentId', deleteCommentHandler);
-router.delete('/movies/:movieId/comments', deleteAllCommentsHandler);
+router.post('/movies/:movieId/comments', CommentController.addComment);
+router.get('/movies/:movieId/comments', CommentController.getComments);
+router.get('/comments/:commentId', CommentController.getComment);
+router.put('/comments/:commentId', CommentController.updateComment);
+router.delete('/comments/:commentId', CommentController.deleteComment);
 
-// Director
+// Category
+router.post('/movies/:movieId/categories', CategoryController.createCategory);
+router.get('/categories', CategoryController.getCategories);
+router.put('/categories/:categoryId', CategoryController.updateCategory);
+router.delete('/categories/:categoryId', CategoryController.deleteCategory);
 
+// Directors
+router.post('/movies/:movieId/directors', DirectorController.createDirector);
+router.get('/directors/:directorId', DirectorController.getDirector);
+router.put('/directors/:directorId', DirectorController.updateDirector);
+router.delete('/directors/:directorId', DirectorController.deleteDirector);
 
 module.exports = router;

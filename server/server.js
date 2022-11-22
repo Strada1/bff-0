@@ -1,16 +1,17 @@
-require('./connectDatabase')();
-
 const express = require('express');
 const cors = require('cors');
 
 const router = require('./router/');
-
 const app = express();
-const PORT = 3000;
+
+require('dotenv').config();
+require('./connectDB').connect();
+
+const PORT = process.env.PORT || 3000;
+const CLIENT_URL = process.env.CLIENT_URL;
 
 const allowedOrigins = [
-  'http://localhost:8000',
-  'http://localhost:63342',
+  CLIENT_URL,
 ];
 
 app.use(cors({
