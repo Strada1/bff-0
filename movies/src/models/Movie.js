@@ -8,19 +8,19 @@ const MovieSchema = new mongoose.Schema(
         duration: Number,
         category: {
             type: ObjectId,
-            ref: 'Category',
+            ref: 'Category'
         },
         director: {
             type: ObjectId,
-            ref: 'Director',
+            ref: 'Director'
         },
-        comments: {
+        comments: [{
             type: ObjectId,
-            ref: 'Comment',
-        },
+            ref: 'Comment'
+        }]
     },
     {
-        versionKey: false,
+        versionKey: false
     }
 )
 

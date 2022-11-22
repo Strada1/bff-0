@@ -19,7 +19,7 @@ const fieldValidators = [
 
 const paramValidator = param('movieId').isMongoId().withMessage('movieId must be MongoId')
 
-router.get('/', async (req, res) => {
+router.get('/movies', async (req, res) => {
     try {
         const movies = await getMovies()
         return res.status(200).send(movies)
@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.get('/:movieId', paramValidator, async (req, res) => {
+router.get('/movies/:movieId', paramValidator, async (req, res) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -41,7 +41,7 @@ router.get('/:movieId', paramValidator, async (req, res) => {
     }
 })
 
-router.post('/',
+router.post('/movies',
     validate(['title', 'year']),
     ...fieldValidators,
     async (req, res) => {
@@ -57,7 +57,7 @@ router.post('/',
         }
     })
 
-router.delete('/:movieId', paramValidator, async (req, res) => {
+router.delete('/movies/:movieId', paramValidator, async (req, res) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -70,7 +70,7 @@ router.delete('/:movieId', paramValidator, async (req, res) => {
     }
 })
 
-router.patch('/:movieId',
+router.patch('/movies/:movieId',
     paramValidator,
     ...fieldValidators,
     async (req, res) => {

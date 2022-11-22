@@ -16,7 +16,7 @@ const fieldValidators = [
 
 const paramValidator = param('directorId').isMongoId().withMessage('directorId must be MongoId')
 
-router.get('/', async (req, res) => {
+router.get('/directors', async (req, res) => {
     try {
         const directors = await getDirectors()
         return res.status(200).send(directors)
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/', validate(['fullName']), ...fieldValidators, async (req, res) => {
+router.post('/directors', validate(['fullName']), ...fieldValidators, async (req, res) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -39,7 +39,7 @@ router.post('/', validate(['fullName']), ...fieldValidators, async (req, res) =>
     }
 })
 
-router.delete('/:directorId', paramValidator, async (req, res) => {
+router.delete('/directors/:directorId', paramValidator, async (req, res) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -52,7 +52,7 @@ router.delete('/:directorId', paramValidator, async (req, res) => {
     }
 })
 
-router.patch('/:directorId', paramValidator, ...fieldValidators, async (req, res) => {
+router.patch('/directors/:directorId', paramValidator, ...fieldValidators, async (req, res) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {

@@ -11,10 +11,7 @@ function useRoutes(app) {
             return res.status(500).send(err.message)
         }
     })
-    app.use('/movies', movies)
-    app.use('/categories', categories)
-    app.use('/comments', comments)
-    app.use('/directors', directors)
+    app.use(movies, categories, comments, directors)
 }
 
 module.exports = useRoutes

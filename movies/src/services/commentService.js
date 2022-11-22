@@ -1,4 +1,6 @@
 const Comment = require('../models/Comment')
+const { addCommentToMovie } = require('./movieService')
+const { deleteCommentFromMovie } = require('../services/movieService')
 
 const getComments = (movieId) => {
     return Comment.find({ movie: movieId }).lean().populate('movie')
@@ -32,5 +34,5 @@ module.exports = {
     createComment,
     deleteComment,
     deleteComments,
-    updateComment,
+    updateComment
 }

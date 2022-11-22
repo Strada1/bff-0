@@ -15,7 +15,7 @@ const fieldValidators = [
 ]
 const paramValidator = param('categoryId').isMongoId().withMessage('categoryId must be MongoId')
 
-router.get('/', async (req, res) => {
+router.get('/categories', async (req, res) => {
     try {
         const categories = await getCategories()
         return res.status(200).send(categories)
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-router.post('/', validate(['name']), ...fieldValidators, async (req, res) => {
+router.post('/categories', validate(['name']), ...fieldValidators, async (req, res) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -39,7 +39,7 @@ router.post('/', validate(['name']), ...fieldValidators, async (req, res) => {
     }
 })
 
-router.patch('/:categoryId', paramValidator, ...fieldValidators, async (req, res) => {
+router.patch('/categories/:categoryId', paramValidator, ...fieldValidators, async (req, res) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
@@ -53,7 +53,7 @@ router.patch('/:categoryId', paramValidator, ...fieldValidators, async (req, res
     }
 })
 
-router.delete('/:categoryId', paramValidator, async (req, res) => {
+router.delete('/categories/:categoryId', paramValidator, async (req, res) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
