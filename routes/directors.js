@@ -5,11 +5,13 @@ import {
   updateDirector,
   deleteDirector
 } from '../helpers/directors.js'
+import validate from '../helpers/validate.js'
 
 const router = express.Router()
+const requiredKeys = ['name']
 
 router
-  .post('/', async (req, res, next) => {
+  .post('/', validate(requiredKeys), async (req, res, next) => {
     try {
       await createDirector(req.body)
       return res.status(201).send('director created')

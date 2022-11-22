@@ -6,11 +6,13 @@ import {
   getComments,
   updateComments
 } from '../helpers/comments.js'
+import validate from '../helpers/validate.js'
 
 const router = express.Router()
+const requiredKeys = ['author', 'text']
 
 router
-  .post('/:id', async (req, res, next) => {
+  .post('/:id', validate(requiredKeys), async (req, res, next) => {
     try {
       const id = req.params.id
       const movieComment = await findMovie(id)

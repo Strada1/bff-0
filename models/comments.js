@@ -1,6 +1,7 @@
 import db from '../ext/db.js'
 
 const CommentsSchema = new db.Schema({
+  author: String,
   text: String
 })
 

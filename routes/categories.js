@@ -5,11 +5,14 @@ import {
   updateCategory,
   deleteCategory
 } from '../helpers/categories.js'
+import validate from '../helpers/validate.js'
 
 const router = express.Router()
 
+const requiredKeys = ['title']
+
 router
-  .post('/', async (req, res, next) => {
+  .post('/', validate(requiredKeys), async (req, res, next) => {
     try {
       await createCategory(req.body)
       return res.status(201).send('category created')

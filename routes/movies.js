@@ -7,11 +7,21 @@ import {
   deleteMovie
 } from '../helpers/movies.js'
 import {deleteAllComments} from '../helpers/comments.js'
+import validate from '../helpers/validate.js'
 
 const router = express.Router()
 
+const requiredKeys = [
+  'title',
+  'year',
+  'rating',
+  'category',
+  'duration',
+  'director'
+]
+
 router
-  .post('/', async (req, res, next) => {
+  .post('/', validate(requiredKeys), async (req, res, next) => {
     try {
       await createMovie(req.body)
       return res.status(201).send('movie created')
