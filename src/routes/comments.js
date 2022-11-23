@@ -19,7 +19,7 @@ const router = Router();
 
 router.get(
   '/',
-  query('movieId', 'movieId should be ObjectId').isMongoId(),
+  query('movieId', 'movieId should be ObjectId').isMongoId().optional(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
