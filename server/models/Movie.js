@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const MovieSchema = new mongoose.Schema({
   title: {
@@ -7,10 +7,6 @@ const MovieSchema = new mongoose.Schema({
   },
   year: Number,
   duration: Number,
-  director: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Director',
-  },
   categories: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
@@ -19,6 +15,10 @@ const MovieSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Comment',
   }],
+  directors: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Director',
+  }],
 });
 
-module.exports = mongoose.model('Movie', MovieSchema);
+export default mongoose.model('Movie', MovieSchema);

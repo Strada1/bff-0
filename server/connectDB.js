@@ -1,10 +1,13 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
-const URL = process.env.MONGO_CONNECTION_STRING;
-
-module.exports.connect = function () {
- mongoose
-  .connect(URL, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Database connected'))
-  .catch((err) => console.error('Database error', err));
+export default async function (url) {
+   try {
+     await mongoose.connect(url, {
+       useNewUrlParser: true,
+       useUnifiedTopology: true
+     });
+     console.log('Database connected');
+   } catch (err) {
+     console.error('Database error', err)
+   }
 }

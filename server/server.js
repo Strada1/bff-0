@@ -1,14 +1,18 @@
-const express = require('express');
-const cors = require('cors');
+import * as dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
 
-const router = require('./router/');
+import router from './router/index.js';
+import connectDB from './connectDB.js';
+
 const app = express();
-
-require('dotenv').config();
-require('./connectDB').connect();
+dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const CLIENT_URL = process.env.CLIENT_URL;
+const MONGO_CONNECTION_STRING = process.env.MONGO_CONNECTION_STRING;
+
+connectDB(MONGO_CONNECTION_STRING);
 
 const allowedOrigins = [
   CLIENT_URL,
