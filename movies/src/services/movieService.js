@@ -9,8 +9,8 @@ const getMovie = (movieId) => {
     return Movie.findById({ _id: movieId }).populate('category director comments')
 }
 
-const createMovie = ({ title, year, duration, category }) => {
-    return Movie.create({ title, year, duration, category })
+const createMovie = ({ title, year, duration, category, director, comments }) => {
+    return Movie.create({ title, year, duration, category, director, comments })
 }
 
 const deleteMovie = (movieId) => {
