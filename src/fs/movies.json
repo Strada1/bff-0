@@ -1,0 +1,23 @@
+[
+  {
+    "title": "my horror film",
+    "category": "63721f7b10f8b825f3a21613",
+    "year": "2022-01-01",
+    "duration": 60,
+    "director": "637bbc6d119112bc0e264ecc"
+  },
+  {
+    "title": "my comedy film",
+    "category": "63747fd9aeb3a5fc9820b937",
+    "year": "2022-02-02",
+    "duration": 83,
+    "director": "637bbc6d119112bc0e264ecc"
+  },
+  {
+    "title": "my drama film",
+    "category": "637674c9bc74e1d6e40601a9",
+    "year": "2022-03-03",
+    "duration": 180,
+    "director": "637bbc6d119112bc0e264ecc"
+  }
+]
