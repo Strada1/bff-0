@@ -23,7 +23,7 @@ router.get('/test/:directorId', paramValidator, async (req, res) => {
         return res.status(500).send('can not get moviesCount')
     }
 })
-router.get('/movies/count', ...fieldValidators, async (req, res) => {
+router.get('/count/movies', ...fieldValidators, async (req, res) => {
     try {
         const errors = validationResult(req)
         if (!errors.isEmpty()) {
