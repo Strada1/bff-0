@@ -35,6 +35,15 @@ const deleteCommentFromMovie = (movieId, commentId) => {
   return Movie.findByIdAndUpdate(movieId, { $pull: { comments: commentId } });
 };
 
+const countMoviesBetweenYears = (startedYear, finalYear) => {
+  return Movie.aggregate().match({
+    year: {
+      $gte: new Date(startedYear),
+      $lt: new Date(String(+finalYear + 1)),
+    },
+  }).group({_id: null, 'count': {$sum: 1}});
+};
+
 module.exports = {
   createMovie,
   deleteMovie,
@@ -43,4 +52,5 @@ module.exports = {
   getMovies,
   addCommentInMovie,
   deleteCommentFromMovie,
+  countMoviesBetweenYears,
 };

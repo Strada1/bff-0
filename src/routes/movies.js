@@ -5,10 +5,11 @@ const {
   updateMovie,
   getMovie,
   getMovies,
+  countMoviesBetweenYears,
 } = require('../services/movieServices');
 const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
-const { validationResult } = require('express-validator');
+const { validationResult, param } = require('express-validator');
 const validateParamId = require('../middlewares/validateParamId');
 const router = Router();
 
@@ -69,7 +70,7 @@ router.delete('/:id', validateParamId(), async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    
+
     const deleted = await deleteMovie(req.params.id);
     if (!deleted) {
       return res.status(404).send('movie not found');
@@ -103,5 +104,29 @@ router.put('/:id', validateParamId(), async (req, res) => {
       .send('failed to update movie\nerror: ' + error.message);
   }
 });
+
+router.get(
+  '/countBetweenYears/:start-:finish',
+  param('start').isInt(),
+  param('finish').isInt(),
+  async (req, res) => {
+    const { start, finish } = req.params;
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const counter = await countMoviesBetweenYears(start, finish);
+      return res.status(200).json(counter);
+    } catch (error) {
+      return res
+        .status(500)
+        .send(
+          `failed to count movies between ${start} and ${finish} \nerror: ${error.message}`
+        );
+    }
+  }
+);
 
 module.exports = router;

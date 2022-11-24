@@ -8,6 +8,7 @@ const {
   createDirector,
   updateDirector,
   deleteDirector,
+  countMoviesByDirector,
 } = require('../services/directorServices');
 const router = Router();
 
@@ -92,6 +93,21 @@ router.delete('/:id', validateParamId(), async (req, res) => {
     return res
       .status(500)
       .send('failed to delete director\nerror: ' + error.message);
+  }
+});
+
+router.get('/:id/countMovies', validateParamId(), async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    const counter = await countMoviesByDirector(req.params.id);
+    return res.status(200).json(counter);
+  } catch (error) {
+    return res
+      .status(500)
+      .send('failed to count director movies\nerror: ' + error.message);
   }
 });
 
