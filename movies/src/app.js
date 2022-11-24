@@ -6,7 +6,7 @@ const app = express()
 const port = process.env.PORT
 
 const allowedOrigins = [
-    `http://localhost:${port}`,
+    `http://localhost:${port}`
 ]
 
 app.use(
