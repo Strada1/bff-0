@@ -18,7 +18,8 @@ const requiredKeys = [
   'rating',
   'category',
   'duration',
-  'director'
+  'director',
+  'comments'
 ]
 
 router
