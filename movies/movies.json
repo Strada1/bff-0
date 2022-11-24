@@ -1,0 +1,20 @@
+[
+  {
+    "title": "test upload",
+    "year": 2021,
+    "category": "63776678555a3a111e5d39a2",
+  },
+  {
+    "title": "тест загрузки из json",
+    "year": 1997,
+    "duration": 143,
+    "comments": [
+      "637ccb9e55f9e5f98d80e031"
+    ],
+    "director": "637f3b4191873855f5b170cf"
+  },
+  {
+    "title": "movie title",
+    "year": 2020
+  }
+]
