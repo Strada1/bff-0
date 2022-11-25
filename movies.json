@@ -1,0 +1,35 @@
+[{
+  "_id": {
+    "$oid": "637de47115e515cceabe80f8"
+  },
+  "title": "t",
+  "year": 2020,
+  "rating": 10,
+  "director": {
+    "$oid": "6378b3244baef0bbefd65c79"
+  },
+  "category": {
+    "$oid": "6378b31b4baef0bbefd65c76"
+  },
+  "comments": [
+    {
+      "$oid": "637e0690506a28c3f74b779d"
+    }
+  ],
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "637de6b6dfc5a86c5ea379fd"
+  },
+  "title": "hi",
+  "year": 2022,
+  "rating": 10,
+  "director": {
+    "$oid": "6378b3244baef0bbefd65c79"
+  },
+  "category": {
+    "$oid": "6378b31b4baef0bbefd65c76"
+  },
+  "comments": [],
+  "__v": 0
+}]

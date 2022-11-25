@@ -2,10 +2,12 @@ const express = require('express');
 const cors = require("cors");
 const dotenv = require('dotenv');
 
-const connectDataBase = require('./connectDataBase');
-const {router} = require("./router/router");
+const connectDataBase = require('./helpers/connectDataBase');
+const readerFS = require("./helpers/readerFS");
+const { router } = require("./router/router");
 
-const { MONGO_CONNECTION_STRING, PORT } = dotenv.config().parsed
+const { MONGO_CONNECTION_STRING, PORT } = dotenv.config().parsed;
+const path = './movies.json';
 
 const app = express();
 app.use(express.json());
@@ -19,6 +21,7 @@ app.use(cors({
 }));
 
 connectDataBase(MONGO_CONNECTION_STRING);
+// readerFS(path)
 
 app.use('/api', router);
 

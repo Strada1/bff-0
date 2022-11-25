@@ -1,18 +1,36 @@
 const Router = require('express');
 const { createCategory, findCategories, updateCategory, deleteCategory } = require("../services/categoriesService");
+const {checkSchema} = require("express-validator");
+const checkError = require("../helpers/checkError");
 
 const categories = new Router();
 
-categories.get('/categories', async (req, res) => {
+categories.get(
+    '/categories',
+    async (req, res) => {
     try {
-        const category = await findCategories();
+        const { sort } = req.query;
+        const category = await findCategories(sort);
         return res.status(200).send(category);
     } catch (e) {
         return res.status(500).send(e.message);
     }
-})
+});
 
-categories.post('/categories', async (req, res) => {
+categories.post(
+    '/categories',
+    checkSchema({
+        title: {
+            in: ['body'],
+            isString: true,
+            isLength: {
+                errorMessage: 'Title should be at least 2 chars long',
+                options: { min: 2 },
+            },
+        },
+    }),
+    checkError,
+    async (req, res) => {
     try {
         const category = await createCategory(req.body);
         return res.status(201).send(category);
@@ -21,18 +39,38 @@ categories.post('/categories', async (req, res) => {
     }
 });
 
-categories.put('/categories', async (req, res) => {
+categories.put(
+    '/categories/:categoryId',
+    checkSchema({
+        categoryId: {
+            in: ['params'],
+            isMongoId: true,
+        },
+    }),
+    checkError,
+    async (req, res) => {
     try {
-        const category = await updateCategory(req.body);
+        const { categoryId } = req.params;
+        const category = await updateCategory({categoryId, ...req.body});
         return res.status(200).send(category);
     } catch (e) {
         return res.status(500).send(e.message);
     }
-})
+});
 
-categories.delete('/categories', async (req, res) => {
+categories.delete(
+    '/categories/:categoryId',
+    checkSchema({
+        categoryId: {
+            in: ['params'],
+            isMongoId: true,
+        },
+    }),
+    checkError,
+    async (req, res) => {
     try {
-        await deleteCategory(req.body);
+        const { categoryId } = req.params;
+        await deleteCategory(categoryId);
         return res.status(200).send('delete');
     } catch (e) {
         return res.status(500).send(e.message);

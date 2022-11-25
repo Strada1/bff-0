@@ -4,16 +4,17 @@ const createCategory = ({ title }) => {
     return Category.create({ title });
 }
 
-const findCategories = () => {
-    return Category.find();
+const findCategories = (sort) => {
+    return Category.find()
+        .sort(sort);
 }
 
-const updateCategory = ({ id, ...updates }) => {
-    return Category.findByIdAndUpdate(id, {...updates}, { new: true, rawResult: true });
+const updateCategory = ({ categoryId, ...updates }) => {
+    return Category.findByIdAndUpdate(categoryId, {...updates}, { new: true, rawResult: true });
 }
 
-const deleteCategory = ({ id }) => {
-    return Category.findByIdAndDelete(id);
+const deleteCategory = (categoryId) => {
+    return Category.findByIdAndDelete(categoryId);
 }
 
 module.exports = {
