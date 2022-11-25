@@ -19,7 +19,7 @@ async function loadingListToCollection(path, model) {
       loadingList.push(doc);
     }
 
-    return await model.create(loadingList);
+    return await model.insertMany(loadingList);
   } catch (err) {
     console.log(err);
   }
