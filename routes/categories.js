@@ -6,7 +6,7 @@ import {
   updateCategory,
   deleteCategory
 } from '../helpers/categories.js'
-import validate from '../helpers/validate.js'
+import {validate} from '../helpers/validate.js'
 
 const router = express.Router()
 const requiredKeys = ['title']

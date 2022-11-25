@@ -7,7 +7,7 @@ import {
   getComments,
   updateComments
 } from '../helpers/comments.js'
-import validate from '../helpers/validate.js'
+import {validate} from '../helpers/validate.js'
 
 const router = express.Router()
 const requiredKeys = ['author', 'text']
@@ -47,9 +47,9 @@ router
       return next(error)
     }
   })
-  .put('/:id',validate(requiredKeys), async (req, res, next) => {
+  .put('/:id', validate(requiredKeys), async (req, res, next) => {
     try {
-			const errors = validationResult(req)
+      const errors = validationResult(req)
       if (!errors.isEmpty()) {
         return res.status(400).json({errors: errors.array()})
       }

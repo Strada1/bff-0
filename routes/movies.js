@@ -10,7 +10,7 @@ import {
   deleteMovie
 } from '../helpers/movies.js'
 import {deleteAllComments} from '../helpers/comments.js'
-import validate from '../helpers/validate.js'
+import {validate, validateObj} from '../helpers/validate.js'
 
 const router = express.Router()
 
@@ -42,28 +42,12 @@ router
       const arrMovie = []
       const file = await fs.readFile('movies.json', {encoding: 'utf-8'})
       const fileAfterParse = JSON.parse(file)
+
       fileAfterParse.forEach(i => {
-        const isValidate = requiredKeys.every(key => {
-          if (key === 'title' && typeof i[key] !== 'string') return false
-          if (
-            (key === 'year' || key === 'rating' || key === 'duration') &&
-            typeof i[key] !== 'number'
-          ) {
-            return false
-          }
-          if (key === 'comments' && typeof i[key] !== 'object') {
-            return false
-          }
-          if (
-            (key === 'category' || key === 'director') &&
-            (typeof i[key] !== 'string' || i[key].length !== 24)
-          ) {
-            return false
-          }
-          return true
-        })
+        const isValidate = validateObj(i, requiredKeys)
         if (isValidate) arrMovie.push(i)
       })
+
       await createMovies(arrMovie)
       res.status(201).send(arrMovie)
     } catch (error) {
