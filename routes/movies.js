@@ -4,6 +4,7 @@ import {validationResult} from 'express-validator'
 import {
   getAllMovies,
   getMovie,
+  getCountMovieByYear,
   createMovie,
   createMovies,
   updateMovie,
@@ -20,8 +21,7 @@ const requiredKeys = [
   'rating',
   'category',
   'duration',
-  'director',
-  'comments'
+  'director'
 ]
 
 router
@@ -62,6 +62,17 @@ router
       return next(error)
     }
   })
+  .get('/sorted-movie', async (req, res, next) => {
+    try {
+      const from = Number(req.query.from)
+      const to = Number(req.query.to)
+      const movie = await getCountMovieByYear(from, to)
+      return res.status(201).send(movie)
+    } catch (error) {
+      return next(error)
+    }
+  })
+
   .get('/:id', async (req, res, next) => {
     try {
       const id = req.params.id

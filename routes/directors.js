@@ -3,6 +3,7 @@ import {validationResult} from 'express-validator'
 import {
   createDirector,
   getAllDirector,
+  getMoviesCountByDirector,
   updateDirector,
   deleteDirector
 } from '../helpers/directors.js'
@@ -28,6 +29,15 @@ router
     try {
       const allCategory = await getAllDirector()
       return res.status(201).send(allCategory)
+    } catch (error) {
+      return next(error)
+    }
+  })
+  .get('/movies-by-directors/:id', async (req, res, next) => {
+    try {
+      const id = req.params.id
+      const moviesCount = await getMoviesCountByDirector(id)
+      return res.status(201).send(moviesCount)
     } catch (error) {
       return next(error)
     }

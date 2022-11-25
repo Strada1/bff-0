@@ -10,6 +10,17 @@ const getMovie = id => {
     .populate(['category', 'comments', 'director'])
 }
 
+const getCountMovieByYear = (from, to) => {
+  return Movies.aggregate([
+    {
+      $match: {
+        $and: [{year: {$lt: to}}, {year: {$gt: from}}]
+      }
+    },
+    {$count: `number of films from ${from} to ${to}`}
+  ])
+}
+
 const createMovie = payload => {
   return Movies.create(payload)
 }
@@ -33,6 +44,7 @@ const findMovie = id => {
 export {
   getAllMovies,
   getMovie,
+  getCountMovieByYear,
   createMovie,
   createMovies,
   updateMovie,
