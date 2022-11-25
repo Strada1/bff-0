@@ -13,7 +13,7 @@ const {
 
 router.get('/', async (req, res) => {
   try {
-    const categories = await getCategories();
+    const categories = await getCategories(req.query);
     return res.status(200).json(categories);
   } catch (error) {
     return res

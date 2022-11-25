@@ -1,7 +1,11 @@
 const Category = require('../models/Category.js');
 
-const getCategories = () => {
-  return Category.find().lean();
+const getCategories = ({ sort, asc = 1 }) => {
+  const categories = Category.find().lean();
+  if (sort) {
+    categories.sort({ [sort]: asc });
+  }
+  return categories;
 };
 
 const getCategory = (id) => {

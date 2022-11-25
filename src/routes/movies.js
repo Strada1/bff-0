@@ -15,7 +15,7 @@ const router = Router();
 
 router.get('/', async (req, res) => {
   try {
-    const movies = await getMovies();
+    const movies = await getMovies(req.query);
     return res.status(200).json(movies);
   } catch (error) {
     return res

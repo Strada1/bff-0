@@ -22,8 +22,38 @@ const getMovie = (id) => {
   return Movie.findById(id).lean().populate('category director comments');
 };
 
-const getMovies = () => {
-  return Movie.find().lean().populate('category director comments');
+const getMovies = ({
+  title,
+  category,
+  year,
+  duration,
+  director,
+  sort,
+  asc = 1,
+}) => {
+  const movies = Movie.find().lean().populate('category director comments');
+  if (sort) {
+    movies.sort({ [sort]: asc });
+  }
+  if (title) {
+    movies.where('title', new RegExp(title, 'i'));
+  }
+  if (category) {
+    movies.where('category', category);
+  }
+  if (year) {
+    movies
+      .where('year')
+      .gte(new Date(year))
+      .lt(new Date(String(+year + 1)));
+  }
+  if (duration) {
+    movies.where('duration').lte(duration);
+  }
+  if (director) {
+    movies.where('director', director);
+  }
+  return movies;
 };
 
 const addCommentInMovie = (movieId, commentId) => {
@@ -36,12 +66,14 @@ const deleteCommentFromMovie = (movieId, commentId) => {
 };
 
 const countMoviesBetweenYears = (startedYear, finalYear) => {
-  return Movie.aggregate().match({
-    year: {
-      $gte: new Date(startedYear),
-      $lt: new Date(String(+finalYear + 1)),
-    },
-  }).group({_id: null, 'count': {$sum: 1}});
+  return Movie.aggregate()
+    .match({
+      year: {
+        $gte: new Date(startedYear),
+        $lt: new Date(String(+finalYear + 1)),
+      },
+    })
+    .group({ _id: null, count: { $sum: 1 } });
 };
 
 module.exports = {
