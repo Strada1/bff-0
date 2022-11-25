@@ -1,9 +1,11 @@
 import express from 'express'
+import fs from 'node:fs/promises'
 import {validationResult} from 'express-validator'
 import {
   getAllMovies,
   getMovie,
   createMovie,
+  createMovies,
   updateMovie,
   deleteMovie
 } from '../helpers/movies.js'
@@ -31,6 +33,39 @@ router
       }
       await createMovie(req.body)
       return res.status(201).send('movie created')
+    } catch (error) {
+      return next(error)
+    }
+  })
+  .post('/addMovieFromJSON', async (req, res, next) => {
+    try {
+      const arrMovie = []
+      const file = await fs.readFile('movies.json', {encoding: 'utf-8'})
+      const fileAfterParse = JSON.parse(file)
+      fileAfterParse.forEach(i => {
+        const isValidate = requiredKeys.every(key => {
+          if (key === 'title' && typeof i[key] !== 'string') return false
+          if (
+            (key === 'year' || key === 'rating' || key === 'duration') &&
+            typeof i[key] !== 'number'
+          ) {
+            return false
+          }
+          if (key === 'comments' && typeof i[key] !== 'object') {
+            return false
+          }
+          if (
+            (key === 'category' || key === 'director') &&
+            (typeof i[key] !== 'string' || i[key].length !== 24)
+          ) {
+            return false
+          }
+          return true
+        })
+        if (isValidate) arrMovie.push(i)
+      })
+      await createMovies(arrMovie)
+      res.status(201).send(arrMovie)
     } catch (error) {
       return next(error)
     }

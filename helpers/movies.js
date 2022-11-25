@@ -14,6 +14,10 @@ const createMovie = payload => {
   return Movies.create(payload)
 }
 
+const createMovies = payload => {
+  return Movies.insertMany(payload)
+}
+
 const updateMovie = (id, payload) => {
   return Movies.findByIdAndUpdate(id, payload)
 }
@@ -30,6 +34,7 @@ export {
   getAllMovies,
   getMovie,
   createMovie,
+  createMovies,
   updateMovie,
   deleteMovie,
   findMovie
