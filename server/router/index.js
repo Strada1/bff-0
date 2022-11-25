@@ -14,26 +14,25 @@ import {
 const router = new Router();
 
 // Movies
-router.post('/movies', handleValidationErrors(movieCreateValidation),  MovieController.createMovie); // create movie: POST '/movies' (body)
-router.get('/movies/:movieId', MovieController.getMovie); // get movie by id: GET '/movies/${movieId}'
-router.get('/movies', MovieController.getMovies); // get movies: GET '/movies'
-router.put('/movies/:movieId', MovieController.updateMovie); // update movie by id: PUT '/movies/${movieId}' (body)
-router.delete('/movies/:movieId', MovieController.deleteMovie); // delete movie by id: DELETE '/movies/${movieId}'
-// router.get('/movies/'); // Получить фильмы по категории ???
+router.post('/movies', handleValidationErrors(movieCreateValidation), MovieController.createMovie);
+router.get('/movies/:movieId', MovieController.getMovie);
+router.get('/movies', MovieController.getMovies);
+router.put('/movies/:movieId', MovieController.updateMovie);
+router.delete('/movies/:movieId', MovieController.deleteMovie);
 
 // Comments
-router.post('/comments', handleValidationErrors(commentCreateValidation),  CommentController.createComment); // create comment by movie id: POST 'comments?movieId=12312312' (body)
-router.get('/comments/:commentId', CommentController.getComment); // get comment by id: GET '/comments/${commentId}'
-router.get('/comments', CommentController.getComments); // get comments by id: GET: '/comments' | get all comments: GET '/comments?movieId=12312312'
-router.put('/comments/:commentId', CommentController.updateComment); // update comment: PUT '/comments/${commentId}'
-router.delete('/comments/:commentId', CommentController.deleteComment); // delete comment by id: DELETE '/comments/${commentId}'
+router.post('/comments', handleValidationErrors(commentCreateValidation), CommentController.createComment);
+router.get('/comments/:commentId', CommentController.getComment);
+router.get('/comments', CommentController.getComments);
+router.put('/comments/:commentId', CommentController.updateComment);
+router.delete('/comments/:commentId', CommentController.deleteComment);
 
 // Categories
-router.post('/categories', handleValidationErrors(categoryCreateValidation), CategoryController.createCategory); // create category: POST '/category' (body) | create category categories and in movie categories: POST '/category?movieId=12312312' (body)
-router.get('/categories/:categoryId', CategoryController.getCategory); // get category by id: GET '/categories/${categoryId}'
-router.get('/categories', CategoryController.getCategories); // get all category: GET '/categories' | get categories of movie: GET '/categories?movieId=12312312'
-router.put('/categories/:categoryId', CategoryController.updateCategory); // update category by id | PUT '/category/${categoryId}'
-router.delete('/categories/:categoryId', CategoryController.deleteCategory); // delete category in categories and in all movies in categories: DELETE '/categories/:categoryId' | delete category in movie categories: DELETE '/categories/:categoryId?movieId=12312312'
+router.post('/categories', handleValidationErrors(categoryCreateValidation), CategoryController.createCategory);
+router.get('/categories/:categoryId', CategoryController.getCategory);
+router.get('/categories', CategoryController.getCategories);
+router.put('/categories/:categoryId', CategoryController.updateCategory);
+router.delete('/categories/:categoryId', CategoryController.deleteCategory);
 
 // Directors
 //...
