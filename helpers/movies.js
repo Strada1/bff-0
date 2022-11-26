@@ -13,9 +13,7 @@ const getMovie = id => {
 const getCountMovieByYear = (from, to) => {
   return Movies.aggregate([
     {
-      $match: {
-        $and: [{year: {$lt: to}}, {year: {$gt: from}}]
-      }
+      $match: {year: {$lte: to, $gte: from}}
     },
     {$count: `number of films from ${from} to ${to}`}
   ])
