@@ -1,7 +1,9 @@
 const Category = require('../models/Category')
 
-const getCategories = () => {
-    return Category.find().lean().populate('movies')
+const getCategories = (sort) => {
+    const query = Category.find().lean().populate('movies')
+    if (sort) query.sort(sort)
+    return query.exec()
 }
 
 const createCategory = (data) => {

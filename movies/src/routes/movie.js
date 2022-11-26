@@ -21,7 +21,8 @@ const paramValidator = param('movieId').isMongoId().withMessage('movieId must be
 
 router.get('/movies', async (req, res) => {
     try {
-        const movies = await getMovies()
+        const { sort, title, year } = req.query
+        const movies = await getMovies(sort, title, year)
         return res.status(200).send(movies)
     } catch (e) {
         return res.status(500).send('can not get movies')
