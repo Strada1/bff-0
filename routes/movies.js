@@ -5,6 +5,8 @@ import {
   getAllMovies,
   getMovie,
   getCountMovieByYear,
+  getFilterMovie,
+  getSortedMovie,
   createMovie,
   createMovies,
   updateMovie,
@@ -62,17 +64,33 @@ router
       return next(error)
     }
   })
-  .get('/sorted-movie', async (req, res, next) => {
+  .get('/count-movies', async (req, res, next) => {
     try {
-      const from = Number(req.query.from)
-      const to = Number(req.query.to)
-      const movie = await getCountMovieByYear(from, to)
+      const query = req.query
+      const movie = await getCountMovieByYear(query)
       return res.status(201).send(movie)
     } catch (error) {
       return next(error)
     }
   })
-
+  .get('/filter', async (req, res, next) => {
+    try {
+      const query = req.query
+      const filteredMovie = await getFilterMovie(query)
+      return res.status(201).send(filteredMovie)
+    } catch (error) {
+      return next(error)
+    }
+  })
+  .get('/sort', async (req, res, next) => {
+    try {
+      const sortName = req.query.sortName
+      const sortedMovie = await getSortedMovie(sortName)
+      return res.status(201).send(sortedMovie)
+    } catch (error) {
+      return next(error)
+    }
+  })
   .get('/:id', async (req, res, next) => {
     try {
       const id = req.params.id

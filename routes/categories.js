@@ -3,6 +3,7 @@ import {validationResult} from 'express-validator'
 import {
   createCategory,
   getAllCategory,
+  getSortedCategory,
   updateCategory,
   deleteCategory
 } from '../helpers/categories.js'
@@ -28,6 +29,15 @@ router
     try {
       const allCategory = await getAllCategory()
       return res.status(201).send(allCategory)
+    } catch (error) {
+      return next(error)
+    }
+  })
+  .get('/sort', async (req, res, next) => {
+    try {
+      const sortName = req.query.sortName
+      const sortedCategory = await getSortedCategory(sortName)
+      return res.status(201).send(sortedCategory)
     } catch (error) {
       return next(error)
     }
