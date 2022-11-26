@@ -15,4 +15,9 @@ const findMovie = (params, method) => {
   return foundFilm;
 };
 
-module.exports = { createMovie, updateMovie, findMovie, MovieModel };
+module.exports = {
+  createMovie,
+  updateMovie,
+  findMovie,
+  MovieModel,
+};

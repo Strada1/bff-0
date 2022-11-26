@@ -6,14 +6,16 @@ const {
   updateMovie,
   findMovie,
   MovieModel,
-} = require("../services/movieServices");
-const { checkRequiredFields } = require("../middlewares/checkRequireFields");
+} = require("../services/movieService");
+const fs = require("node:fs/promises");
+const { body, validationResult } = require("express-validator");
 
 router.get("/", async (req, res) => {
   try {
     const filmList = await MovieModel.find()
       .populate("category")
       .populate("director");
+
     return res
       .status(201)
       .send({ message: "Movies film has loaded", data: filmList });
@@ -37,18 +39,30 @@ router.get("/:id", async (req, res) => {
 
 router.post(
   "/add",
-  checkRequiredFields(["title", "year"]),
+  body("title").isString(),
+  body("year").isLength({ min: 4 }),
   async (req, res) => {
-    try {
-      const film = await createMovie(req.body);
-      return res
-        .status(201)
-        .send({ message: "Movie has succesfuly added", data: film });
-    } catch (err) {
-      return res.status(500).send({ error: err.message });
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
+    const film = await createMovie(req.body);
+    return res
+      .status(201)
+      .send({ message: "Movie has succesfuly added", data: film });
   }
 );
+
+router.post("/add_by_file", async (req, res) => {
+  const file = await fs.readFile("./routes/test.json", {
+    encoding: "utf-8",
+  });
+  const readFile = await JSON.parse(file).film;
+  const film = await createMovie(readFile);
+  return res
+    .status(201)
+    .send({ message: "Movie has succesfuly added", data: film });
+});
 
 router.patch("/update/:id", async (req, res) => {
   try {
