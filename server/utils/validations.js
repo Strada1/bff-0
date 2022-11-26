@@ -5,8 +5,9 @@ export const movieCreateValidation = [
     .isString()
     .isLength({ min: 2, max: 100 })
     .withMessage('Не менее 2 символов, максимально 100'),
-  body('year', 'Укажите год создания фильма').isNumeric(),
-  body('duration', 'Укажите продолжительность фильма').isNumeric(),
+  body('year', 'Укажите год создания фильма').optional().isNumeric(),
+  body('duration', 'Укажите продолжительность фильма').optional().isNumeric(),
+  body('categories', '').optional().isArray(),
 ];
 
 export const commentCreateValidation = [
@@ -24,5 +25,14 @@ export const categoryCreateValidation = [
   body('title', 'Укажите название категории')
     .isString()
     .isLength({ min: 2, max: 40 })
-    .withMessage('Не менее 2 символов, максимально 40'),
+    .withMessage('Не менее 2 символов, максимально 40')
+    .trim()
+    .toLowerCase(),
+];
+
+export const directorCreateValidation = [
+  body('name', 'Укажите имя режиссера')
+    .isString()
+    .isLength({ min: 2, max: 40 })
+    .withMessage('Не менее 2 символов, максимально 80'),
 ];

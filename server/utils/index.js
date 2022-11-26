@@ -2,5 +2,6 @@ export { default as handleValidationErrors } from './handleValidationErrors.js';
 export {
   movieCreateValidation,
   commentCreateValidation,
-  categoryCreateValidation
+  categoryCreateValidation,
+  directorCreateValidation,
 } from './validations.js';

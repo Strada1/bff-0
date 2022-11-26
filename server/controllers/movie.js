@@ -3,8 +3,8 @@ import * as CommentService from '../services/comment.js';
 
 export async function createMovie(req, res) {
   try {
-    const { title, year, duration } = req.body;
-    const movie = await MovieService.createMovie({ title, year, duration });
+    const { title, year, duration, categories, directors } = req.body;
+    const movie = await MovieService.createMovie({ title, year, duration, categories, directors });
 
     return res.status(201).send(movie);
   } catch (err) {
