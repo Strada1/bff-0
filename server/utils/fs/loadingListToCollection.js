@@ -1,11 +1,15 @@
 import * as fs from 'node:fs/promises';
-import Movie from '../models/Movie.js';
 
-loadingListToCollection('../movies.json', Movie).then(console.log);
+// USING
+// loadingListToCollection(
+//     './utils/fs/movies.json',
+//     Movie,
+//     ['title', 'year', 'duration', 'categories', 'directors' ]
+//   ).then(console.log);
 
-export async function loadingListToCollection(path, model) {
+async function loadingListToCollection(pathToList, model, validationFieldsList) {
   try {
-    const file = await fs.readFile(path, { encoding: 'utf8' });
+    const file = await fs.readFile(pathToList, { encoding: 'utf8' });
     const docs = JSON.parse(file);
     const loadingList = [];
 
@@ -14,7 +18,7 @@ export async function loadingListToCollection(path, model) {
     const map = new Map();
 
     for (let doc of docs) {
-      const missingFields = validate(['title', 'year', 'duration'], doc);
+      const missingFields = validate(validationFieldsList, doc);
 
       if (missingFields.length > 0) {
         map.set(missingFields, doc);
