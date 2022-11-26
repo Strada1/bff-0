@@ -9,12 +9,19 @@ export function getCategory(id) {
   return Category.findById(id);
 }
 
-export async function getCategories(movieId) {
-  if (movieId) {
-    const movie = await Movie.findById(movieId);
-    return Category.find({ _id: movie.categories });
+export async function getCategories(sort) {
+  const categories = Category.find();
+
+  switch (sort) {
+    case 'asc':
+      categories.sort({ title: 'asc' });
+      break;
+    case '-1':
+      categories.sort({ title: -1 });
+      break;
   }
-  return Category.find();
+
+  return categories;
 }
 
 export function updateCategory(id, title) {

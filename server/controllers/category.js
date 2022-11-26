@@ -34,8 +34,8 @@ export async function getCategory(req, res) {
 
 export async function getCategories(req, res) {
   try {
-    const { movieId } = req.query;
-    const categories = await CategoryService.getCategories(movieId);
+    const { sort } = req.query;
+    const categories = await CategoryService.getCategories(sort);
 
     return res.status(200).send(categories);
   } catch (err) {

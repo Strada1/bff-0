@@ -29,7 +29,10 @@ export async function getMovie(req, res) {
 
 export async function getMovies(req, res) {
   try {
-    const movies = await MovieService.getMovies();
+    const { director, category, year, sort } = req.query;
+    const filters = { director, category, year };
+
+    const movies = await MovieService.getMovies({ filters, sort });
 
     return res.status(200).send(movies);
   } catch (err) {

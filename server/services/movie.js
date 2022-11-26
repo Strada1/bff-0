@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import Movie from '../models/Movie.js';
 
-export async function createMovie({ title, year, duration, categories, directors }) {
+export function createMovie({ title, year, duration, categories, directors }) {
   return Movie.create({ title, year, duration, categories, directors });
 }
 
@@ -9,8 +9,31 @@ export function getMovie(id) {
   return Movie.findById(id).populate('comments categories directors');
 }
 
-export function getMovies() {
-  return Movie.find().populate('comments categories directors');
+export function getMovies({ filters, sort }) {
+  const movies = Movie.find().populate('comments categories directors');
+
+  if (filters.director) {
+    movies.where('directors', filters.director);
+  }
+
+  if (filters.category) {
+    movies.where('categories', filters.category);
+  }
+
+  if (filters.year) {
+    movies.where('year', filters.year);
+  }
+
+  switch (sort) {
+    case 'year':
+      movies.sort({ year: 'asc' });
+      break;
+    case 'duration':
+      movies.sort({ duration: -1 });
+      break;
+  }
+
+  return movies;
 }
 
 export function updateMovie(id, { title, year, duration, categories, director }) {
