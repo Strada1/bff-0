@@ -1,14 +1,22 @@
 const Movie = require('../models/Movie');
+const NodeCache = require('node-cache');
+const moviesCache = new NodeCache();
+const moviesCacheKeys = {
+  all: 'all',
+};
 
 const createMovie = ({ title, category, year, duration, director }) => {
+  moviesCache.del(moviesCacheKeys.all);
   return Movie.create({ title, category, year, duration, director });
 };
 
 const deleteMovie = (id) => {
+  moviesCache.del(moviesCacheKeys.all);
   return Movie.findByIdAndDelete(id);
 };
 
 const updateMovie = (id, { title, category, year, duration, director }) => {
+  moviesCache.del(moviesCacheKeys.all);
   return Movie.findByIdAndUpdate(id, {
     title,
     category,
@@ -57,11 +65,12 @@ const getMovies = ({
 };
 
 const addCommentInMovie = (movieId, commentId) => {
-  console.log(movieId);
+  moviesCache.del(moviesCacheKeys.all);
   return Movie.findByIdAndUpdate(movieId, { $push: { comments: commentId } });
 };
 
 const deleteCommentFromMovie = (movieId, commentId) => {
+  moviesCache.del(moviesCacheKeys.all);
   return Movie.findByIdAndUpdate(movieId, { $pull: { comments: commentId } });
 };
 
@@ -85,4 +94,6 @@ module.exports = {
   addCommentInMovie,
   deleteCommentFromMovie,
   countMoviesBetweenYears,
+  moviesCache,
+  moviesCacheKeys,
 };

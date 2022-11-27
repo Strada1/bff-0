@@ -6,6 +6,8 @@ const {
   getMovie,
   getMovies,
   countMoviesBetweenYears,
+  moviesCache,
+  moviesCacheKeys,
 } = require('../services/movieServices');
 const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
@@ -15,7 +17,18 @@ const router = Router();
 
 router.get('/', async (req, res) => {
   try {
-    const movies = await getMovies(req.query);
+    if (Object.keys(req.query).length) {
+      const movies = await getMovies(req.query);
+      return res.status(200).json(movies);
+    }
+
+    let movies = moviesCache.get(moviesCacheKeys.all);
+    if (movies) {
+      console.log('read from cache');
+      return res.status(200).json(movies);
+    }
+    movies = await getMovies(req.query);
+    moviesCache.set(moviesCacheKeys.all, movies, 7200);
     return res.status(200).json(movies);
   } catch (error) {
     return res
@@ -55,6 +68,7 @@ router.post(
         return res.status(400).json({ errors: errors.array() });
       }
       const movie = await createMovie(req.body);
+
       return res.status(201).json(movie);
     } catch (error) {
       return res
@@ -76,6 +90,7 @@ router.delete('/:id', validateParamId(), async (req, res) => {
       return res.status(404).send('movie not found');
     }
     await deleteAllMovieComments(deleted._id);
+
     return res.status(200).send('movie deleted');
   } catch (error) {
     return res
