@@ -1,4 +1,6 @@
+const { ObjectId } = require("mongodb");
 const MovieModel = require("../scheme/movieScheme");
+
 
 const createMovie = (body) => {
   const createdMovie = MovieModel.create(body);
@@ -15,9 +17,45 @@ const findMovie = (params, method) => {
   return foundFilm;
 };
 
+const getMovies = (filters, sort) => {
+  const movies = MovieModel.find().populate("category director");
+
+  if (filters.rating) {
+    movies.where("rating", filters.rating);
+  }
+
+  if (filters.category) {
+    movies.where("category", new ObjectId(filters.category));
+  }
+
+  if (filters.year) {
+    movies.where("year", filters.year);
+  }
+
+  if (filters.title) {
+    movies.where("title", filters.title);
+  }
+
+  switch (sort) {
+    case "title":
+      movies.sort({ title: "asc`" });
+      break;
+    case "year":
+      movies.sort({ year: -1 });
+      break;
+
+    case "rating":
+      movies.sort({ rating: 1 });
+      break;
+    default:
+      break;
+  }
+  return movies;
+};
 module.exports = {
   createMovie,
   updateMovie,
   findMovie,
   MovieModel,
+  getMovies,
 };

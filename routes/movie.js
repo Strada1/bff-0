@@ -6,19 +6,31 @@ const {
   updateMovie,
   findMovie,
   MovieModel,
+  getMovies,
 } = require("../services/movieService");
 const fs = require("node:fs/promises");
 const { body, validationResult } = require("express-validator");
+const NodeCache = require("node-cache");
+
+const movieCache = new NodeCache({ stdTTL: 3600 });
 
 router.get("/", async (req, res) => {
   try {
-    const filmList = await MovieModel.find()
-      .populate("category")
-      .populate("director");
+    const { year, title, category, rating, sort } = req.query;
+    const filters = { year, title, category, rating };
 
-    return res
-      .status(201)
-      .send({ message: "Movies film has loaded", data: filmList });
+    if (!Object.keys(req.query).length && movieCache.has("movies")) {
+      return res.status(200).send({
+        message: "Movies film has loaded from cache",
+        data: movieCache.get("movies"),
+      });
+    } else {
+      const filmList = await getMovies(filters, sort);
+      movieCache.set("movies", filmList);
+      return res
+        .status(201)
+        .send({ message: "Movies film has loaded", data: filmList });
+    }
   } catch (err) {
     return res.status(500).send({ error: err.message });
   }
@@ -45,6 +57,8 @@ router.post(
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
+    } else {
+      movieCache.del("movies");
     }
     const film = await createMovie(req.body);
     return res
@@ -59,6 +73,7 @@ router.post("/add_by_file", async (req, res) => {
   });
   const readFile = await JSON.parse(file).film;
   const film = await createMovie(readFile);
+  movieCache.del("movies");
   return res
     .status(201)
     .send({ message: "Movie has succesfuly added", data: film });
@@ -67,6 +82,7 @@ router.post("/add_by_file", async (req, res) => {
 router.patch("/update/:id", async (req, res) => {
   try {
     const film = await updateMovie(req);
+    movieCache.del("movies");
     return res
       .status(201)
       .send({ message: "This movie has updated", data: film });
@@ -92,6 +108,7 @@ router.post("/:id/comments_add", async (req, res) => {
       movie: foundMovie._id,
       ...req.body,
     });
+    movieCache.del("movies");
     return res
       .status(201)
       .send({ message: "Comment has been added", data: comment });
@@ -106,6 +123,7 @@ router.patch("/:id/comments_update", async (req, res) => {
       req.params.id,
       req.body
     );
+    movieCache.del("movies");
     return res
       .status(201)
       .send({ message: "Comment has been updated", data: comment });
@@ -117,6 +135,7 @@ router.patch("/:id/comments_update", async (req, res) => {
 router.delete("/:id/comments_delete", async (req, res) => {
   try {
     const comment = await CommentModel.findByIdAndDelete(req.params.id);
+    movieCache.del("movies");
     return res
       .status(201)
       .send({ message: "Comment has been deleted!", data: comment });

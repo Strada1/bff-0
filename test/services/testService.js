@@ -22,6 +22,10 @@ const getDirectorMoviesCount = (directorId) => {
   ]);
 };
 
+const getAllMoviesYears = () => {
+  return MovieModel.aggregate([{ $project: { year: 1, _id: 0 } }]);
+};
+
 const getYearMoviesFind = (gt, lt) => {
   return MovieModel.aggregate([
     {
@@ -41,4 +45,5 @@ const getYearMoviesFind = (gt, lt) => {
 module.exports = {
   getDirectorMoviesCount,
   getYearMoviesFind,
+  getAllMoviesYears,
 };
