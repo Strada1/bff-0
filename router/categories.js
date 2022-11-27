@@ -1,6 +1,7 @@
 const Router = require('express');
-const { createCategory, findCategories, updateCategory, deleteCategory } = require("../services/categoriesService");
-const {checkSchema} = require("express-validator");
+const { checkSchema } = require("express-validator");
+
+const { createCategory, getCategories, updateCategory, deleteCategory } = require("../services/categoriesService");
 const checkError = require("../helpers/checkError");
 
 const categories = new Router();
@@ -10,7 +11,7 @@ categories.get(
     async (req, res) => {
     try {
         const { sort } = req.query;
-        const category = await findCategories(sort);
+        const category = await getCategories(sort);
         return res.status(200).send(category);
     } catch (e) {
         return res.status(500).send(e.message);

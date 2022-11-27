@@ -1,6 +1,7 @@
 const Router = require('express');
-const { createDirector, findDirectors, updateDirector, deleteDirector } = require("../services/directorService");
 const {checkSchema} = require("express-validator");
+
+const { createDirector, getDirectors, updateDirector, deleteDirector } = require("../services/directorService");
 const checkError = require("../helpers/checkError");
 
 const directors = new Router();
@@ -9,7 +10,7 @@ directors.get(
     '/directors',
     async (req, res) => {
         try {
-            const director = await findDirectors();
+            const director = await getDirectors();
             return res.status(200).send(director);
         } catch (e) {
             return res.status(500).send(e.message);

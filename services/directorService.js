@@ -4,7 +4,7 @@ const createDirector = ({ name, firstname }) => {
     return Director.create({ name, firstname });
 }
 
-const findDirectors = () => {
+const getDirectors = () => {
     return Director.find();
 }
 
@@ -17,5 +17,5 @@ const deleteDirector = (id) => {
 }
 
 module.exports = {
-    createDirector, findDirectors, updateDirector, deleteDirector
+    createDirector, getDirectors, updateDirector, deleteDirector
 }

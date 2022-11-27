@@ -1,15 +1,24 @@
 const Movie = require('../models/MovieSchema');
 const {ObjectId} = require("mongodb");
+const {deleteComment} = require("./commentsService");
 
-const createMovie = ({ title, year, director, rating, category, comments = [] }) => {
-    return Movie.create({ title, year, director, rating, category, comments });
+const createMovie = async ({title, year, director, rating, category}) => {
+    const movies = await getMovies({filters: {title, year, director, rating, category}})
+    const hasMovie = movies.length !== 0;
+
+    return hasMovie ?
+        movies[0]
+        :
+        (await (await Movie.create({title, year, director, rating, category}))
+            .populate('director'))
+            .populate('category');
 }
 
 const createManyMovies = (movies) => {
     const result = []
     movies.forEach((item) => {
-        const { title, year, director, rating, category, comments } = item;
-        result.push(createMovie({ title, year, director, rating, category, comments: comments ?? [] }));
+        const { title, year, director, rating, category } = item;
+        result.push(createMovie({ title, year, director, rating, category }));
     })
     return result;
 }
@@ -85,7 +94,7 @@ const createManyMovies = (movies) => {
 //     ]);
 // }
 
-const getMovies = ({ filters, sort }) => {
+const getMovies = ({ filters, sort } = {}) => {
     const movies = Movie.find()
         .populate('director')
         .populate('category')
@@ -102,7 +111,7 @@ const getMovies = ({ filters, sort }) => {
     return movies;
 }
 
-const findByIdMovie = (id) => {
+const getByIdMovie = (id) => {
     return Movie.findById(id)
         .populate('director')
         .populate('category')
@@ -113,10 +122,19 @@ const updateMovie = ({ movieId, ...updates }) => {
     return Movie.findByIdAndUpdate(movieId, {...updates}, { new: true, rawResult: true });
 }
 
-const deleteMovie = (id) => {
+const deleteMovie = async (id) => {
+    const { comments } = await getByIdMovie(id);
+
+    const hasComment = comments.length !== 0;
+    if (hasComment) {
+        for (let i = 0; i < comments.length; ++i) {
+            const id = comments[i]._id.valueOf()
+            await deleteComment(id);
+        }
+    }
     return Movie.findByIdAndDelete(id);
 }
 
 module.exports = {
-    createMovie, createManyMovies, findByIdMovie, updateMovie, deleteMovie, getMovies
+    createMovie, createManyMovies, getMovies, getByIdMovie, updateMovie, deleteMovie
 }

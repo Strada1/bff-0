@@ -1,21 +1,25 @@
 const Comment = require('../models/CommentSchema');
+const {getByIdMovie, updateMovie} = require("./movieService");
 
 const createComment = ({ text }) => {
     return Comment.create({ text });
 }
 
-const findByIdComment = (id) => {
+const getByIdComment = (id) => {
     return Comment.findById(id);
 }
 
-const updateComment = ({ id, ...updates }) => {
-    return Comment.findByIdAndUpdate(id, {...updates}, { new: true, rawResult: true });
+const updateComment = ({ commentId, ...updates }) => {
+    return Comment.findByIdAndUpdate(commentId, {...updates}, { new: true, rawResult: true });
 }
 
-const deleteComment = (id) => {
-    return Comment.findByIdAndDelete(id);
+const deleteComment = async (commentId, movieId) => {
+    const movie = await getByIdMovie(movieId);
+    const comments = movie.comments.filter((item) => item._id.valueOf() !== commentId)
+    await updateMovie({ movieId, comments });
+    return Comment.findByIdAndDelete(commentId);
 }
 
 module.exports = {
-    createComment, findByIdComment, updateComment, deleteComment
+    createComment, getByIdComment, updateComment, deleteComment
 }

@@ -1,7 +1,8 @@
 const Router = require('express');
-const { findByIdMovie, updateMovie } = require("../services/movieService");
+const { checkSchema } = require("express-validator");
+
+const { getByIdMovie, updateMovie } = require("../services/movieService");
 const { createComment, updateComment, deleteComment } = require("../services/commentsService");
-const {checkSchema} = require("express-validator");
 const checkError = require("../helpers/checkError");
 
 const comments = new Router();
@@ -11,7 +12,7 @@ comments.get(
     async (req, res) => {
         try {
             const movieId = req.params.movieId;
-            const movie = await findByIdMovie(movieId);
+            const movie = await getByIdMovie(movieId);
             const comments = movie.comments;
             return res.status(200).send(comments);
         } catch (e) {
@@ -39,7 +40,7 @@ comments.post(
     async (req, res) => {
         try {
             const movieId = req.params.movieId;
-            const movie = await findByIdMovie(movieId);
+            const movie = await getByIdMovie(movieId);
             const comments = movie.comments;
 
             const comment = await createComment(req.body);
@@ -69,7 +70,7 @@ comments.put(
     async (req, res) => {
         try {
             const commentId = req.params.commentId;
-            const comment = await updateComment({id: commentId, ...req.body});
+            const comment = await updateComment({commentId, ...req.body});
             return res.status(200).send(comment);
         } catch (e) {
             return res.status(500).send(e.message);

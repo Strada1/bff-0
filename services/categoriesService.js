@@ -4,7 +4,7 @@ const createCategory = ({ title }) => {
     return Category.create({ title });
 }
 
-const findCategories = (sort) => {
+const getCategories = (sort) => {
     return Category.find()
         .sort(sort);
 }
@@ -18,5 +18,5 @@ const deleteCategory = (categoryId) => {
 }
 
 module.exports = {
-    createCategory, findCategories, updateCategory, deleteCategory
+    createCategory, getCategories, updateCategory, deleteCategory
 }
