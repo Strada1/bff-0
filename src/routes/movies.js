@@ -24,7 +24,6 @@ router.get('/', async (req, res) => {
 
     let movies = moviesCache.get(moviesCacheKeys.all);
     if (movies) {
-      console.log('read from cache');
       return res.status(200).json(movies);
     }
     movies = await getMovies(req.query);
