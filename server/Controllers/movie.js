@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const {validationResult} = require("express-validator");
 
 const MovieModel = require("../models/movie");
 const movieService = require("../Service/movieService");
@@ -38,6 +39,12 @@ module.exports = {
 
     createNewMovie: async (req, res, next) => {
         try {
+            // можно в каждом контроллере отдельно прописывать эту палидацию или сделать
+            // функцию validateAll
+            // const errors = validationResult(req);
+            // if (!errors.isEmpty()) {
+            //     return res.status(400).json({errors: errors.array()});
+            // }
             const result = await movieService.createNewMovie(req.body);
             return res.status(201).send({code: 201, message: "movie created", movie: result});
         } catch (err) {

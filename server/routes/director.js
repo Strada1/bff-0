@@ -3,6 +3,10 @@ const router = new Router();
 
 const DirectorController = require("../Controllers/director");
 
+const ValidateMiddleware = require("../middlewares/validate-middleware");
+
+const validateAll = require("../middlewares/validateAll");
+
 // получить список всех рижиссеров
 router.get("/director", DirectorController.getAllDirector);
 
@@ -10,7 +14,11 @@ router.get("/director", DirectorController.getAllDirector);
 router.get("/director/:id", DirectorController.findDirectorById);
 
 // создать нового рижиссера
-router.post("/director", DirectorController.createNewDirector);
+router.post(
+    "/director",
+    validateAll(ValidateMiddleware(["firstName", "lastName"])),
+    DirectorController.createNewDirector
+);
 
 // Изменить (обновить) рижиссера по id
 router.put("/director/:id", DirectorController.updateDirector);
