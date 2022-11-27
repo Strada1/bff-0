@@ -1,5 +1,5 @@
 const Comment = require('../models/Comment');
-const { addComment } = require('./movieService');
+const { addComment, removeComment } = require('./movieService');
 
 const getComment = (commentId) => {
   return Comment.find({ _id: commentId });
@@ -20,14 +20,17 @@ const createComment = async ({ text, movieId }) => {
   return comment;
 };
 
-const updateComment = (id, data) => {
-  return Comment.findByIdAndUpdate(id, data, {
+const updateComment = (commentId, data) => {
+  return Comment.findByIdAndUpdate(commentId, data, {
     new: true,
   });
 };
 
-const deleteComment = (id) => {
-  return Comment.findByIdAndDelete(id);
+const deleteComment = async (commentId) => {
+  const comment = await Comment.findByIdAndDelete(commentId);
+  await removeComment(comment.movie, commentId);
+
+  return comment;
 };
 
 module.exports.getComment = getComment;
