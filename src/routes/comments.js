@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Comment = require('../models/Comment');
 const {
+  getComment,
   getComments,
   createComment,
   updateComment,
@@ -10,9 +11,9 @@ const {
 const { validate, sanitize } = require('../middlewares');
 const { validationResult, body } = require('express-validator');
 
-router.get('/comments/:movieId', async (request, response) => {
+router.get('/comments/', async (request, response) => {
   try {
-    const { movieId } = request.params;
+    const { movieId } = request.body;
 
     const comments = await getComments(movieId);
 
@@ -23,11 +24,24 @@ router.get('/comments/:movieId', async (request, response) => {
   }
 });
 
+router.get('/comments/:commentId', async (request, response) => {
+  try {
+    const { commentId } = request.params;
+
+    const comments = await getComment(commentId);
+
+    response.status(200).send(comments);
+  } catch (error) {
+    console.log(error);
+    return response.status(500).send([]);
+  }
+});
+
 router.post(
   '/comments',
-  validate(['text', 'movie']),
-  sanitize(['text', 'movie']),
-  body('movie').isLength({ min: 24 }),
+  validate(['text', 'movieId']),
+  sanitize(['text', 'movieId']),
+  body('movieId').isLength({ min: 24 }),
   async (request, response) => {
     const { errors } = validationResult(request);
 
@@ -36,11 +50,11 @@ router.post(
     }
 
     try {
-      const { text, movie } = request.body;
+      const { text, movieId } = request.body;
 
       const result = await createComment({
         text,
-        movie,
+        movieId,
       });
 
       response.status(201).send(result);

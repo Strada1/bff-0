@@ -1,7 +1,16 @@
 const Movie = require('../models/Movie');
 
-const getMovies = () => {
-  return Movie.find();
+const getMovies = (options) => {
+  const optionalFields = [];
+
+  if (options.withComments) {
+    optionalFields.push('comments');
+  }
+
+  return Movie.find().populate([
+    ...['category', 'director'],
+    ...optionalFields,
+  ]);
 };
 
 const createMovie = ({ title, year, duration, category, director }) => {
@@ -18,7 +27,16 @@ const deleteMovie = (id) => {
   return Movie.findByIdAndDelete(id);
 };
 
+const addComment = (movieId, commentId) => {
+  console.log(movieId);
+  return Movie.findByIdAndUpdate(
+    { _id: movieId },
+    { $push: { comments: commentId } }
+  );
+};
+
 module.exports.getMovies = getMovies;
 module.exports.createMovie = createMovie;
 module.exports.updateMovie = updateMovie;
 module.exports.deleteMovie = deleteMovie;
+module.exports.addComment = addComment;

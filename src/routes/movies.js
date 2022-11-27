@@ -13,7 +13,8 @@ const { validationResult } = require('express-validator');
 
 router.get('/movies', async (request, response) => {
   try {
-    const movies = await getMovies().populate(['category', 'director']);
+    const options = request.query;
+    const movies = await getMovies(options);
 
     response.status(200).send(movies);
   } catch (error) {
@@ -52,6 +53,7 @@ router.post(
         duration,
         category: findedCategory._id,
         director: findedDirector._id,
+        comments: [],
       });
 
       response.status(201).send(movie);

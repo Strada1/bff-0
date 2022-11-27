@@ -6,7 +6,7 @@ const MovieSchema = new db.Schema({
   duration: Number,
   category: { type: 'ObjectId', ref: 'Category' },
   director: { type: 'ObjectId', ref: 'Director' },
-  comments: Array,
+  comments: [{ type: 'ObjectId', ref: 'Comment' }],
 });
 
 module.exports = db.model('Movie', MovieSchema);
