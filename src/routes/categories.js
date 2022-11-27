@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const Category = require('../models/Category');
 const {
   getCategories,
   createCategory,
@@ -12,7 +11,8 @@ const { validationResult } = require('express-validator');
 
 router.get('/categories', async (request, response) => {
   try {
-    const categories = await getCategories().populate('category');
+    const options = request.query;
+    const categories = await getCategories(options);
 
     response.status(200).send(categories);
   } catch (error) {

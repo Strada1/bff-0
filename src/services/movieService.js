@@ -1,16 +1,23 @@
 const Movie = require('../models/Movie');
+const db = require('../ext/db');
 
 const getMovies = (options) => {
-  const optionalFields = [];
+  const query = Movie.find().populate(['category', 'director']);
+  const extendedFields = options.extendedFields?.split(',') ?? [];
 
-  if (options.withComments) {
-    optionalFields.push('comments');
+  if (extendedFields.includes('comments')) {
+    query.populate('comments');
   }
 
-  return Movie.find().populate([
-    ...['category', 'director'],
-    ...optionalFields,
-  ]);
+  if (options.year) {
+    query.where('year', options.year);
+  }
+
+  if (options.sort) {
+    query.sort({ title: options.sort });
+  }
+
+  return query;
 };
 
 const createMovie = ({ title, year, duration, category, director }) => {
@@ -39,6 +46,26 @@ const removeComment = (movieId, commentId) => {
     { _id: movieId },
     { $pull: { comments: commentId } }
   );
+};
+
+const aggregateByDirector = async (directorId) => {
+  const count = await Movie.aggregate([
+    {
+      $match: { director: new db.Types.ObjectId(directorId) },
+    },
+  ]).count('count');
+
+  return count;
+};
+
+const aggregateByYears = async ({ from, to }) => {
+  const movies = await Movie.aggregate([
+    {
+      $match: { year: { $gte: from, $lte: to } },
+    },
+  ]);
+
+  return movies;
 };
 
 module.exports.getMovies = getMovies;

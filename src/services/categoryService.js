@@ -1,7 +1,13 @@
 const Category = require('../models/Category');
 
-const getCategories = () => {
-  return Category.find();
+const getCategories = (options) => {
+  const query = Category.find().populate('category');
+
+  if (options?.sort) {
+    query.sort({ category: options.sort });
+  }
+
+  return query;
 };
 
 const createCategory = ({ category }) => {
