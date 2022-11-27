@@ -9,18 +9,18 @@ export function getMovie(id) {
   return Movie.findById(id).populate('comments categories directors');
 }
 
-export function getMovies({ filters, sort }) {
+export function getMovies({ filters, sort } = {}) {
   const movies = Movie.find().populate('comments categories directors');
 
-  if (filters.director) {
+  if (filters?.director) {
     movies.where('directors', filters.director);
   }
 
-  if (filters.category) {
+  if (filters?.category) {
     movies.where('categories', filters.category);
   }
 
-  if (filters.year) {
+  if (filters?.year) {
     movies.where('year', filters.year);
   }
 

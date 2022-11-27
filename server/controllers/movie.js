@@ -1,5 +1,9 @@
+import NodeCache from 'node-cache';
+
 import * as MovieService from '../services/movie.js';
 import * as CommentService from '../services/comment.js';
+
+const moviesCache = new NodeCache();
 
 export async function createMovie(req, res) {
   try {
@@ -29,10 +33,23 @@ export async function getMovie(req, res) {
 
 export async function getMovies(req, res) {
   try {
-    const { director, category, year, sort } = req.query;
-    const filters = { director, category, year };
+    let movies;
+    const isEmptyQueryParams = Object.values(req.query).length === 0;
 
-    const movies = await MovieService.getMovies({ filters, sort });
+    if (isEmptyQueryParams) {
+      if (moviesCache.has('movies')) {
+        console.log(moviesCache.getStats());
+        return res.status(200).send( moviesCache.get('movies') );
+      }
+
+      movies = await MovieService.getMovies();
+      moviesCache.set('movies', movies, 600)
+    } else {
+      const { director, category, year, sort } = req.query;
+      const filters = { director, category, year };
+
+      movies = await MovieService.getMovies({ filters, sort });
+    }
 
     return res.status(200).send(movies);
   } catch (err) {
