@@ -33,23 +33,22 @@ export async function getMovie(req, res) {
 
 export async function getMovies(req, res) {
   try {
-    let movies;
-    const isEmptyQueryParams = Object.values(req.query).length === 0;
+    const isNotEmptyQueryParams = Object.keys(req.query).length !== 0;
 
-    if (isEmptyQueryParams) {
-      if (moviesCache.has('movies')) {
-        console.log(moviesCache.getStats());
-        return res.status(200).send( moviesCache.get('movies') );
-      }
-
-      movies = await MovieService.getMovies();
-      moviesCache.set('movies', movies, 600)
-    } else {
+    if (isNotEmptyQueryParams) {
       const { director, category, year, sort } = req.query;
       const filters = { director, category, year };
 
-      movies = await MovieService.getMovies({ filters, sort });
+      const movies = await MovieService.getMovies({ filters, sort });
+      return res.status(200).send(movies);
     }
+
+    if (moviesCache.has('movies')) {
+      return res.status(200).send( moviesCache.get('movies') );
+    }
+
+    const movies = await MovieService.getMovies();
+    moviesCache.set('movies', movies, 600)
 
     return res.status(200).send(movies);
   } catch (err) {
