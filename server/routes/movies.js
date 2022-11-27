@@ -2,6 +2,9 @@ const Router = require("express").Router;
 const router = new Router();
 
 const MovieController = require("../Controllers/movie");
+// const validate = require("../middlewares/validate-middleware");
+
+const ValidateMiddleware = require("../middlewares/validate-middleware");
 
 // получить список всех фильмов
 router.get("/movies", MovieController.getAllMovies);
@@ -10,7 +13,7 @@ router.get("/movies", MovieController.getAllMovies);
 router.get("/movies/:id", MovieController.findMovieById);
 
 // создать новый фильм
-router.post("/movies", MovieController.createNewMovie);
+router.post("/movies", ValidateMiddleware(["title", "director", "rating"]), MovieController.createNewMovie);
 
 // Изменить (обновить) фильм по id
 router.put("/movies/:id", MovieController.updateMovie);
