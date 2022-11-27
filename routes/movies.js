@@ -14,6 +14,7 @@ import {
 } from '../helpers/movies.js'
 import {deleteAllComments} from '../helpers/comments.js'
 import {validate, validateObj} from '../helpers/validate.js'
+import {getCache, setCache, hasCache, deleteCache} from '../helpers/cache.js'
 
 const router = express.Router()
 
@@ -25,6 +26,7 @@ const requiredKeys = [
   'duration',
   'director'
 ]
+const ttlCacheMovies = 3600
 
 router
   .post('/', validate(requiredKeys), async (req, res, next) => {
@@ -34,6 +36,7 @@ router
         return res.status(400).json({errors: errors.array()})
       }
       await createMovie(req.body)
+      deleteCache('allMovies')
       return res.status(201).send('movie created')
     } catch (error) {
       return next(error)
@@ -51,6 +54,7 @@ router
       })
 
       await createMovies(arrMovie)
+      deleteCache('allMovies')
       res.status(201).send(arrMovie)
     } catch (error) {
       return next(error)
@@ -58,7 +62,13 @@ router
   })
   .get('/', async (req, res, next) => {
     try {
-      const allMovies = await getAllMovies()
+      let allMovies
+      if (hasCache('allMovies')) {
+        allMovies = getCache('allMovies')
+      } else {
+        allMovies = await getAllMovies()
+        setCache('allMovies', allMovies, ttlCacheMovies)
+      }
       return res.status(201).send(allMovies)
     } catch (error) {
       return next(error)
@@ -93,10 +103,11 @@ router
   })
   .get('/:id', async (req, res, next) => {
     try {
+      console.log(getCache('allMovies'))
       const id = req.params.id
       const movie = await getMovie(id)
       if (!movie) {
-        res.status(404).send('movie not found')
+        return res.status(404).send('movie not found')
       }
       return res.status(201).send(movie)
     } catch (error) {
@@ -114,6 +125,7 @@ router
       if (!updatedMovie) {
         return res.status(404).send('movie not found')
       }
+      deleteCache('allMovies')
       return res.status(201).send('changed movie')
     } catch (error) {
       return next(error)
@@ -127,6 +139,7 @@ router
         return res.status(404).send('movie not found')
       }
       deleteAllComments(deletedMovie.comments)
+      deleteCache('allMovies')
       return res.status(201).send('movie deleted')
     } catch (error) {
       return next(error)
