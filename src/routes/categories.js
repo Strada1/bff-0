@@ -3,6 +3,7 @@ const router = express.Router();
 const Category = require('../models/Category');
 const {
   getCategories,
+  createCategory,
   updateCategory,
   deleteCategory,
 } = require('../services/categoryService');
@@ -34,7 +35,7 @@ router.post(
     try {
       const { category } = request.body;
 
-      const result = await Category.create({
+      const result = await createCategory({
         category,
       });
 
