@@ -6,6 +6,8 @@ const {
   updateDirector,
   deleteDirector,
 } = require('../services/directorService');
+const { validate, sanitize } = require('../middlewares');
+const { validationResult } = require('express-validator');
 
 router.get('/directors', async (request, response) => {
   try {
@@ -18,20 +20,31 @@ router.get('/directors', async (request, response) => {
   }
 });
 
-router.post('/directors', async (request, response) => {
-  try {
-    const { director } = request.body;
+router.post(
+  '/directors',
+  validate(['director']),
+  sanitize(['director']),
+  async (request, response) => {
+    const { errors } = validationResult(request);
 
-    const createdDirector = await createDirector({
-      director,
-    });
+    if (errors.length > 0) {
+      return response.status(400).send({ errors });
+    }
 
-    response.status(201).send(createdDirector);
-  } catch (error) {
-    console.log(error);
-    response.status(500).send({});
+    try {
+      const { director } = request.body;
+
+      const createdDirector = await createDirector({
+        director,
+      });
+
+      response.status(201).send(createdDirector);
+    } catch (error) {
+      console.log(error);
+      response.status(500).send({});
+    }
   }
-});
+);
 
 router.put('/directors/:directorId', async (request, response) => {
   try {

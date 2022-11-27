@@ -6,6 +6,8 @@ const {
   updateCategory,
   deleteCategory,
 } = require('../services/categoryService');
+const { validate, sanitize } = require('../middlewares');
+const { validationResult } = require('express-validator');
 
 router.get('/categories', async (request, response) => {
   try {
@@ -18,20 +20,31 @@ router.get('/categories', async (request, response) => {
   }
 });
 
-router.post('/categories', async (request, response) => {
-  try {
-    const { category } = request.body;
+router.post(
+  '/categories',
+  validate(['category']),
+  sanitize(['category']),
+  async (request, response) => {
+    const { errors } = validationResult(request);
 
-    const result = await Category.create({
-      category,
-    });
+    if (errors.length > 0) {
+      return response.status(400).send({ errors });
+    }
 
-    response.status(201).send(result);
-  } catch (error) {
-    console.log(error);
-    response.status(500).send({});
+    try {
+      const { category } = request.body;
+
+      const result = await Category.create({
+        category,
+      });
+
+      response.status(201).send(result);
+    } catch (error) {
+      console.log(error);
+      response.status(500).send({});
+    }
   }
-});
+);
 
 router.put('/categories/:categoryId', async (request, response) => {
   try {

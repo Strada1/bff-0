@@ -8,7 +8,8 @@ const {
 } = require('../services/movieService');
 const { findDirector } = require('../services/directorService');
 const { findCategory } = require('../services/categoryService');
-const { validate } = require('../middlewares/validate');
+const { validate, sanitize } = require('../middlewares');
+const { validationResult } = require('express-validator');
 
 router.get('/movies', async (request, response) => {
   try {
@@ -23,19 +24,26 @@ router.get('/movies', async (request, response) => {
 
 router.post(
   '/movies',
-  validate(['title', 'year']),
+  validate(['title', 'category', 'year', 'duration', 'director']),
+  sanitize(['title', 'category', 'year', 'duration', 'director']),
   async (request, response) => {
+    const { errors } = validationResult(request);
+
+    if (errors.length > 0) {
+      return response.status(400).send({ errors });
+    }
+
     try {
       const { title, category, year, duration, director } = request.body;
       const findedCategory = await findCategory({ category });
       const findedDirector = await findDirector({ director });
 
       if (!findedCategory) {
-        return response.status(400).send({ error: 'category not found' });
+        return response.status(400).send({ errors: 'category not found' });
       }
 
       if (!findedDirector) {
-        return response.status(400).send({ error: 'director not found' });
+        return response.status(400).send({ errors: 'director not found' });
       }
 
       const movie = await createMovie({

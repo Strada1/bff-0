@@ -4,7 +4,10 @@ const cors = require('cors');
 const Movies = require('./routes/movies');
 const Categories = require('./routes/categories');
 const Directors = require('./routes/directors');
+const Comments = require('./routes/comments');
 require('dotenv').config();
+
+// TODO: добавить отлов ошибок json в мидлвары
 
 app.use(
   cors({
@@ -12,7 +15,7 @@ app.use(
   }),
   express.json()
 );
-app.use(Movies, Categories, Directors);
+app.use(Movies, Categories, Directors, Comments);
 
 app.listen(process.env.PORT, () => {
   console.log(
