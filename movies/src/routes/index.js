@@ -2,6 +2,7 @@ const movies = require('./movie')
 const categories = require('./category')
 const comments = require('./comment')
 const directors = require('./director')
+const users = require('./user')
 const test = require('./test')
 
 function useRoutes(app) {
@@ -12,7 +13,7 @@ function useRoutes(app) {
             return res.status(500).send(err.message)
         }
     })
-    app.use(movies, categories, comments, directors, test)
+    app.use(movies, categories, comments, directors, users, test)
 }
 
 module.exports = useRoutes
