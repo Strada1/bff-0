@@ -10,6 +10,7 @@ const {
   updateCategory,
   deleteCategory,
 } = require('../services/categoryServices');
+const { authUser, UserRoles } = require('../services/userServices');
 
 router.get('/', async (req, res) => {
   try {
@@ -44,6 +45,12 @@ router.get('/:id', validateParamId(), async (req, res) => {
 
 router.post('/', validate(['title']), async (req, res) => {
   try {
+    const [email, password] = req.headers.authorization.split(' ');
+    const user = await authUser({ email, password });
+    if (!user || !user.roles.includes(UserRoles.admin)) {
+      return res.status(403).send('Not enough rights');
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -60,6 +67,12 @@ router.post('/', validate(['title']), async (req, res) => {
 
 router.put('/:id', validateParamId(), async (req, res) => {
   try {
+    const [email, password] = req.headers.authorization.split(' ');
+    const user = await authUser({ email, password });
+    if (!user || !user.roles.includes(UserRoles.admin)) {
+      return res.status(403).send('Not enough rights');
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -81,6 +94,16 @@ router.put('/:id', validateParamId(), async (req, res) => {
 
 router.delete('/:id', validateParamId(), async (req, res) => {
   try {
+    if (!req.headers.authorization) {
+      console.log(req.headers);
+      return res.status(401).send('Not Auth');
+    }
+    const [email, password] = req.headers.authorization.split(' ');
+    const user = await authUser({ email, password });
+    if (!user || !user.roles.includes(UserRoles.admin)) {
+      return res.status(403).send('Not enough rights');
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

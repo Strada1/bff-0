@@ -10,6 +10,7 @@ const {
   deleteDirector,
   countMoviesByDirector,
 } = require('../services/directorServices');
+const { authUser, UserRoles } = require('../services/userServices');
 const router = Router();
 
 router.get('/', async (req, res) => {
@@ -45,6 +46,12 @@ router.get('/:id', validateParamId(), async (req, res) => {
 
 router.post('/', validate(['firstName', 'lastName']), async (req, res) => {
   try {
+    const [email, password] = req.headers.authorization.split(' ');
+    const user = await authUser({ email, password });
+    if (!user || !user.roles.includes(UserRoles.user)) {
+      return res.status(403).send('Not enough rights');
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -61,6 +68,12 @@ router.post('/', validate(['firstName', 'lastName']), async (req, res) => {
 
 router.put('/:id', validateParamId(), async (req, res) => {
   try {
+    const [email, password] = req.headers.authorization.split(' ');
+    const user = await authUser({ email, password });
+    if (!user || !user.roles.includes(UserRoles.admin)) {
+      return res.status(403).send('Not enough rights');
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -82,6 +95,12 @@ router.put('/:id', validateParamId(), async (req, res) => {
 
 router.delete('/:id', validateParamId(), async (req, res) => {
   try {
+    const [email, password] = req.headers.authorization.split(' ');
+    const user = await authUser({ email, password });
+    if (!user || !user.roles.includes(UserRoles.admin)) {
+      return res.status(403).send('Not enough rights');
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

@@ -1,5 +1,5 @@
 const movies = require('./movies.js');
-const categories = require('./catogories.js');
+const categories = require('./categories.js');
 const comments = require('./comments.js');
 const directors = require('./directors.js');
 const users = require('./users.js');

@@ -13,6 +13,7 @@ const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
 const { validationResult, param } = require('express-validator');
 const validateParamId = require('../middlewares/validateParamId');
+const { authUser, UserRoles } = require('../services/userServices');
 const router = Router();
 
 router.get('/', async (req, res) => {
@@ -62,6 +63,12 @@ router.post(
   validate(['title', 'category', 'year', 'director', 'duration']),
   async (req, res) => {
     try {
+      const [email, password] = req.headers.authorization.split(' ');
+      const user = await authUser({ email, password });
+      if (!user || !user.roles.includes(UserRoles.user)) {
+        return res.status(403).send('Not enough rights');
+      }
+
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -79,6 +86,12 @@ router.post(
 
 router.delete('/:id', validateParamId(), async (req, res) => {
   try {
+    const [email, password] = req.headers.authorization.split(' ');
+    const user = await authUser({ email, password });
+    if (!user || !user.roles.includes(UserRoles.admin)) {
+      return res.status(403).send('Not enough rights');
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -100,6 +113,12 @@ router.delete('/:id', validateParamId(), async (req, res) => {
 
 router.put('/:id', validateParamId(), async (req, res) => {
   try {
+    const [email, password] = req.headers.authorization.split(' ');
+    const user = await authUser({ email, password });
+    if (!user || !user.roles.includes(UserRoles.admin)) {
+      return res.status(403).send('Not enough rights');
+    }
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
