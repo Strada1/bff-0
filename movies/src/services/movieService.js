@@ -1,10 +1,12 @@
 const Movie = require('../models/Movie')
 
-const getMovies = () => {
-    return Movie.find()
-        .lean().populate('category director comments')
+const getMovies = ({ sort, title, year }) => {
+    const query = Movie.find().lean().populate('category director comments')
+    if (title) query.where('title', title)
+    if (year) query.where('year', year)
+    if (sort) query.sort(sort)
+    return query.exec()
 }
-
 const getMovie = (movieId) => {
     return Movie.findById({ _id: movieId }).populate('category director comments')
 }

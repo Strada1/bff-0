@@ -17,7 +17,8 @@ const paramValidator = param('categoryId').isMongoId().withMessage('categoryId m
 
 router.get('/categories', async (req, res) => {
     try {
-        const categories = await getCategories()
+        const { sort } = req.query
+        const categories = await getCategories(sort)
         return res.status(200).send(categories)
     } catch (e) {
         console.log(e)
