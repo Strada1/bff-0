@@ -3,7 +3,8 @@ const {
     getUser,
     createUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    authUser
 } = require('../services/userService')
 const { validate } = require('../middlewares')
 const { validationResult, body, param } = require('express-validator')
@@ -71,6 +72,24 @@ router.delete('/user/:userId', paramValidator, async (req, res) => {
     } catch (e) {
         console.log(e)
         return res.status(500).send('can not delete user')
+    }
+})
+
+router.post('/auth', validate(['email', 'password']), ...fieldValidators, async (req, res) => {
+    try {
+        const errors = validationResult(req)
+        if (!errors.isEmpty()) {
+            return res.status(400).send({ errors: errors.array() })
+        }
+        const { email, password } = req.body
+        const user = await authUser(email, password)
+        if (user) {
+            return res.status(201).send(user)
+        }
+        return res.status(403).send('invalid authentication data, please check your email and password')
+    } catch (e) {
+        console.log(e)
+        return res.status(500).send('can not create user')
     }
 })
 
