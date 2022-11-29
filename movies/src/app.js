@@ -1,26 +1,26 @@
-require('dotenv').config()
-const express = require('express')
-const cors = require('cors')
-const useRoutes = require('./routes')
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const useRoutes = require('./routes');
 // const { uploadMoviesToDB } = require('./services/uploadFromFile')
-const app = express()
-const port = process.env.PORT
+const app = express();
+const port = process.env.PORT;
 
 const allowedOrigins = [
-    `http://localhost:${port}`
-]
+  `http://localhost:${port}`
+];
 
 app.use(
-    cors({
-        origin: allowedOrigins
-    })
-)
+  cors({
+    origin: allowedOrigins
+  })
+);
 
-app.use(express.json())
+app.use(express.json());
 
-useRoutes(app)
+useRoutes(app);
 
 app.listen(port, async () => {
-    // await uploadMoviesToDB('movies.json')
-    console.log(`app listening on port ${port}`)
-})
+  // await uploadMoviesToDB('movies.json')
+  console.log(`app listening on port ${port}`);
+});
