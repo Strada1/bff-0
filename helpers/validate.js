@@ -24,4 +24,14 @@ const validateObj = (obj, arrKeys) => {
   })
 }
 
-export {validate, validateObj}
+const validateUser = () => {
+  return [
+    body('email').isEmail(),
+    body(
+      'password',
+      'password length must be between 5 and 20 characters'
+    ).isLength({min: 5, max: 20})
+  ]
+}
+
+export {validate, validateObj, validateUser}
