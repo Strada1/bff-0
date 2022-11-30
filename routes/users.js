@@ -1,10 +1,12 @@
 import express from 'express'
+import jwt from 'jsonwebtoken'
 import {validationResult} from 'express-validator'
 import {validateUser} from '../helpers/validate.js'
 import {
   createUser,
   getUsers,
   getUser,
+  getUserByEmail,
   checkAuthUser,
   updateUser,
   deleteUser
@@ -19,13 +21,14 @@ router
       if (!errors.isEmpty()) {
         return res.status(400).json({errors: errors.array()})
       }
-
-      const body = req.body
-      const indexAtEmail = body.email.indexOf('@')
-      body['username'] = req.body.email.slice(0, indexAtEmail)
-      body.roles = ['default']
-      await createUser(body)
-      return res.status(201).send('user created')
+      const {email, password} = req.body
+      const indexAtEmail = email.indexOf('@')
+      const username = email.slice(0, indexAtEmail)
+      const roles = ['default']
+      const token = jwt.sign({email, password}, process.env.JWT_SECRET)
+      const dataUser = {email, username, token, roles}
+      await createUser(dataUser)
+      return res.status(201).send('here is your token  ' + token)
     } catch (error) {
       return next(error)
     }
@@ -38,12 +41,12 @@ router
       }
 
       const {email, password} = req.body
-      const isAuth = await checkAuthUser(email, password)
-      if (!isAuth) {
+      const candidate = await getUserByEmail(email)
+      const decode = jwt.verify(candidate.token, process.env.JWT_SECRET)
+      if (password !== decode.password) {
         return res.status(401).send('Incorrect login or password')
       }
-
-      return res.status(201).send(`${email} ${password}`)
+      return res.status(201).send('here is your token  ' + candidate.token)
     } catch (error) {
       return next(error)
     }

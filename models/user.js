@@ -4,7 +4,7 @@ const UserSchema = new db.Schema({
   email: String,
   username: String,
   roles: [String],
-  password: String
+  token: String
 })
 
 const userModel = db.model('User', UserSchema)

@@ -2,13 +2,12 @@ import {checkAuthUser} from '../helpers/users.js'
 
 const auth = async (req, res, next) => {
   try {
-    const authorization = req.headers.authorization
-    if (!authorization) {
-      return res.status(401).send('specify authorization parameters')
+    const token = req.headers.authorization
+    if (!token) {
+      return res.status(401).send('no token in the headers')
     }
 
-    const [email, password] = authorization.split(' ')
-    const isAuth = await checkAuthUser(email, password)
+    const isAuth = await checkAuthUser(token)
     if (!isAuth) {
       return res.status(401).send("you aren't authorized")
     }

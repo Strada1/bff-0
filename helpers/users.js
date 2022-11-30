@@ -12,8 +12,12 @@ const getUser = userId => {
   return Users.findById(userId).lean()
 }
 
-const checkAuthUser = (email, password) => {
-  return Users.findOne({email, password})
+const getUserByEmail = email => {
+  return Users.findOne({email}).lean()
+}
+
+const checkAuthUser = token => {
+  return Users.findOne({token})
 }
 
 const updateUser = (userId, payload) => {
@@ -24,4 +28,12 @@ const deleteUser = userId => {
   return Users.findByIdAndRemove(userId)
 }
 
-export {createUser, getUsers, getUser, checkAuthUser, updateUser, deleteUser}
+export {
+  createUser,
+  getUsers,
+  getUser,
+  getUserByEmail,
+  checkAuthUser,
+  updateUser,
+  deleteUser
+}
