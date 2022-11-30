@@ -11,14 +11,17 @@ const {
 } = require('../services/movieServices');
 const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
-const { validationResult, param } = require('express-validator');
+const { validationResult, param, body } = require('express-validator');
 const validateParamId = require('../middlewares/validateParamId');
-const { authUser, UserRoles } = require('../services/userServices');
+const { checkAuth } = require('../middlewares/checkAuth');
 const router = Router();
 
 router.get('/', async (req, res) => {
   try {
-    if (Object.keys(req.query).length) {
+    const twoHours = 7200;
+    const hasQuery = Object.keys(req.query).length;
+
+    if (hasQuery) {
       const movies = await getMovies(req.query);
       return res.status(200).json(movies);
     }
@@ -28,7 +31,7 @@ router.get('/', async (req, res) => {
       return res.status(200).json(movies);
     }
     movies = await getMovies(req.query);
-    moviesCache.set(moviesCacheKeys.all, movies, 7200);
+    moviesCache.set(moviesCacheKeys.all, movies, twoHours);
     return res.status(200).json(movies);
   } catch (error) {
     return res
@@ -61,14 +64,14 @@ router.get('/:id', validateParamId(), async (req, res) => {
 router.post(
   '/',
   validate(['title', 'category', 'year', 'director', 'duration']),
+  body('title', 'Should be string').isString(),
+  body('duration', 'Should be integer').isInt(),
+  body('year', 'Should be date').isDate(),
+  body('director', 'Should be ObjectId').isMongoId(),
+  body('category', 'Should be ObjectId').isMongoId(),
+  checkAuth,
   async (req, res) => {
     try {
-      const [email, password] = req.headers.authorization.split(' ');
-      const user = await authUser({ email, password });
-      if (!user || !user.roles.includes(UserRoles.user)) {
-        return res.status(403).send('Not enough rights');
-      }
-
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
@@ -84,14 +87,8 @@ router.post(
   }
 );
 
-router.delete('/:id', validateParamId(), async (req, res) => {
+router.delete('/:id', validateParamId(), checkAuth, async (req, res) => {
   try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const user = await authUser({ email, password });
-    if (!user || !user.roles.includes(UserRoles.admin)) {
-      return res.status(403).send('Not enough rights');
-    }
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
@@ -111,32 +108,36 @@ router.delete('/:id', validateParamId(), async (req, res) => {
   }
 });
 
-router.put('/:id', validateParamId(), async (req, res) => {
-  try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const user = await authUser({ email, password });
-    if (!user || !user.roles.includes(UserRoles.admin)) {
-      return res.status(403).send('Not enough rights');
+router.put(
+  '/:id',
+  validateParamId(),
+  body('title', 'Should be string').isString(),
+  body('duration', 'Should be integer').isInt(),
+  body('year', 'Should be date').isDate(),
+  body('director', 'Should be ObjectId').isMongoId(),
+  body('category', 'Should be ObjectId').isMongoId(),
+  checkAuth,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const movie = await updateMovie(req.params.id, req.body);
+
+      if (!movie) {
+        return res.status(404).send(`Movie id:"${req.params.id}" - Not found`);
+      }
+
+      return res.status(200).send('movie updated successfully');
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to update movie\nerror: ' + error.message);
     }
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const movie = await updateMovie(req.params.id, req.body);
-
-    if (!movie) {
-      return res.status(404).send(`Movie id:"${req.params.id}" - Not found`);
-    }
-
-    return res.status(200).send('movie updated successfully');
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to update movie\nerror: ' + error.message);
   }
-});
+);
 
 router.get(
   '/countBetweenYears/:start-:finish',

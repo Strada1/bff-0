@@ -1,5 +1,6 @@
 const { Router } = require('express');
-const { validationResult } = require('express-validator');
+const { validationResult, body } = require('express-validator');
+const { checkAuth } = require('../middlewares/checkAuth');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
 const {
@@ -10,7 +11,6 @@ const {
   deleteDirector,
   countMoviesByDirector,
 } = require('../services/directorServices');
-const { authUser, UserRoles } = require('../services/userServices');
 const router = Router();
 
 router.get('/', async (req, res) => {
@@ -44,63 +44,60 @@ router.get('/:id', validateParamId(), async (req, res) => {
   }
 });
 
-router.post('/', validate(['firstName', 'lastName']), async (req, res) => {
-  try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const user = await authUser({ email, password });
-    if (!user || !user.roles.includes(UserRoles.user)) {
-      return res.status(403).send('Not enough rights');
-    }
+router.post(
+  '/',
+  validate(['firstName', 'lastName']),
+  checkAuth,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      const director = await createDirector(req.body);
+      return res.status(201).json(director);
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to add director\nerror: ' + error.message);
     }
-
-    const director = await createDirector(req.body);
-    return res.status(201).json(director);
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to add director\nerror: ' + error.message);
   }
-});
+);
 
-router.put('/:id', validateParamId(), async (req, res) => {
-  try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const user = await authUser({ email, password });
-    if (!user || !user.roles.includes(UserRoles.admin)) {
-      return res.status(403).send('Not enough rights');
+router.put(
+  '/:id',
+  validateParamId(),
+  body('firstName', 'Should be string').isString().optional(),
+  body('lastName', 'Should be string').isString().optional(),
+  body('birthDay', 'Should be string').isDate().optional(),
+  checkAuth,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const director = await updateDirector(req.params.id, req.body);
+
+      if (!director) {
+        return res
+          .status(404)
+          .send(`Director id:"${req.params.id}" - Not found`);
+      }
+
+      return res.status(200).send('Director updated successfully');
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to update director\nerror: ' + error.message);
     }
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const director = await updateDirector(req.params.id, req.body);
-
-    if (!director) {
-      return res.status(404).send(`Director id:"${req.params.id}" - Not found`);
-    }
-
-    return res.status(200).send('Director updated successfully');
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to update director\nerror: ' + error.message);
   }
-});
+);
 
-router.delete('/:id', validateParamId(), async (req, res) => {
+router.delete('/:id', validateParamId(), checkAuth, async (req, res) => {
   try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const user = await authUser({ email, password });
-    if (!user || !user.roles.includes(UserRoles.admin)) {
-      return res.status(403).send('Not enough rights');
-    }
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });

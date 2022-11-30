@@ -36,11 +36,11 @@ router.post('/auth', validate(['email', 'password']), async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const user = await authUser(req.body);
-    if (!user) {
+    const token = await authUser(req.body);
+    if (!token) {
       return res.status(401).send('Wrong email or password');
     }
-    return res.status(200).send(`${user.email} ${user.password}`);
+    return res.status(200).send(token);
   } catch (error) {
     return res.status(500).send('failed to auth\nerror: ' + error.message);
   }

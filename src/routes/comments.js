@@ -1,5 +1,6 @@
 const { Router } = require('express');
-const { validationResult, query } = require('express-validator');
+const { validationResult, query, body } = require('express-validator');
+const { checkAuth } = require('../middlewares/checkAuth');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
 const {
@@ -15,7 +16,6 @@ const {
   deleteCommentFromMovie,
   addCommentInMovie,
 } = require('../services/movieServices');
-const { authUser, UserRoles } = require('../services/userServices');
 const router = Router();
 
 router.get(
@@ -63,66 +63,63 @@ router.get('/:id', validateParamId(), async (req, res) => {
   }
 });
 
-router.post('/', validate(['user', 'text', 'movie']), async (req, res) => {
-  try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const user = await authUser({ email, password });
-    if (!user || !user.roles.includes(UserRoles.user)) {
-      return res.status(403).send('Not enough rights');
-    }
+router.post(
+  '/',
+  validate(['user', 'text', 'movie']),
+  checkAuth,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      const movie = await getMovie(req.body.movie);
+      if (!movie) {
+        return res.status(404).send('movie not found');
+      }
+      const comment = await createComment(req.body);
+      await addCommentInMovie(movie._id, comment.id);
+      return res.status(201).json(comment);
+    } catch (error) {
+      return res.status(500).send('Server error: ' + error.message);
     }
-
-    const movie = await getMovie(req.body.movie);
-    if (!movie) {
-      return res.status(404).send('movie not found');
-    }
-    const comment = await createComment(req.body);
-    await addCommentInMovie(movie._id, comment.id);
-    return res.status(201).json(comment);
-  } catch (error) {
-    return res.status(500).send('Server error: ' + error.message);
   }
-});
+);
 
-router.put('/:id', validateParamId(), async (req, res) => {
-  try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const user = await authUser({ email, password });
-    if (!user || !user.roles.includes(UserRoles.user)) {
-      return res.status(403).send('Not enough rights');
+router.put(
+  '/:id',
+  body('user', 'Should be string').isString().optional(),
+  body('text', 'Should be string').isString().optional(),
+  body('movie', 'Should be objectId').isMongoId().optional(),
+  checkAuth,
+  validateParamId(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+
+      const comment = await updateComment(req.params.id, req.body);
+
+      if (!comment) {
+        return res
+          .status(404)
+          .send(`Comment id:"${req.params.id}" - Not found`);
+      }
+
+      return res.status(200).send('Comment updated successfully');
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to update comment\nerror: ' + error.message);
     }
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-
-    const comment = await updateComment(req.params.id, req.body);
-
-    if (!comment) {
-      return res.status(404).send(`Comment id:"${req.params.id}" - Not found`);
-    }
-
-    return res.status(200).send('Comment updated successfully');
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to update comment\nerror: ' + error.message);
   }
-});
+);
 
-router.delete('/:id', validateParamId(), async (req, res) => {
+router.delete('/:id', validateParamId(), checkAuth, async (req, res) => {
   try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const user = await authUser({ email, password });
-    if (!user || !user.roles.includes(UserRoles.user)) {
-      return res.status(403).send('Not enough rights');
-    }
-
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
