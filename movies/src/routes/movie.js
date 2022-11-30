@@ -13,7 +13,7 @@ const { isAdmin } = require('../services/userService');
 
 const router = express.Router();
 
-const movieCache = new NodeCache( { stdTTL: 3600 } );
+const movieCache = new NodeCache({ stdTTL: 3600 });
 
 const fieldValidators = [
   body('title').matches(/[a-zA-Zа-яА-Я0-9]/).trim().optional().withMessage('title must contain only letters or numbers'),
@@ -25,17 +25,25 @@ const paramValidator = param('movieId').isMongoId().withMessage('movieId must be
 
 router.get('/movies', async (req, res) => {
   try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const isRightsEnough = await isAdmin(email, password);
+    const token = req.headers.authorization;
+    const isRightsEnough = await isAdmin(token);
     if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
 
-    if (Object.keys(req.query).length === 0 && movieCache.has('movies')) {
-      return res.status(200).send(movieCache.get('movies'));
-    } else {
+    const hasQueryParams = Object.keys(req.query).length > 0;
+    const hasCache = movieCache.has('movies');
+
+    if (hasQueryParams) {
       const movies = await getMovies(req.query);
-      movieCache.set('movies', movies);
       return res.status(200).send(movies);
     }
+
+    if (hasCache) {
+      return res.status(200).send(movieCache.get('movies'));
+    }
+
+    const movies = await getMovies(req.query);
+    movieCache.set('movies', movies);
+    return res.status(200).send(movies);
   } catch (e) {
     console.log(e);
     return res.status(500).send('can not get movies');
@@ -44,8 +52,8 @@ router.get('/movies', async (req, res) => {
 
 router.get('/movies/:movieId', paramValidator, async (req, res) => {
   try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const isRightsEnough = await isAdmin(email, password);
+    const token = req.headers.authorization;
+    const isRightsEnough = await isAdmin(token);
     if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
 
     const errors = validationResult(req);
@@ -65,8 +73,8 @@ router.post('/movies',
   ...fieldValidators,
   async (req, res) => {
     try {
-      const [email, password] = req.headers.authorization.split(' ');
-      const isRightsEnough = await isAdmin(email, password);
+      const token = req.headers.authorization;
+      const isRightsEnough = await isAdmin(token);
       if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
 
       const errors = validationResult(req);
@@ -84,8 +92,8 @@ router.post('/movies',
 
 router.delete('/movies/:movieId', paramValidator, async (req, res) => {
   try {
-    const [email, password] = req.headers.authorization.split(' ');
-    const isRightsEnough = await isAdmin(email, password);
+    const token = req.headers.authorization;
+    const isRightsEnough = await isAdmin(token);
     if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
 
     const errors = validationResult(req);
@@ -106,8 +114,8 @@ router.patch('/movies/:movieId',
   ...fieldValidators,
   async (req, res) => {
     try {
-      const [email, password] = req.headers.authorization.split(' ');
-      const isRightsEnough = await isAdmin(email, password);
+      const token = req.headers.authorization;
+      const isRightsEnough = await isAdmin(token);
       if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
 
       const errors = validationResult(req);

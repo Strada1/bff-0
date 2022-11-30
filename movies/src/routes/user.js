@@ -8,6 +8,8 @@ const {
 } = require('../services/userService');
 const { validate } = require('../middlewares');
 const { validationResult, body, param } = require('express-validator');
+const jwt = require('jsonwebtoken');
+const { createToken } = require('../utils');
 
 const router = express.Router();
 
@@ -38,7 +40,9 @@ router.post('/user', validate(['email', 'password']), ...fieldValidators, async 
     if (!errors.isEmpty()) {
       return res.status(400).send({ errors: errors.array() });
     }
-    const user = await createUser(req.body);
+    const { email, password, roles } = req.body;
+    const token = await createToken(email, password);
+    const user = await createUser({ email, roles, token });
     return res.status(201).send(user);
   } catch (e) {
     console.log(e);
@@ -82,14 +86,14 @@ router.post('/auth', validate(['email', 'password']), ...fieldValidators, async 
       return res.status(400).send({ errors: errors.array() });
     }
     const { email, password } = req.body;
-    const user = await authUser(email, password);
-    if (user) {
-      return res.status(201).send(user);
+    const token = await authUser(email, password);
+    if (token) {
+      return res.status(201).send(token);
     }
     return res.status(403).send('invalid authentication data, please check your email and password');
   } catch (e) {
     console.log(e);
-    return res.status(500).send('can not create user');
+    return res.status(500).send('can not auth user');
   }
 });
 
