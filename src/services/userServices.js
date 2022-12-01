@@ -29,11 +29,30 @@ const authUser = async ({ email, password }) => {
 };
 
 const findUserByToken = async (token) => {
-  const user = await User.findOne({token});
+  const user = await User.findOne({ token });
   if (user) {
     return user;
   }
   return false;
+};
+
+const updateUser = async (id, { username, email }) => {
+  return User.findOneAndUpdate({ id }, { username, email }, { new: true });
+};
+
+const updateUserRoles = async (id, { roles }) => {
+  if (!roles || roles.length === 0) {
+    return false;
+  }
+  const validRoles = roles.filter((role) => {
+    return Object.values(UserRoles).includes(role);
+  });
+
+  return User.findOneAndUpdate({ id }, { validRoles }, { new: true });
+};
+
+const deleteUser = async (id) => {
+  return User.findOneAndDelete({ id });
 };
 
 module.exports = {
@@ -41,4 +60,7 @@ module.exports = {
   authUser,
   UserRoles,
   findUserByToken,
+  updateUser,
+  updateUserRoles,
+  deleteUser,
 };
