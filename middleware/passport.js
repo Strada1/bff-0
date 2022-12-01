@@ -15,9 +15,8 @@ passport.use(
     try {
       if (user) {
         return done(null, user)
-      } else {
-        return done(null, false)
       }
+      return done(null, false)
     } catch (error) {
       if (error) {
         return done(err, false)
@@ -34,7 +33,7 @@ const passportJWT = (req, res, next) => {
     if (!user) {
       return res
         .status(401)
-        .json({success: false, error: 'authentication failed'})
+        .send({success: false, error: 'authentication failed'})
     }
 
     next()
