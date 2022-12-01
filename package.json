@@ -19,6 +19,7 @@
     "mongodb": "^4.11.0",
     "mongoose": "^6.7.2",
     "node-cache": "^5.1.2",
-    "passport": "^0.6.0"
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0"
   }
 }
