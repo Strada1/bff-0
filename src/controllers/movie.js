@@ -1,4 +1,5 @@
 const { movieService } = require('../services');
+const fs = require('fs/promises');
 
 class Controller {
   create = async ( req, res ) => {
@@ -6,6 +7,20 @@ class Controller {
     const movie = await movieService.create(newMovie);
 
     return res.status(201).send(movie);
+  };
+
+  createFromFile = async ( req, res ) => {
+    let file;
+    try {
+      file = await fs.readFile('src/movies.json', { encoding: 'utf8' });
+    } catch (e) {
+      console.log(e);
+    }
+
+    const fileJSON = JSON.parse(file);
+    const movies = await movieService.createFromJSON(fileJSON);
+
+    return res.status(201).send(movies);
   };
   get = async ( req, res ) => {
     const movies = await movieService.get();

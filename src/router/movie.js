@@ -13,6 +13,7 @@ const movieRouter = Router();
 
 
 movieRouter.post('/', createMovieValidator, movieController.create);
+movieRouter.post('/createFromFile', movieController.createFromFile);
 movieRouter.get('/', movieController.get);
 movieRouter.get('/:movieId', movieIdValidator, movieController.getOne);
 movieRouter.put('/:movieId', updateMovieValidator, movieController.update);

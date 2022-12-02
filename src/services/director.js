@@ -5,10 +5,10 @@ class Service {
     return Director.create({ name, surname, age });
   };
   get = () => {
-    return Director.find().populate('movies');
+    return Director.find();
   };
   getOne = ( directorId ) => {
-    return Director.findById(directorId).populate('movies');
+    return Director.findById(directorId);
   };
   update = ( directorId, { name, surname, age } ) => {
     return Director.findByIdAndUpdate(

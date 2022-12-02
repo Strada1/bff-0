@@ -4,6 +4,9 @@ class Service {
   create = ( { title, category, year, duration, director } ) => {
     return Movie.create({ title, category, year, duration, director });
   };
+  createFromJSON = async ( fileJSON ) => {
+    return Movie.create(fileJSON);
+  };
   get = () => {
     return Movie.find().populate('comments');
   };
