@@ -1,17 +1,12 @@
 import passport from 'passport'
-import JwtStrategy from 'passport-jwt'
-import ExtractJwt from 'passport-jwt'
-import {getUserByIdForAuth} from '../helpers/users.js'
+import BearerStrategy from 'passport-http-bearer'
+import {checkAuthUser} from '../helpers/users.js'
 
-const options = {
-  jwtFromRequest: ExtractJwt.ExtractJwt.fromHeader('authorization'),
-  secretOrKey: process.env.JWT_SECRET
-}
 const config = {session: false}
 
 passport.use(
-  new JwtStrategy.Strategy(options, async (jwt_payload, done) => {
-    const user = await getUserByIdForAuth(jwt_payload)
+  new BearerStrategy(async (token, done) => {
+    const user = await checkAuthUser(token)
     try {
       if (user) {
         return done(null, user)
@@ -25,8 +20,8 @@ passport.use(
   })
 )
 
-const passportJWT = (req, res, next) => {
-  passport.authenticate('jwt', config, (err, user, info) => {
+const passportBear = (req, res, next) => {
+  passport.authenticate('bearer', config, (err, user) => {
     if (err) {
       return next(err)
     }
@@ -35,9 +30,8 @@ const passportJWT = (req, res, next) => {
         .status(401)
         .send({success: false, error: 'authentication failed'})
     }
-
     next()
   })(req, res, next)
 }
 
-export default passportJWT
+export default passportBear

@@ -2,6 +2,8 @@ import mongoose from 'mongoose'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
+const blueColor = '\x1b[34m'
+const redColor = '\x1b[31m'
 const url = process.env.URL_DB
 const connectDB = async () => {
   try {
@@ -9,9 +11,9 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true
     })
-    console.log('mongoose connected')
+    console.log(blueColor, 'mongoose connected')
   } catch (error) {
-    console.error(error)
+    console.error(redColor, error)
   }
 }
 

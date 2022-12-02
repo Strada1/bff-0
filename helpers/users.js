@@ -16,10 +16,6 @@ const getUserByEmail = email => {
   return Users.findOne({email}).lean()
 }
 
-const getUserByIdForAuth = id => {
-  return Users.findOne({id})
-}
-
 const checkAuthUser = token => {
   return Users.findOne({token})
 }
@@ -37,7 +33,6 @@ export {
   getUsers,
   getUser,
   getUserByEmail,
-  getUserByIdForAuth,
   checkAuthUser,
   updateUser,
   deleteUser
