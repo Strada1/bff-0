@@ -72,7 +72,7 @@ router.put(
   validateParamId(),
   body('firstName', 'Should be string').isString().optional(),
   body('lastName', 'Should be string').isString().optional(),
-  body('birthDay', 'Should be string').isDate().optional(),
+  body('birthDay', 'Should be date').isDate().optional(),
   passport.authenticate('bearer', { session: false }),
   async (req, res) => {
     try {

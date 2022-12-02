@@ -8,11 +8,28 @@ const {
   deleteUser,
   updateUser,
   UserRoles,
+  getAllUsers,
 } = require('../services/userServices');
 const { checkRole } = require('../middlewares/checkRole');
 const passport = require('../middlewares/passport');
 const validateParamId = require('../middlewares/validateParamId');
 const router = Router();
+
+router.get(
+  '/',
+  passport.authenticate('bearer', { session: false }),
+  checkRole(UserRoles.admin),
+  async (req, res) => {
+    try {
+      const users = await getAllUsers();
+      return res.status(200).json(users);
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to get users\nerror: ' + error.message);
+    }
+  }
+);
 
 router.post(
   '/',
@@ -35,7 +52,7 @@ router.post(
     } catch (error) {
       return res
         .status(500)
-        .send('failed to create movie\nerror: ' + error.message);
+        .send('failed to create user\nerror: ' + error.message);
     }
   }
 );
@@ -46,20 +63,20 @@ router.post('/auth', validate(['email', 'password']), async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    const token = await authUser(req.body);
-    if (!token) {
+    const user = await authUser(req.body);
+    if (!user) {
       return res.status(401).send('Wrong email or password');
     }
-    return res.status(200).send(token);
+    return res.status(200).json(user);
   } catch (error) {
     return res.status(500).send('failed to auth\nerror: ' + error.message);
   }
 });
 
 router.put(
-  '/:id/info',
+  '/info/:id',
+  validateParamId(),
   passport.authenticate('bearer', { session: false }),
-  validateParamId,
   body('email', 'Should be valid mail')
     .isEmail()
     .optional()

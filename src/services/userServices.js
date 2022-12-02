@@ -6,6 +6,11 @@ const UserRoles = {
   admin: 'admin',
 };
 
+const getAllUsers = async () => {
+  const users = await User.find({}).lean();
+  return users;
+};
+
 const createUser = async ({ email, username, password }) => {
   const user = await User.findOne({ email });
   const token = await jwt.sign({ email, password }, process.env.JWT_SECRET);
@@ -23,21 +28,13 @@ const authUser = async ({ email, password }) => {
   }
   const decoded = jwt.decode(user.token);
   if (password === decoded.password) {
-    return user.token;
-  }
-  return false;
-};
-
-const findUserByToken = async (token) => {
-  const user = await User.findOne({ token });
-  if (user) {
     return user;
   }
   return false;
 };
 
 const updateUser = async (id, { username, email }) => {
-  return User.findOneAndUpdate({ id }, { username, email }, { new: true });
+  return User.findByIdAndUpdate(id, { username, email }, { new: true });
 };
 
 const updateUserRoles = async (id, { roles }) => {
@@ -48,18 +45,18 @@ const updateUserRoles = async (id, { roles }) => {
     return Object.values(UserRoles).includes(role);
   });
 
-  return User.findOneAndUpdate({ id }, { validRoles }, { new: true });
+  return User.findByIdAndUpdate(id, { validRoles }, { new: true });
 };
 
 const deleteUser = async (id) => {
-  return User.findOneAndDelete({ id });
+  return User.findByIdAndDelete(id);
 };
 
 module.exports = {
+  getAllUsers,
   createUser,
   authUser,
   UserRoles,
-  findUserByToken,
   updateUser,
   updateUserRoles,
   deleteUser,
