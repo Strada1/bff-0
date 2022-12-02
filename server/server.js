@@ -6,7 +6,6 @@ const CategoryRoute = require("./routes/category");
 const CommentRoute = require("./routes/comment");
 const DirectorRoute = require("./routes/director");
 const connectDB = require("./db");
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 

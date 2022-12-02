@@ -1,0 +1,110 @@
+[
+    {
+        "_id": "63720aaa2ce42175851aa847",
+        "title": "Matrix",
+        "year": 1999,
+        "__v": 0
+    },
+    {
+        "_id": "6375eec79ae2bd06099e40f0",
+        "title": "Конец",
+        "year": 2010,
+        "rating": 1,
+        "duration": 148,
+        "__v": 0
+    },
+    {
+        "_id": "63778b0de604c11b954b1581",
+        "title": "Начало",
+        "year": 2010,
+        "rating": 1,
+        "category": null,
+        "comments": [
+            "637798e5bf35bbe8519d0ad7"
+        ],
+        "duration": 148,
+        "__v": 0
+    },
+    {
+        "_id": "6377a3830ed656a1d38097f5",
+        "title": "Начало",
+        "year": 2010,
+        "rating": 1,
+        "category": null,
+        "comments": [],
+        "duration": 148,
+        "__v": 0
+    },
+    {
+        "_id": "6377cb85d639076ba2b0c0d1",
+        "title": "Начало",
+        "year": 2010,
+        "rating": 1,
+        "category": {
+            "_id": "6377adb8a358d24907411ca9",
+            "title": "Ужасы",
+            "__v": 0
+        },
+        "duration": 148,
+        "director": {
+            "_id": "6377c84811e8657a85ec5ce6",
+            "firstName": "Стивен",
+            "lastName": "Спилберг",
+            "__v": 0
+        },
+        "__v": 0
+    },
+    {
+        "_id": "63833c69f44830b8c1564e43",
+        "title": "Начало",
+        "year": 2010,
+        "rating": 1,
+        "category": null,
+        "duration": 148,
+        "director": {
+            "_id": "6377c9f5ce6979cffa577d4c",
+            "firstName": "Мартин",
+            "lastName": "Скорсезе",
+            "__v": 0
+        },
+        "__v": 0
+    },
+    {
+        "_id": "638353a15b76b47bf2fb817c",
+        "title": "Дюна",
+        "year": 2021,
+        "rating": 15,
+        "category": {
+            "_id": "6383532f5b76b47bf2fb8178",
+            "title": "Фантастика",
+            "__v": 0
+        },
+        "duration": 155,
+        "director": {
+            "_id": "6383536e5b76b47bf2fb817a",
+            "firstName": "Дени",
+            "lastName": "Вильнёв",
+            "__v": 0
+        },
+        "__v": 0
+    },
+    {
+        "_id": "638354105b76b47bf2fb8182",
+        "title": "Последняя дуэль",
+        "year": 2021,
+        "rating": 10,
+        "category": {
+            "_id": "638353fb5b76b47bf2fb8180",
+            "title": "История",
+            "__v": 0
+        },
+        "duration": 152,
+        "director": {
+            "_id": "638353dc5b76b47bf2fb817e",
+            "firstName": "Ридли",
+            "lastName": "Скотт",
+            "__v": 0
+        },
+        "__v": 0
+    }
+]
