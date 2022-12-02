@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { validationResult, query, body } = require('express-validator');
-const { checkAuth } = require('../middlewares/checkAuth');
+const passport = require('../middlewares/passport');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
 const {
@@ -66,7 +66,7 @@ router.get('/:id', validateParamId(), async (req, res) => {
 router.post(
   '/',
   validate(['user', 'text', 'movie']),
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -91,7 +91,7 @@ router.put(
   '/:id',
   body('user', 'Should be string').isString().optional(),
   body('text', 'Should be string').isString().optional(),
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   validateParamId(),
   async (req, res) => {
     try {
@@ -117,7 +117,7 @@ router.put(
   }
 );
 
-router.delete('/:id', validateParamId(), checkAuth, async (req, res) => {
+router.delete('/:id', validateParamId(), passport.authenticate('bearer', { session: false }), async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

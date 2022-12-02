@@ -13,7 +13,8 @@ const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
 const { validationResult, param, body } = require('express-validator');
 const validateParamId = require('../middlewares/validateParamId');
-const { checkAuth, checkRole } = require('../middlewares/checkAuth');
+const { checkRole } = require('../middlewares/checkRole');
+const passport = require('../middlewares/passport');
 const { UserRoles } = require('../services/userServices');
 const router = Router();
 
@@ -70,7 +71,7 @@ router.post(
   body('year', 'Should be date').isDate(),
   body('director', 'Should be ObjectId').isMongoId(),
   body('category', 'Should be ObjectId').isMongoId(),
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -91,7 +92,7 @@ router.post(
 router.delete(
   '/:id',
   validateParamId(),
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
   async (req, res) => {
     try {
@@ -123,7 +124,7 @@ router.put(
   body('year', 'Should be date').isDate(),
   body('director', 'Should be ObjectId').isMongoId(),
   body('category', 'Should be ObjectId').isMongoId(),
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   async (req, res) => {
     try {
       const errors = validationResult(req);

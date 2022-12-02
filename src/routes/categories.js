@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { validationResult, body } = require('express-validator');
-const { checkAuth, checkRole } = require('../middlewares/checkAuth');
+const { checkRole } = require('../middlewares/checkRole');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
 const router = Router();
@@ -12,6 +12,7 @@ const {
   deleteCategory,
 } = require('../services/categoryServices');
 const { UserRoles } = require('../services/userServices');
+const passport = require('../middlewares/passport');
 
 router.get('/', async (req, res) => {
   try {
@@ -23,7 +24,6 @@ router.get('/', async (req, res) => {
       .send('failed to find categories\nerror: ' + error.message);
   }
 });
-
 router.get('/:id', validateParamId(), async (req, res) => {
   const id = req.params.id;
   try {
@@ -44,27 +44,33 @@ router.get('/:id', validateParamId(), async (req, res) => {
   }
 });
 
-router.post('/', validate(['title']), checkAuth, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+router.post(
+  '/',
+  validate(['title']),
+  passport.authenticate('bearer', { session: false }),
+  async (req, res) => {
+    console.log(req.user);
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-    const category = await createCategory(req.body);
-    return res.status(201).json(category);
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to add category\nerror: ' + error.message);
+      const category = await createCategory(req.body);
+      return res.status(201).json(category);
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to add category\nerror: ' + error.message);
+    }
   }
-});
+);
 
 router.put(
   '/:id',
   body('title', 'Should be string').isString().optional(),
   validateParamId(),
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   async (req, res) => {
     try {
       const errors = validationResult(req);
@@ -92,7 +98,7 @@ router.put(
 router.delete(
   '/:id',
   validateParamId(),
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
   async (req, res) => {
     try {

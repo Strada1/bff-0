@@ -9,7 +9,8 @@ const {
   updateUser,
   UserRoles,
 } = require('../services/userServices');
-const { checkAuth, checkRole } = require('../middlewares/checkAuth');
+const { checkRole } = require('../middlewares/checkRole');
+const passport = require('../middlewares/passport');
 const validateParamId = require('../middlewares/validateParamId');
 const router = Router();
 
@@ -57,7 +58,7 @@ router.post('/auth', validate(['email', 'password']), async (req, res) => {
 
 router.put(
   '/:id/info',
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   validateParamId,
   body('email', 'Should be valid mail')
     .isEmail()
@@ -89,7 +90,7 @@ router.put(
 router.put(
   '/:id/roles',
   validateParamId,
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
   body('roles', 'roles should be array').isArray(),
   async (req, res) => {
@@ -117,7 +118,7 @@ router.put(
 router.delete(
   '/:id',
   validateParamId,
-  checkAuth,
+  passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
   async (req, res) => {
     try {
