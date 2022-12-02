@@ -1,4 +1,4 @@
-const { mongoIdValidator, validate, generateMongoIdsValidatorSchema } = require('../utils/middlewares/validate');
+const { mongoIdValidator, validate } = require('../utils/middlewares/validate');
 
 const createMovieValidator = validate({
   title: {
@@ -23,9 +23,9 @@ const createMovieValidator = validate({
   },
 });
 
-const movieIdValidator = validate(
-  generateMongoIdsValidatorSchema([ 'movieId' ]),
-);
+const movieIdValidator = validate({
+  movieId: mongoIdValidator('movieId'),
+});
 
 const updateMovieValidator = validate({
   movieId: mongoIdValidator('movieId'),
