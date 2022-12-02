@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { validationResult, body } = require('express-validator');
-const { checkAuth } = require('../middlewares/checkAuth');
+const { checkAuth, checkRole } = require('../middlewares/checkAuth');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
 const {
@@ -11,6 +11,7 @@ const {
   deleteDirector,
   countMoviesByDirector,
 } = require('../services/directorServices');
+const { UserRoles } = require('../services/userServices');
 const router = Router();
 
 router.get('/', async (req, res) => {
@@ -96,21 +97,27 @@ router.put(
   }
 );
 
-router.delete('/:id', validateParamId(), checkAuth, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+router.delete(
+  '/:id',
+  validateParamId(),
+  checkAuth,
+  checkRole(UserRoles.admin),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-    await deleteDirector(req.params.id);
-    return res.status(200).send('Director deleted');
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to delete director\nerror: ' + error.message);
+      await deleteDirector(req.params.id);
+      return res.status(200).send('Director deleted');
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to delete director\nerror: ' + error.message);
+    }
   }
-});
+);
 
 router.get('/:id/countMovies', validateParamId(), async (req, res) => {
   try {

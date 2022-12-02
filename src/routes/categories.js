@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { validationResult, body } = require('express-validator');
-const { checkAuth } = require('../middlewares/checkAuth');
+const { checkAuth, checkRole } = require('../middlewares/checkAuth');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
 const router = Router();
@@ -11,6 +11,7 @@ const {
   updateCategory,
   deleteCategory,
 } = require('../services/categoryServices');
+const { UserRoles } = require('../services/userServices');
 
 router.get('/', async (req, res) => {
   try {
@@ -88,20 +89,26 @@ router.put(
   }
 );
 
-router.delete('/:id', validateParamId(), checkAuth, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+router.delete(
+  '/:id',
+  validateParamId(),
+  checkAuth,
+  checkRole(UserRoles.admin),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-    await deleteCategory(req.params.id);
-    return res.status(200).send('Category deleted');
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to delete category\nerror: ' + error.message);
+      await deleteCategory(req.params.id);
+      return res.status(200).send('Category deleted');
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to delete category\nerror: ' + error.message);
+    }
   }
-});
+);
 
 module.exports = router;

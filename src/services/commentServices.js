@@ -24,11 +24,10 @@ const getCommentsByMovie = (movieId) => {
   return Comment.find({ movie: movieId }).lean();
 };
 
-const updateComment = (id, { user, text, movie }) => {
+const updateComment = (id, { user, text }) => {
   return Comment.findByIdAndUpdate(id, {
     user,
     text,
-    movie,
     updatedAt: Date.now(),
   });
 };

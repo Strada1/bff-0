@@ -91,7 +91,6 @@ router.put(
   '/:id',
   body('user', 'Should be string').isString().optional(),
   body('text', 'Should be string').isString().optional(),
-  body('movie', 'Should be objectId').isMongoId().optional(),
   checkAuth,
   validateParamId(),
   async (req, res) => {

@@ -7,8 +7,9 @@ const {
   updateUserRoles,
   deleteUser,
   updateUser,
+  UserRoles,
 } = require('../services/userServices');
-const { checkAuth } = require('../middlewares/checkAuth');
+const { checkAuth, checkRole } = require('../middlewares/checkAuth');
 const validateParamId = require('../middlewares/validateParamId');
 const router = Router();
 
@@ -89,6 +90,7 @@ router.put(
   '/:id/roles',
   validateParamId,
   checkAuth,
+  checkRole(UserRoles.admin),
   body('roles', 'roles should be array').isArray(),
   async (req, res) => {
     try {
@@ -112,19 +114,25 @@ router.put(
   }
 );
 
-router.delete('/:id', validateParamId, checkAuth, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+router.delete(
+  '/:id',
+  validateParamId,
+  checkAuth,
+  checkRole(UserRoles.admin),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      await deleteUser(req.params.id);
+      return res.status(200).send('successfully deleted');
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to delete user\nerror:' + error.message);
     }
-    await deleteUser(req.params.id);
-    return res.status(200).send('successfully deleted');
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to delete user\nerror:' + error.message);
   }
-});
+);
 
 module.exports = router;

@@ -13,7 +13,8 @@ const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
 const { validationResult, param, body } = require('express-validator');
 const validateParamId = require('../middlewares/validateParamId');
-const { checkAuth } = require('../middlewares/checkAuth');
+const { checkAuth, checkRole } = require('../middlewares/checkAuth');
+const { UserRoles } = require('../services/userServices');
 const router = Router();
 
 router.get('/', async (req, res) => {
@@ -87,26 +88,32 @@ router.post(
   }
 );
 
-router.delete('/:id', validateParamId(), checkAuth, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+router.delete(
+  '/:id',
+  validateParamId(),
+  checkAuth,
+  checkRole(UserRoles.admin),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
 
-    const deleted = await deleteMovie(req.params.id);
-    if (!deleted) {
-      return res.status(404).send('movie not found');
-    }
-    await deleteAllMovieComments(deleted._id);
+      const deleted = await deleteMovie(req.params.id);
+      if (!deleted) {
+        return res.status(404).send('movie not found');
+      }
+      await deleteAllMovieComments(deleted._id);
 
-    return res.status(200).send('movie deleted');
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to delete movie\nerror: ' + error.message);
+      return res.status(200).send('movie deleted');
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to delete movie\nerror: ' + error.message);
+    }
   }
-});
+);
 
 router.put(
   '/:id',
