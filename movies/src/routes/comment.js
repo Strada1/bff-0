@@ -8,6 +8,7 @@ const {
 const { validate } = require('../middlewares');
 const { validationResult, body, param } = require('express-validator');
 const { addCommentToMovie, deleteCommentFromMovie } = require('../services/movieService');
+const passport = require('passport');
 
 const router = express.Router();
 
@@ -31,48 +32,59 @@ router.get('/comments', async (req, res) => {
   }
 });
 
-router.post('/comments', validate(['text', 'author']), ...fieldValidators, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
+router.post('/comments',
+  passport.authenticate('bearer', { session: false }),
+  validate(['text', 'author']),
+  ...fieldValidators,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const { movieId } = req.query;
+      const comment = await createComment({ ...req.body, movie: movieId });
+      await addCommentToMovie(movieId, comment._id);
+      return res.status(201).send(`comment added successfully: ${comment}`);
+    } catch (e) {
+      return res.status(500).send('can not add comment');
     }
-    const { movieId } = req.query;
-    const comment = await createComment({ ...req.body, movie: movieId });
-    await addCommentToMovie(movieId, comment._id);
-    return res.status(201).send(`comment added successfully: ${comment}`);
-  } catch (e) {
-    return res.status(500).send('can not add comment');
-  }
-});
+  });
 
-router.delete('/comments/:commentId', paramValidator, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
+router.delete('/comments/:commentId',
+  passport.authenticate('bearer', { session: false }),
+  paramValidator,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const { commentId } = req.params;
+      const comment = await deleteComment(commentId);
+      await deleteCommentFromMovie(comment.movie, commentId);
+      return res.status(200).send('comment successfully deleted');
+    } catch (e) {
+      return res.status(500).send('can not delete comment');
     }
-    const { commentId } = req.params;
-    const comment = await deleteComment(commentId);
-    await deleteCommentFromMovie(comment.movie, commentId);
-    return res.status(200).send('comment successfully deleted');
-  } catch (e) {
-    return res.status(500).send('can not delete comment');
-  }
-});
+  });
 
-router.patch('/comments/:commentId', paramValidator, ...fieldValidators, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
+router.patch('/comments/:commentId',
+  passport.authenticate('bearer', { session: false }),
+  paramValidator,
+  ...fieldValidators,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const { commentId } = req.params;
+      const comment = await updateComment(commentId, req.body);
+      return res.status(200).send(`successfully updated: ${comment}`);
+    } catch (e) {
+      return res.status(500).send('can not update comment');
     }
-    const { commentId } = req.params;
-    const comment = await updateComment(commentId, req.body);
-    return res.status(200).send(`successfully updated: ${comment}`);
-  } catch (e) {
-    return res.status(500).send('can not update comment');
-  }
-});
+  });
 
 module.exports = router;

@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const useRoutes = require('./routes');
+const { usePassport } = require('./middlewares');
 // const { uploadMoviesToDB } = require('./services/uploadFromFile')
 const app = express();
 const port = process.env.PORT;
@@ -19,6 +20,8 @@ app.use(
 app.use(express.json());
 
 useRoutes(app);
+
+usePassport();
 
 app.listen(port, async () => {
   // await uploadMoviesToDB('movies.json')

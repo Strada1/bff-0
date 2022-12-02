@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const { createToken } = require('../utils');
 const jwt = require('jsonwebtoken');
 
 const userRoles = { client: 'client', admin: 'admin' };
@@ -13,7 +12,8 @@ const createUser = ({ email, roles = [userRoles.client], token }) => {
 };
 
 const updateUser = (userId, data) => {
-  return User.findByIdAndUpdate({ _id: userId }, data, {
+  const { email, username, roles } = data;
+  return User.findByIdAndUpdate({ _id: userId }, { email, username, roles }, {
     new: true
   }).lean();
 };
@@ -24,14 +24,17 @@ const deleteUser = (userId) => {
 
 const authUser = async (email, password) => {
   const user = await User.findOne({ email });
+  if (!user) return undefined;
   const { token } = user;
   const decoded = jwt.decode(token);
   if (password === decoded.password) return token;
+  return undefined;
 };
 
-const isAdmin = async (token) => {
+const getUserByToken = async (token) => {
   const user = await User.findOne({ token });
-  return (user && user.roles.includes(userRoles.admin));
+  if (!user) return undefined;
+  return user;
 };
 
 module.exports = {
@@ -41,5 +44,5 @@ module.exports = {
   updateUser,
   deleteUser,
   authUser,
-  isAdmin
+  getUserByToken
 };

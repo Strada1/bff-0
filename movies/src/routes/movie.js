@@ -6,14 +6,16 @@ const {
   updateMovie,
   getMovie
 } = require('../services/movieService');
-const { validate } = require('../middlewares');
+const { validate, checkIsAdmin } = require('../middlewares');
 const { validationResult, body, param } = require('express-validator');
 const NodeCache = require('node-cache');
-const { isAdmin } = require('../services/userService');
+const passport = require('passport');
 
 const router = express.Router();
 
-const movieCache = new NodeCache({ stdTTL: 3600 });
+const oneHour = 3600;
+
+const movieCache = new NodeCache({ stdTTL: oneHour });
 
 const fieldValidators = [
   body('title').matches(/[a-zA-Zа-яА-Я0-9]/).trim().optional().withMessage('title must contain only letters or numbers'),
@@ -23,60 +25,56 @@ const fieldValidators = [
 
 const paramValidator = param('movieId').isMongoId().withMessage('movieId must be MongoId');
 
-router.get('/movies', async (req, res) => {
-  try {
-    const token = req.headers.authorization;
-    const isRightsEnough = await isAdmin(token);
-    if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
+router.get('/movies',
+  passport.authenticate('bearer', { session: false }),
+  async (req, res) => {
+    try {
 
-    const hasQueryParams = Object.keys(req.query).length > 0;
-    const hasCache = movieCache.has('movies');
+      const hasQueryParams = Object.keys(req.query).length > 0;
+      const hasCache = movieCache.has('movies');
 
-    if (hasQueryParams) {
+      if (hasQueryParams) {
+        const movies = await getMovies(req.query);
+        return res.status(200).send(movies);
+      }
+
+      if (hasCache) {
+        return res.status(200).send(movieCache.get('movies'));
+      }
+
       const movies = await getMovies(req.query);
+      movieCache.set('movies', movies);
       return res.status(200).send(movies);
+    } catch (e) {
+      console.log(e);
+      return res.status(500).send('can not get movies');
     }
+  });
 
-    if (hasCache) {
-      return res.status(200).send(movieCache.get('movies'));
+router.get('/movies/:movieId',
+  passport.authenticate('bearer', { session: false }),
+  paramValidator,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const movie = await getMovie(req.params.movieId);
+      return res.status(200).send(movie);
+    } catch (e) {
+      console.log(e);
+      return res.status(500).send('can not get movie');
     }
-
-    const movies = await getMovies(req.query);
-    movieCache.set('movies', movies);
-    return res.status(200).send(movies);
-  } catch (e) {
-    console.log(e);
-    return res.status(500).send('can not get movies');
-  }
-});
-
-router.get('/movies/:movieId', paramValidator, async (req, res) => {
-  try {
-    const token = req.headers.authorization;
-    const isRightsEnough = await isAdmin(token);
-    if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
-    }
-    const movie = await getMovie(req.params.movieId);
-    return res.status(200).send(movie);
-  } catch (e) {
-    console.log(e);
-    return res.status(500).send('can not get movie');
-  }
-});
+  });
 
 router.post('/movies',
   validate(['title', 'year']),
+  passport.authenticate('bearer', { session: false }),
+  checkIsAdmin,
   ...fieldValidators,
   async (req, res) => {
     try {
-      const token = req.headers.authorization;
-      const isRightsEnough = await isAdmin(token);
-      if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
-
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).send({ errors: errors.array() });
@@ -90,34 +88,32 @@ router.post('/movies',
     }
   });
 
-router.delete('/movies/:movieId', paramValidator, async (req, res) => {
-  try {
-    const token = req.headers.authorization;
-    const isRightsEnough = await isAdmin(token);
-    if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
-
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
+router.delete('/movies/:movieId',
+  passport.authenticate('bearer', { session: false }),
+  checkIsAdmin,
+  paramValidator,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      movieCache.del('movies');
+      const movie = await deleteMovie(req.params.movieId);
+      return res.status(200).send(`successfully deleted: ${movie}`);
+    } catch (e) {
+      console.log(e);
+      return res.status(500).send('can not delete movie');
     }
-    movieCache.del('movies');
-    const movie = await deleteMovie(req.params.movieId);
-    return res.status(200).send(`successfully deleted: ${movie}`);
-  } catch (e) {
-    console.log(e);
-    return res.status(500).send('can not delete movie');
-  }
-});
+  });
 
 router.patch('/movies/:movieId',
+  passport.authenticate('bearer', { session: false }),
+  checkIsAdmin,
   paramValidator,
   ...fieldValidators,
   async (req, res) => {
     try {
-      const token = req.headers.authorization;
-      const isRightsEnough = await isAdmin(token);
-      if (!isRightsEnough) return res.status(403).send('you don\'t have enough rights');
-
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
         return res.status(400).send({ errors: errors.array() });

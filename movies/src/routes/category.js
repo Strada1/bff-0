@@ -5,8 +5,9 @@ const {
   updateCategory,
   deleteCategory
 } = require('../services/categoryService');
-const { validate } = require('../middlewares');
+const { validate, checkIsAdmin } = require('../middlewares');
 const { validationResult, body, param } = require('express-validator');
+const passport = require('passport');
 
 const router = express.Router();
 
@@ -26,45 +27,58 @@ router.get('/categories', async (req, res) => {
   }
 });
 
-router.post('/categories', validate(['name']), ...fieldValidators, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
+router.post('/categories',
+  passport.authenticate('bearer', { session: false }),
+  validate(['name']),
+  ...fieldValidators,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const category = await createCategory(req.body);
+      return res.status(201).send(category);
+    } catch (e) {
+      console.log(e);
+      return res.status(500).send('can not create category');
     }
-    const category = await createCategory(req.body);
-    return res.status(201).send(category);
-  } catch (e) {
-    console.log(e);
-    return res.status(500).send('can not create category');
-  }
-});
+  });
 
-router.patch('/categories/:categoryId', paramValidator, ...fieldValidators, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
+router.patch('/categories/:categoryId',
+  passport.authenticate('bearer', { session: false }),
+  checkIsAdmin,
+  paramValidator,
+  ...fieldValidators,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const { categoryId } = req.params;
+      const category = await updateCategory(categoryId, req.body);
+      return res.status(200).send(`successfully updated: ${category}`);
+    } catch (e) {
+      return res.status(500).send('can not patch category');
     }
-    const { categoryId } = req.params;
-    const category = await updateCategory(categoryId, req.body);
-    return res.status(200).send(`successfully updated: ${category}`);
-  } catch (e) {
-    return res.status(500).send('can not patch category');
-  }
-});
+  });
 
-router.delete('/categories/:categoryId', paramValidator, async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).send({ errors: errors.array() });
+router.delete('/categories/:categoryId',
+  passport.authenticate('bearer', { session: false }),
+  checkIsAdmin,
+  paramValidator,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const category = await deleteCategory(req.params.categoryId);
+      return res.status(200).send(`successfully deleted: ${category}`);
+    } catch (e) {
+      return res.status(500).send('can not delete category');
     }
-    const category = await deleteCategory(req.params.categoryId);
-    return res.status(200).send(`successfully deleted: ${category}`);
-  } catch (e) {
-    return res.status(500).send('can not delete category');
-  }
-});
+  });
 
 module.exports = router;
