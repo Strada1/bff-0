@@ -74,7 +74,7 @@ router.post('/auth', validate(['email', 'password']), async (req, res) => {
 });
 
 router.put(
-  '/info/:id',
+  '/:id/info',
   validateParamId(),
   passport.authenticate('bearer', { session: false }),
   body('email', 'Should be valid mail')
@@ -106,7 +106,7 @@ router.put(
 
 router.put(
   '/:id/roles',
-  validateParamId,
+  validateParamId(),
   passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
   body('roles', 'roles should be array').isArray(),
@@ -134,7 +134,7 @@ router.put(
 
 router.delete(
   '/:id',
-  validateParamId,
+  validateParamId(),
   passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
   async (req, res) => {
