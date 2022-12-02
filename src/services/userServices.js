@@ -45,7 +45,7 @@ const updateUserRoles = async (id, { roles }) => {
     return Object.values(UserRoles).includes(role);
   });
 
-  return User.findByIdAndUpdate(id, { validRoles }, { new: true });
+  return User.findByIdAndUpdate(id, { roles: validRoles }, { new: true });
 };
 
 const deleteUser = async (id) => {
