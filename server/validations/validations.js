@@ -34,5 +34,23 @@ export const directorCreateValidation = [
   body('name', 'Укажите имя режиссера')
     .isString()
     .isLength({ min: 2, max: 40 })
-    .withMessage('Не менее 2 символов, максимально 80'),
+    .withMessage('Не менее 2 символов, максимально 40'),
+];
+
+export const userCreateValidation = [
+  body('email', 'Укажите email').isEmail().normalizeEmail(),
+  body('password', 'Укажите пароль')
+    .isString()
+    .trim()
+    .isLength({ min: 6, max: 12 }),
+  body('username', 'Укажите имя')
+    .isString()
+    .trim()
+    .isLength({ min: 2, max: 40 })
+    .withMessage('Не менее 2 символов, максимально 40'),
+];
+
+export const userLoginValidation = [
+  body('email', 'Укажите email').isEmail().normalizeEmail(),
+  body('password', 'Укажите пароль').isString().trim(),
 ];

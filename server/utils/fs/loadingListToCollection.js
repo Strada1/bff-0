@@ -4,7 +4,7 @@ import * as fs from 'node:fs/promises';
 // loadingListToCollection(
 //     './utils/fs/movies.json',
 //     Movie,
-//     ['title', 'year', 'duration', 'categories', 'directors' ]
+//     ['title', 'year', 'duration', 'categories', 'directors']
 //   ).then(console.log);
 
 async function loadingListToCollection(pathToList, model, validationFieldsList) {

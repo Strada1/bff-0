@@ -2,8 +2,9 @@ import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 
-import router from './router/index.js';
+import router from './routers/router.js';
 import connectDB from './connectDB.js';
+import ErrorMiddleware from './middlewares/errorMiddleware.js'
 
 const app = express();
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use('/api', router);
+app.use(ErrorMiddleware);
 
 app.listen(PORT, () => {
   console.log(`Web server listening on port ${PORT}`);
