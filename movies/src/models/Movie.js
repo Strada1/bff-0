@@ -6,6 +6,7 @@ const MovieSchema = new mongoose.Schema(
     title: String,
     year: Number,
     duration: Number,
+    description: String,
     category: {
       type: ObjectId,
       ref: 'Category'

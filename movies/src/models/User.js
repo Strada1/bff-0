@@ -5,10 +5,11 @@ const UserSchema = new mongoose.Schema(
     email: String,
     username: String,
     roles: [String],
-    token: String
+    token: String,
+    favorites: []
   },
   {
-    versionKey: false,
+    versionKey: false
   }
 );
 
