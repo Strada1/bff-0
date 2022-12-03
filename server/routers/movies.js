@@ -12,6 +12,9 @@ import { deleteComments } from '../services/comment.js';
 
 import Cache from '../services/cache.js';
 import ApiError from '../exceptions/apiError.js';
+import { authenticate } from '../services/passport.js';
+import checkRole from '../middlewares/checkRole.js';
+import { ROLES } from '../services/user.js';
 
 const router = new Router();
 const moviesCache = new Cache();
@@ -42,62 +45,72 @@ router.get('/:movieId', async (req, res, next) => {
   }
 });
 
-router.get('/', async (req, res, next) => {
-  try {
-    const hasQueryParams = Object.keys(req.query).length !== 0;
+router.get('/',
+  async (req, res, next) => {
+    try {
+      const hasQueryParams = Object.keys(req.query).length !== 0;
 
-    if (hasQueryParams) {
-      const { director, category, year, sort } = req.query;
-      const filters = { director, category, year };
+      if (hasQueryParams) {
+        const { director, category, year, sort } = req.query;
+        const filters = { director, category, year };
 
-      const movies = await getMovies({ filters, sort });
+        const movies = await getMovies({ filters, sort });
+        return res.status(200).send(movies);
+      }
+
+      if (moviesCache.check('movies')) {
+        return res.status(200).send(moviesCache.get('movies'));
+      }
+
+      const movies = await getMovies();
+      moviesCache.set('movies', movies);
+
       return res.status(200).send(movies);
+    } catch (err) {
+      next(err);
     }
-
-    if (moviesCache.check('movies')) {
-      return res.status(200).send(moviesCache.get('movies'));
-    }
-
-    const movies = await getMovies();
-    moviesCache.set('movies', movies);
-
-    return res.status(200).send(movies);
-  } catch (err) {
-    next(err);
   }
-});
+);
 
-router.put('/:movieId', async (req, res, next) => {
-  try {
-    const { movieId } = req.params;
-    const updatedMovie = await updateMovie(movieId, req.body);
+router.put('/:movieId',
+  authenticate(),
+  checkRole(ROLES.MODERATOR),
+  async (req, res, next) => {
+    try {
+      const { movieId } = req.params;
+      const updatedMovie = await updateMovie(movieId, req.body);
 
-    if (!updatedMovie) {
-      return next( ApiError.NotFound('No movie for this ID') );
+      if (!updatedMovie) {
+        return next( ApiError.NotFound('No movie for this ID') );
+      }
+
+      return res.status(200).send(updatedMovie);
+    } catch (err) {
+      next(err);
     }
-
-    return res.status(200).send(updatedMovie);
-  } catch (err) {
-    next(err);
   }
-});
+);
 
-router.delete('/:movieId', async (req, res, next) => {
-  try {
-    const { movieId } = req.params;
-    const deletedMovie = await deleteMovie(movieId);
+router.delete('/:movieId',
+  authenticate(),
+  checkRole(ROLES.MODERATOR),
+  async (req, res, next) => {
+    try {
+      const { movieId } = req.params;
+      const deletedMovie = await deleteMovie(movieId);
 
-    if (!deletedMovie) {
-      return next( ApiError.NotFound('No movie for this ID') );
+      if (!deletedMovie) {
+        return next( ApiError.NotFound('No movie for this ID') );
+      }
+
+      const deletedCommentsCount = await deleteComments(movieId);
+
+      return res.status(200).send({ deletedMovie, deletedCommentsCount });
+    } catch (err) {
+      next(err);
     }
-
-    const deletedCommentsCount = await deleteComments(movieId);
-
-    return res.status(200).send({ deletedMovie, deletedCommentsCount });
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 router.get('/aggregation/directors/:directorId', async (req, res, next) => {
   try {

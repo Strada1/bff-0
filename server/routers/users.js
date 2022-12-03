@@ -36,12 +36,33 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
-router.put('/:userId',
+router.put('/:userId/info',
+  authenticate(),
+  checkRole(ROLES.USER),
   async (req, res, next) => {
     try {
       const { userId } = req.params;
       const { email, password, username } = req.body;
       const user = await updateUser(userId, { email, password, username });
+
+      if (!user) {
+        return next( ApiError.NotFound('No user for this ID') );
+      }
+
+      return res.status(200).send(user);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.put('/:userId',
+  authenticate(),
+  checkRole(ROLES.ADMIN),
+  async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+      const user = await updateUser(userId, req.body);
 
       if (!user) {
         return next( ApiError.NotFound('No user for this ID') );

@@ -43,8 +43,8 @@ export async function loginUser({ email, password }) {
   return user.token;
 }
 
-export function updateUser(id, { email, password, username }) {
-  return User.findByIdAndUpdate(id, { email, password, username }, {
+export function updateUser(id, { email, password, username, roles, token }) {
+  return User.findByIdAndUpdate(id, { email, password, username, roles, token }, {
     new: true,
   });
 }

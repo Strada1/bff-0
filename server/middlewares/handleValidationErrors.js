@@ -10,6 +10,7 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 export default handleValidationErrors;
+
 //
 // export default function (validationFields) {
 //   return [

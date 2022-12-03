@@ -7,6 +7,7 @@ const MovieSchema = new mongoose.Schema({
   },
   year: Number,
   duration: Number,
+  description: String,
   categories: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',

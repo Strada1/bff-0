@@ -12,6 +12,7 @@ const UserSchema = new mongoose.Schema({
   },
   username: String,
   roles: [String],
+  favorites: Array,
 }, {
   timestamps: true,
 });
