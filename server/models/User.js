@@ -12,6 +12,8 @@ const UserSchema = new mongoose.Schema({
   },
   username: String,
   roles: [String],
+}, {
+  timestamps: true,
 });
 
 export default mongoose.model('User', UserSchema);

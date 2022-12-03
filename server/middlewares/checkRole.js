@@ -12,7 +12,7 @@ const checkRole = (role) => (req, res, next) => {
     const isNotAuthorizedUser = !user.roles.includes(role) && !user.roles.includes(ROLES.ADMIN);
 
     if (isNotAuthorizedUser) {
-      return next(ApiError.Unauthorized());
+      return next(ApiError.Forbidden());
     }
 
     next();

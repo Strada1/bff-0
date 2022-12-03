@@ -1,6 +1,6 @@
 import User from '../models/User.js';
 import ApiError from '../exceptions/apiError.js';
-import { generateToken, decodeToken } from '../services/token.js';
+import { generateToken, decodeToken } from './token.js';
 
 export const ROLES = {
   USER: 'user',
@@ -9,20 +9,23 @@ export const ROLES = {
 };
 
 export async function createUser({ email, password, username }) {
-  const potentialUser = await User.findOne({ email });
+  const isUsedEmail = await User.findOne({ email });
+  if (isUsedEmail) {
+    throw ApiError.BadRequest(`User with this "${email}" already exists`);
+  }
 
-  if (potentialUser) {
-    throw ApiError.BadRequest(`User with this ${email} already exists`);
+  const isUsedUsername = await User.findOne({ username });
+  if (isUsedUsername) {
+    throw ApiError.BadRequest(`A user named "${username}" already exists`);
   }
 
   // TODO хешировать пароль
 
   const token = await generateToken({ email, password });
-
   return User.create({ email, username, token, roles: [ROLES.USER] });
 }
 
-// аутентификация
+// authentication
 export async function loginUser({ email, password }) {
   const user = await User.findOne({ email });
 
@@ -41,5 +44,11 @@ export async function loginUser({ email, password }) {
 }
 
 export function updateUser(id, { email, password, username }) {
-  return User.findByIdAndUpdate(id, { email, password, username });
+  return User.findByIdAndUpdate(id, { email, password, username }, {
+    new: true,
+  });
+}
+
+export function deleteUser(id) {
+  return User.findByIdAndDelete(id);
 }

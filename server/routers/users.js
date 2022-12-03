@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import {
+  ROLES,
   createUser,
   loginUser,
   updateUser,
+  deleteUser,
 } from '../services/user.js';
 
-import checkAuth from '../middlewares/checkAuth.js';
+import { authenticate } from '../services/passport.js';
 import checkRole from '../middlewares/checkRole.js';
-import { ROLES } from '../services/user.js';
 import ApiError from '../exceptions/apiError.js';
 
 const router = new Router();
@@ -35,28 +36,41 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
-router.put('/:userId', async (req, res, next) => {
-  try {
-    const { userId } = req.params;
-    const { email, password, username } = req.body;
-    const user = await updateUser(userId, { email, password, username });
+router.put('/:userId',
+  async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+      const { email, password, username } = req.body;
+      const user = await updateUser(userId, { email, password, username });
 
-    if (!user) {
-      return next( ApiError.NotFound('No user for this ID') );
+      if (!user) {
+        return next( ApiError.NotFound('No user for this ID') );
+      }
+
+      return res.status(200).send(user);
+    } catch (err) {
+      next(err);
     }
-
-    return res.status(200).send(user);
-  } catch (err) {
-    next(err);
   }
-});
+);
 
-router.delete('/:userId', checkAuth, checkRole(ROLES.ADMIN), async (req, res, next) => {
-  try {
+router.delete('/:userId',
+  authenticate(),
+  checkRole(ROLES.ADMIN),
+  async (req, res, next) => {
+    try {
+      const { userId } = req.params;
+      const deletedUser = await deleteUser(userId);
 
-  } catch (err) {
-    next(err);
+      if (!deletedUser) {
+        return next(ApiError.NotFound('No user for this ID'));
+      }
+
+      return res.status(200).send(deletedUser);
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 export default router;
