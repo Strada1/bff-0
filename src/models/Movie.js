@@ -3,6 +3,7 @@ const mongoose = require('../db.js');
 
 const MovieSchema = mongoose.Schema({
   title: String,
+  description: String,
   category: { type: ObjectId, ref: 'Category' },
   year: Date,
   duration: Number,
