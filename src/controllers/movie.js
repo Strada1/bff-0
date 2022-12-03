@@ -27,6 +27,18 @@ class Controller {
 
     return res.status(200).send(movies);
   };
+  getDirectorMoviesCount = async ( req, res ) => {
+    const { directorId } = req.params;
+
+    const count = await movieService.getDirectorMoviesCount(directorId);
+
+    return res.status(200).send(count);
+  };
+  getBetween1999And2010 = async ( req, res ) => {
+    const movies = await movieService.getBetween1999And2010();
+
+    return res.status(200).send(movies);
+  };
   getOne = async ( req, res ) => {
     const { movieId } = req.params;
     const movie = await movieService.getOne(movieId);

@@ -1,4 +1,5 @@
 const { Movie, Comment } = require('../models');
+const { ObjectId } = require('mongodb');
 
 class Service {
   create = ( { title, category, year, duration, director } ) => {
@@ -12,6 +13,17 @@ class Service {
   };
   getOne = ( movieId ) => {
     return Movie.findById(movieId).populate('comments');
+  };
+  getDirectorMoviesCount = ( directorId ) => {
+    return Movie.aggregate([
+      { $match: { director: new ObjectId(directorId) } },
+      { $count: 'count' },
+    ]);
+  };
+  getBetween1999And2010 = () => {
+    return Movie.aggregate([
+      { $match: { year: { $gt: 1999, $lt: 2010 } } },
+    ]);
   };
   update = ( movieId, { title, category, year, duration, director } ) => {
     return Movie.findByIdAndUpdate(
