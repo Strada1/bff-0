@@ -1,5 +1,48 @@
 const { mongoIdValidator, validate } = require('../utils/middlewares/validate');
 
+const getMoviesValidator = validate({
+  'filters.category': {
+    optional: {},
+    isMongoId: { errorMessage: 'Category filter should be a mongoId' },
+  },
+  'filters.year': {
+    optional: {},
+    isNumeric: { errorMessage: 'Year filter should be a number' },
+  },
+  'filters.director': {
+    optional: {},
+    isMongoId: { errorMessage: 'Director filter should be a mongoId' },
+  },
+  'sort.title': {
+    optional: {},
+    matches: {
+      options: [ /\b(?:asc|desc|ascending|descending|1|-1)\b/ ],
+      errorMessage: 'Invalid sort order',
+    },
+  },
+  'sort.category': {
+    optional: {},
+    matches: {
+      options: [ /\b(?:asc|desc|ascending|descending|1|-1)\b/ ],
+      errorMessage: 'Invalid sort order',
+    },
+  },
+  'sort.year': {
+    optional: {},
+    matches: {
+      options: [ /\b(?:asc|desc|ascending|descending|1|-1)\b/ ],
+      errorMessage: 'Invalid sort order',
+    },
+  },
+  'sort.director': {
+    optional: {},
+    matches: {
+      options: [ /\b(?:asc|desc|ascending|descending|1|-1)\b/ ],
+      errorMessage: 'Invalid sort order',
+    },
+  },
+});
+
 const createMovieValidator = validate({
   title: {
     exists: { errorMessage: 'Title is required' },
@@ -76,6 +119,7 @@ const updateCommentValidator = validate({
 });
 
 module.exports = {
+  getMoviesValidator,
   createMovieValidator,
   movieIdValidator,
   updateMovieValidator,

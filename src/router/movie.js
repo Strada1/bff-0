@@ -6,7 +6,7 @@ const {
   createCommentValidator,
   updateCommentValidator,
   movieIdValidator,
-  commentIdValidator,
+  commentIdValidator, getMoviesValidator,
 } = require('../validators/movie');
 
 const movieRouter = Router();
@@ -15,6 +15,7 @@ const movieRouter = Router();
 movieRouter.post('/', createMovieValidator, movieController.create);
 movieRouter.post('/createFromFile', movieController.createFromFile);
 movieRouter.get('/', movieController.get);
+movieRouter.post('/getExtended', getMoviesValidator, movieController.get);
 movieRouter.get('/getDirectorMoviesCount/:directorId', movieController.getDirectorMoviesCount);
 movieRouter.get('/getBetween1999And2010', movieController.getBetween1999And2010);
 movieRouter.get('/:movieId', movieIdValidator, movieController.getOne);

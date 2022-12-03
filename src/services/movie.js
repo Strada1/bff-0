@@ -8,8 +8,28 @@ class Service {
   createFromJSON = async ( fileJSON ) => {
     return Movie.create(fileJSON);
   };
-  get = () => {
-    return Movie.find().populate('comments');
+  get = ( { filters = {}, sort = {} } ) => {
+    const query = Movie.find().populate([
+      { path: 'comments' },
+      {
+        path: 'category',
+        transform: ( doc ) => doc === null ? null : doc.title,
+      },
+    ]);
+
+    Object.entries(filters).forEach(filter => {
+      if (filter[1]) {
+        query.where(filter[0], filter[1]);
+      }
+    });
+
+    Object.entries(sort).forEach(sort => {
+      if (sort[1]) {
+        query.sort({ [sort[0]]: sort[1] });
+      }
+    });
+
+    return query;
   };
   getOne = ( movieId ) => {
     return Movie.findById(movieId).populate('comments');
