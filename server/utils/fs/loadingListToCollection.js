@@ -7,7 +7,7 @@ import * as fs from 'node:fs/promises';
 //     ['title', 'year', 'duration', 'categories', 'directors']
 //   ).then(console.log);
 
-async function loadingListToCollection(pathToList, model, validationFieldsList) {
+export async function loadingListToCollection(pathToList, model, validationFieldsList) {
   try {
     const file = await fs.readFile(pathToList, { encoding: 'utf8' });
     const docs = JSON.parse(file);
