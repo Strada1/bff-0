@@ -8,14 +8,15 @@ const {
   movieIdValidator,
   commentIdValidator, getMoviesValidator,
 } = require('../validators/movie');
+const { moviesCacheMiddleware } = require('../services/cache/movie');
 
 const movieRouter = Router();
 
 
 movieRouter.post('/', createMovieValidator, movieController.create);
 movieRouter.post('/createFromFile', movieController.createFromFile);
-movieRouter.get('/', movieController.get);
-movieRouter.post('/getExtended', getMoviesValidator, movieController.get);
+movieRouter.get('/', moviesCacheMiddleware, movieController.get);
+movieRouter.get('/extendedSearch', getMoviesValidator, movieController.getExtended);
 movieRouter.get('/getDirectorMoviesCount/:directorId', movieController.getDirectorMoviesCount);
 movieRouter.get('/getBetween1999And2010', movieController.getBetween1999And2010);
 movieRouter.get('/:movieId', movieIdValidator, movieController.getOne);

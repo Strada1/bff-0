@@ -23,21 +23,13 @@ class Controller {
     return res.status(201).send(movies);
   };
   get = async ( req, res ) => {
-    const { filters, sort} = req.body;
+    const movies = await movieService.get({});
 
-    const movies = await movieService.get({
-      filters: {
-        category: filters.category,
-        year: filters.year,
-        director: filters.director
-      },
-      sort: {
-        title: sort.title,
-        category: sort.category,
-        year: sort.year,
-        director: sort.director
-      },
-    });
+    return res.status(200).send(movies);
+  };
+  getExtended = async ( req, res ) => {
+    const { filters, sort } = req.body;
+    const movies = await movieService.get({ filters, sort });
 
     return res.status(200).send(movies);
   };
