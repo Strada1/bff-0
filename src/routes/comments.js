@@ -1,8 +1,11 @@
 const { Router } = require('express');
-const { validationResult, query, body } = require('express-validator');
+const { query, body } = require('express-validator');
 const passport = require('../middlewares/passport');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
+const {
+  validationErrorsHandler,
+} = require('../middlewares/validationErrorsHandler');
 const {
   createComment,
   deleteComment,
@@ -21,12 +24,9 @@ const router = Router();
 router.get(
   '/',
   query('movieId', 'movieId should be ObjectId').isMongoId().optional(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
       const movieId = req.query.movieId;
       let comments = null;
       if (movieId) {
@@ -43,37 +43,33 @@ router.get(
   }
 );
 
-router.get('/:id', validateParamId(), async (req, res) => {
-  const id = req.params.id;
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+router.get(
+  '/:id',
+  validateParamId(),
+  validationErrorsHandler,
+  async (req, res) => {
+    const id = req.params.id;
+    try {
+      const comment = await getComment(id);
+      if (!comment) {
+        return res.status(404).send(`Comment id:${id} - not found`);
+      }
+      return res.status(200).json(comment);
+    } catch (error) {
+      return res
+        .status(500)
+        .send(`failed to get comment ${id}\nerror: ` + error.message);
     }
-
-    const comment = await getComment(id);
-    if (!comment) {
-      return res.status(404).send(`Comment id:${id} - not found`);
-    }
-    return res.status(200).json(comment);
-  } catch (error) {
-    return res
-      .status(500)
-      .send(`failed to get comment ${id}\nerror: ` + error.message);
   }
-});
+);
 
 router.post(
   '/',
-  validate(['user', 'text', 'movie']),
   passport.authenticate('bearer', { session: false }),
+  validate(['user', 'text', 'movie']),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const movie = await getMovie(req.body.movie);
       if (!movie) {
         return res.status(404).send('movie not found');
@@ -89,17 +85,13 @@ router.post(
 
 router.put(
   '/:id',
+  passport.authenticate('bearer', { session: false }),
   body('user', 'Should be string').isString().optional(),
   body('text', 'Should be string').isString().optional(),
-  passport.authenticate('bearer', { session: false }),
   validateParamId(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const comment = await updateComment(req.params.id, req.body);
 
       if (!comment) {
@@ -117,24 +109,27 @@ router.put(
   }
 );
 
-router.delete('/:id', validateParamId(), passport.authenticate('bearer', { session: false }), async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+router.delete(
+  '/:id',
+  passport.authenticate('bearer', { session: false }),
+  validateParamId(),
+  validationErrorsHandler,
+  async (req, res) => {
+    try {
+      const comment = await deleteComment(req.params.id);
+      if (!comment) {
+        return res
+          .status(404)
+          .send(`Comment id:"${req.params.id}" - Not found`);
+      }
+      await deleteCommentFromMovie(comment.movie, comment.id);
+      return res.status(200).send('Comment deleted');
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to delete comment\nerror: ' + error.message);
     }
-
-    const comment = await deleteComment(req.params.id);
-    if (!comment) {
-      return res.status(404).send(`Comment id:"${req.params.id}" - Not found`);
-    }
-    await deleteCommentFromMovie(comment.movie, comment.id);
-    return res.status(200).send('Comment deleted');
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to delete comment\nerror: ' + error.message);
   }
-});
+);
 
 module.exports = router;

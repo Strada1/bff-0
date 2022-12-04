@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { validationResult, body } = require('express-validator');
+const { body } = require('express-validator');
 const validate = require('../middlewares/validate');
 const {
   createUser,
@@ -15,6 +15,9 @@ const {
 const { checkRole } = require('../middlewares/checkRole');
 const passport = require('../middlewares/passport');
 const validateParamId = require('../middlewares/validateParamId');
+const {
+  validationErrorsHandler,
+} = require('../middlewares/validationErrorsHandler');
 const router = Router();
 
 router.get(
@@ -38,12 +41,9 @@ router.post(
   validate(['email', 'username', 'password']),
   body('email', 'should be email').isEmail().trim().normalizeEmail(),
   body('password', 'should be grater then 3 symbols').isLength({ min: 3 }),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
       const user = await createUser(req.body);
       if (user) {
         return res.status(201).send('User created');
@@ -59,21 +59,22 @@ router.post(
   }
 );
 
-router.post('/auth', validate(['email', 'password']), async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+router.post(
+  '/auth',
+  validate(['email', 'password']),
+  validationErrorsHandler,
+  async (req, res) => {
+    try {
+      const user = await authUser(req.body);
+      if (!user) {
+        return res.status(401).send('Wrong email or password');
+      }
+      return res.status(200).json(user);
+    } catch (error) {
+      return res.status(500).send('failed to auth\nerror: ' + error.message);
     }
-    const user = await authUser(req.body);
-    if (!user) {
-      return res.status(401).send('Wrong email or password');
-    }
-    return res.status(200).json(user);
-  } catch (error) {
-    return res.status(500).send('failed to auth\nerror: ' + error.message);
   }
-});
+);
 
 router.put(
   '/:id/info',
@@ -85,12 +86,9 @@ router.put(
     .normalizeEmail()
     .trim(),
   body('username', 'Should be string').isString().optional().trim(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
       const { id } = req.params;
       const { username, email } = req.body;
       const user = await updateUser(id, { username, email });
@@ -112,12 +110,9 @@ router.put(
   checkRole(UserRoles.admin),
   validateParamId(),
   body('roles', 'roles should be array').isArray(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
       const { id } = req.params;
 
       const user = await updateUserRoles(id, req.body);
@@ -139,12 +134,9 @@ router.post(
   passport.authenticate('bearer', { session: false }),
   validateParamId(),
   body('movie', 'roles should be ObjectId').isMongoId(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
       const { id } = req.params;
 
       const user = await addFavorite(id, req.body);
@@ -166,12 +158,9 @@ router.delete(
   passport.authenticate('bearer', { session: false }),
   validateParamId(),
   body('movie', 'roles should be ObjectId').isMongoId(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
       const { id } = req.params;
 
       const user = await deleteFavorite(id, req.body);
@@ -194,12 +183,9 @@ router.delete(
   passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
   validateParamId(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
       await deleteUser(req.params.id);
       return res.status(200).send('successfully deleted');
     } catch (error) {

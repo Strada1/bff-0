@@ -1,9 +1,12 @@
 const { Router } = require('express');
-const { validationResult, body } = require('express-validator');
+const { body } = require('express-validator');
 const { checkRole } = require('../middlewares/checkRole');
 const passport = require('../middlewares/passport');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
+const {
+  validationErrorsHandler,
+} = require('../middlewares/validationErrorsHandler');
 const {
   getDirectors,
   getDirector,
@@ -26,37 +29,33 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', validateParamId(), async (req, res) => {
-  const id = req.params.id;
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+router.get(
+  '/:id',
+  validateParamId(),
+  validationErrorsHandler,
+  async (req, res) => {
+    const id = req.params.id;
+    try {
+      const director = await getDirector(id);
+      if (!director) {
+        return res.status(404).send(`director id:${id} - not found`);
+      }
+      return res.status(200).json(director);
+    } catch (error) {
+      return res
+        .status(500)
+        .send(`failed to get director ${id}\nerror: ` + error.message);
     }
-
-    const director = await getDirector(id);
-    if (!director) {
-      return res.status(404).send(`director id:${id} - not found`);
-    }
-    return res.status(200).json(director);
-  } catch (error) {
-    return res
-      .status(500)
-      .send(`failed to get director ${id}\nerror: ` + error.message);
   }
-});
+);
 
 router.post(
   '/',
-  validate(['firstName', 'lastName']),
   passport.authenticate('bearer', { session: false }),
+  validate(['firstName', 'lastName']),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const director = await createDirector(req.body);
       return res.status(201).json(director);
     } catch (error) {
@@ -69,18 +68,14 @@ router.post(
 
 router.put(
   '/:id',
+  passport.authenticate('bearer', { session: false }),
   validateParamId(),
   body('firstName', 'Should be string').isString().optional(),
   body('lastName', 'Should be string').isString().optional(),
   body('birthDay', 'Should be date').isDate().optional(),
-  passport.authenticate('bearer', { session: false }),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const director = await updateDirector(req.params.id, req.body);
 
       if (!director) {
@@ -100,16 +95,12 @@ router.put(
 
 router.delete(
   '/:id',
-  validateParamId(),
   passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
+  validateParamId(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       await deleteDirector(req.params.id);
       return res.status(200).send('Director deleted');
     } catch (error) {
@@ -120,19 +111,20 @@ router.delete(
   }
 );
 
-router.get('/:id/countMovies', validateParamId(), async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+router.get(
+  '/:id/countMovies',
+  validateParamId(),
+  validationErrorsHandler,
+  async (req, res) => {
+    try {
+      const counter = await countMoviesByDirector(req.params.id);
+      return res.status(200).json(counter);
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to count director movies\nerror: ' + error.message);
     }
-    const counter = await countMoviesByDirector(req.params.id);
-    return res.status(200).json(counter);
-  } catch (error) {
-    return res
-      .status(500)
-      .send('failed to count director movies\nerror: ' + error.message);
   }
-});
+);
 
 module.exports = router;

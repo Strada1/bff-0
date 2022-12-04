@@ -11,11 +11,14 @@ const {
 } = require('../services/movieServices');
 const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
-const { validationResult, param, body } = require('express-validator');
+const { param, body } = require('express-validator');
 const validateParamId = require('../middlewares/validateParamId');
 const { checkRole } = require('../middlewares/checkRole');
 const passport = require('../middlewares/passport');
 const { UserRoles } = require('../services/userServices');
+const {
+  validationErrorsHandler,
+} = require('../middlewares/validationErrorsHandler');
 const router = Router();
 
 router.get('/', async (req, res) => {
@@ -42,29 +45,30 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/:id', validateParamId(), async (req, res) => {
-  const id = req.params.id;
+router.get(
+  '/:id',
+  validateParamId(),
+  validationErrorsHandler,
+  async (req, res) => {
+    const id = req.params.id;
 
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    try {
+      const movie = await getMovie(id);
+      if (!movie) {
+        return res.status(404).send(`Movie id:${id} - not found`);
+      }
+      return res.status(200).json(movie);
+    } catch (error) {
+      return res
+        .status(500)
+        .send(`failed to get movie ${id}\nerror: ` + error.message);
     }
-
-    const movie = await getMovie(id);
-    if (!movie) {
-      return res.status(404).send(`Movie id:${id} - not found`);
-    }
-    return res.status(200).json(movie);
-  } catch (error) {
-    return res
-      .status(500)
-      .send(`failed to get movie ${id}\nerror: ` + error.message);
   }
-});
+);
 
 router.post(
   '/',
+  passport.authenticate('bearer', { session: false }),
   validate(['title', 'category', 'year', 'director', 'duration']),
   body('title', 'Should be string').isString(),
   body('duration', 'Should be integer').isInt(),
@@ -72,13 +76,9 @@ router.post(
   body('director', 'Should be ObjectId').isMongoId(),
   body('category', 'Should be ObjectId').isMongoId(),
   body('description', 'Should be string').isString().optional(),
-  passport.authenticate('bearer', { session: false }),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
       const movie = await createMovie(req.body);
 
       return res.status(201).json(movie);
@@ -92,16 +92,12 @@ router.post(
 
 router.delete(
   '/:id',
-  validateParamId(),
   passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
+  validateParamId(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const deleted = await deleteMovie(req.params.id);
       if (!deleted) {
         return res.status(404).send('movie not found');
@@ -119,6 +115,7 @@ router.delete(
 
 router.put(
   '/:id',
+  passport.authenticate('bearer', { session: false }),
   validateParamId(),
   body('title', 'Should be string').isString().optional(),
   body('duration', 'Should be integer').isInt().optional(),
@@ -126,15 +123,9 @@ router.put(
   body('director', 'Should be ObjectId').isMongoId().optional(),
   body('category', 'Should be ObjectId').isMongoId().optional(),
   body('description', 'Should be string').isString().optional(),
-
-  passport.authenticate('bearer', { session: false }),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const movie = await updateMovie(req.params.id, req.body);
 
       if (!movie) {
@@ -154,14 +145,10 @@ router.get(
   '/countBetweenYears/:start-:finish',
   param('start').isInt(),
   param('finish').isInt(),
+  validationErrorsHandler,
   async (req, res) => {
     const { start, finish } = req.params;
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const counter = await countMoviesBetweenYears(start, finish);
       return res.status(200).json(counter);
     } catch (error) {

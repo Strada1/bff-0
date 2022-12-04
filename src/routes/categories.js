@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { validationResult, body } = require('express-validator');
+const { body } = require('express-validator');
 const { checkRole } = require('../middlewares/checkRole');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
@@ -13,6 +13,9 @@ const {
 } = require('../services/categoryServices');
 const { UserRoles } = require('../services/userServices');
 const passport = require('../middlewares/passport');
+const {
+  validationErrorsHandler,
+} = require('../middlewares/validationErrorsHandler');
 
 router.get('/', async (req, res) => {
   try {
@@ -24,38 +27,34 @@ router.get('/', async (req, res) => {
       .send('failed to find categories\nerror: ' + error.message);
   }
 });
-router.get('/:id', validateParamId(), async (req, res) => {
-  const id = req.params.id;
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+router.get(
+  '/:id',
+  validateParamId(),
+  validationErrorsHandler,
+  async (req, res) => {
+    const id = req.params.id;
+    try {
+      const category = await getCategory(id);
+      if (!category) {
+        return res.status(404).send(`Category id:${id} - not found`);
+      }
+      return res.status(200).json(category);
+    } catch (error) {
+      return res
+        .status(500)
+        .send(`failed to find category ${id}\nerror: ` + error.message);
     }
-
-    const category = await getCategory(id);
-    if (!category) {
-      return res.status(404).send(`Category id:${id} - not found`);
-    }
-    return res.status(200).json(category);
-  } catch (error) {
-    return res
-      .status(500)
-      .send(`failed to find category ${id}\nerror: ` + error.message);
   }
-});
+);
 
 router.post(
   '/',
-  validate(['title']),
   passport.authenticate('bearer', { session: false }),
+  validate(['title']),
+  validationErrorsHandler,
   async (req, res) => {
     console.log(req.user);
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const category = await createCategory(req.body);
       return res.status(201).json(category);
     } catch (error) {
@@ -68,16 +67,12 @@ router.post(
 
 router.put(
   '/:id',
+  passport.authenticate('bearer', { session: false }),
   body('title', 'Should be string').isString().optional(),
   validateParamId(),
-  passport.authenticate('bearer', { session: false }),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       const category = await updateCategory(req.params.id, req.body);
 
       if (!category) {
@@ -97,16 +92,12 @@ router.put(
 
 router.delete(
   '/:id',
-  validateParamId(),
   passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
+  validateParamId(),
+  validationErrorsHandler,
   async (req, res) => {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
-
       await deleteCategory(req.params.id);
       return res.status(200).send('Category deleted');
     } catch (error) {
