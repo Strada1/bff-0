@@ -1,14 +1,12 @@
 import { Router } from 'express';
 import {
-  ROLES,
   createUser,
   loginUser,
   updateUser,
   deleteUser,
 } from '../services/user.js';
 
-import { authenticate } from '../services/passport.js';
-import checkRole from '../middlewares/checkRole.js';
+import { ROLES, authorization } from '../middlewares/passport.js';
 import ApiError from '../exceptions/apiError.js';
 
 const router = new Router();
@@ -37,8 +35,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 router.put('/:userId/info',
-  authenticate(),
-  checkRole(ROLES.USER),
+  authorization(ROLES.USER),
   async (req, res, next) => {
     try {
       const { userId } = req.params;
@@ -57,8 +54,7 @@ router.put('/:userId/info',
 );
 
 router.put('/:userId',
-  authenticate(),
-  checkRole(ROLES.ADMIN),
+  authorization(ROLES.ADMIN),
   async (req, res, next) => {
     try {
       const { userId } = req.params;
@@ -76,8 +72,7 @@ router.put('/:userId',
 );
 
 router.delete('/:userId',
-  authenticate(),
-  checkRole(ROLES.ADMIN),
+  authorization(ROLES.ADMIN),
   async (req, res, next) => {
     try {
       const { userId } = req.params;

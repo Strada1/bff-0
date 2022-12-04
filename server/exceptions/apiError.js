@@ -12,8 +12,8 @@ class ApiError extends Error {
     return new ApiError(401, 'User not authorized');
   }
 
-  static Forbidden() {
-    return new ApiError(403, 'You are not permitted to perform this action.');
+  static Forbidden(message) {
+    return new ApiError(403, message);
   }
 
   static BadRequest(message, errors = []) {

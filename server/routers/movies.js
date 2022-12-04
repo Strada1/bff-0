@@ -12,9 +12,7 @@ import { deleteComments } from '../services/comment.js';
 
 import Cache from '../services/cache.js';
 import ApiError from '../exceptions/apiError.js';
-import { authenticate } from '../services/passport.js';
-import checkRole from '../middlewares/checkRole.js';
-import { ROLES } from '../services/user.js';
+import { ROLES, authorization } from '../middlewares/passport.js';
 
 const router = new Router();
 const moviesCache = new Cache();
@@ -73,8 +71,7 @@ router.get('/',
 );
 
 router.put('/:movieId',
-  authenticate(),
-  checkRole(ROLES.MODERATOR),
+  authorization(ROLES.MODERATOR),
   async (req, res, next) => {
     try {
       const { movieId } = req.params;
@@ -92,8 +89,7 @@ router.put('/:movieId',
 );
 
 router.delete('/:movieId',
-  authenticate(),
-  checkRole(ROLES.MODERATOR),
+  authorization(ROLES.MODERATOR),
   async (req, res, next) => {
     try {
       const { movieId } = req.params;

@@ -1,12 +1,7 @@
 import User from '../models/User.js';
-import ApiError from '../exceptions/apiError.js';
 import { generateToken, decodeToken } from './token.js';
-
-export const ROLES = {
-  USER: 'user',
-  ADMIN: 'admin',
-  MODERATOR: 'moderator',
-};
+import ApiError from '../exceptions/apiError.js';
+import { ROLES } from '../middlewares/passport.js';
 
 export async function createUser({ email, password, username }) {
   const isUsedEmail = await User.findOne({ email });
