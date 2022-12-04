@@ -1,6 +1,5 @@
 const Movie = require('../models/MovieSchema');
 const {ObjectId} = require("mongodb");
-const {deleteComment} = require("./commentsService");
 
 const createMovie = async ({title, year, director, rating, category}) => {
     const movies = await getMovies({filters: {title, year, director, rating, category}})
@@ -123,15 +122,6 @@ const updateMovie = ({ movieId, ...updates }) => {
 }
 
 const deleteMovie = async (id) => {
-    const { comments } = await getByIdMovie(id);
-
-    const hasComment = comments.length !== 0;
-    if (hasComment) {
-        for (let i = 0; i < comments.length; ++i) {
-            const id = comments[i]._id.valueOf()
-            await deleteComment(id);
-        }
-    }
     return Movie.findByIdAndDelete(id);
 }
 

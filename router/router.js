@@ -4,6 +4,8 @@ const categories = require("./categories");
 const Router = require("express");
 const movies = require("./movies");
 const test = require("./test");
+const users = require("./user");
+const auth = require("./auth");
 
 const router = new Router();
 
@@ -11,6 +13,8 @@ router.use(directors);
 router.use(comments);
 router.use(movies);
 router.use(categories);
+router.use(users);
+router.use(auth);
 
 router.use(test);
 

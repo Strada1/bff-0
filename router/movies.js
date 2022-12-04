@@ -1,9 +1,11 @@
 const Router = require("express");
 const { checkSchema } = require('express-validator');
 
-const { createMovie, updateMovie, deleteMovie, getMovies} = require("../services/movieService");
+const {createMovie, updateMovie, getMovies} = require("../services/movieService");
+const {deleteMovieWithComment} = require("../services/MovieAndCommentService");
 const {getMoviesCache, setMoviesCache} = require("../helpers/cache");
 const checkError = require("../helpers/checkError");
+const {passportAuth} = require("../helpers/passportAuth");
 
 const movies = new Router();
 
@@ -38,6 +40,7 @@ movies.get(
 
 movies.post(
     '/movies',
+    passportAuth,
     checkSchema({
         title: {
             in: ['body'],
@@ -78,6 +81,7 @@ movies.post(
 
 movies.put(
     '/movies/:movieId',
+    passportAuth,
     checkSchema({
         movieId: {
             in: ['params'],
@@ -99,6 +103,7 @@ movies.put(
 
 movies.delete(
     '/movies/:movieId',
+    passportAuth,
     checkSchema({
         movieId: {
             in: ['params'],
@@ -109,7 +114,7 @@ movies.delete(
     async (req, res) => {
         try {
             const { movieId } = req.params;
-            await deleteMovie(movieId);
+            await deleteMovieWithComment(movieId);
             await setMoviesCache();
             return res.status(200).send('delete');
         } catch (e) {
@@ -117,6 +122,5 @@ movies.delete(
         }
     }
 );
-
 
 module.exports = movies;

@@ -4,6 +4,8 @@ const { checkSchema } = require("express-validator");
 const { getByIdMovie, updateMovie } = require("../services/movieService");
 const { createComment, updateComment, deleteComment } = require("../services/commentsService");
 const checkError = require("../helpers/checkError");
+const {deleteCommentInMovie} = require("../services/MovieAndCommentService");
+const {passportAuth} = require("../helpers/passportAuth");
 
 const comments = new Router();
 
@@ -22,6 +24,7 @@ comments.get(
 
 comments.post(
     '/movies/:movieId/comments',
+    passportAuth,
     checkSchema({
         movieId: {
             in: ['params'],
@@ -56,6 +59,7 @@ comments.post(
 
 comments.put(
     '/movies/:movieId/comments/:commentId',
+    passportAuth,
     checkSchema({
         movieId: {
             in: ['params'],
@@ -79,6 +83,7 @@ comments.put(
 
 comments.delete(
     '/movies/:movieId/comments/:commentId',
+    passportAuth,
     checkSchema({
         movieId: {
             in: ['params'],
@@ -92,8 +97,8 @@ comments.delete(
     checkError,
     async (req, res) => {
         try {
-            const { commentId } = req.params;
-            await deleteComment(commentId);
+            const { commentId, movieId } = req.params;
+            await deleteCommentInMovie(commentId, movieId);
             return res.status(200).send('delete');
         } catch (e) {
             return res.status(500).send(e.message);

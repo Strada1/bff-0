@@ -3,6 +3,7 @@ const { checkSchema } = require("express-validator");
 
 const { createCategory, getCategories, updateCategory, deleteCategory } = require("../services/categoriesService");
 const checkError = require("../helpers/checkError");
+const {passportAuth} = require("../helpers/passportAuth");
 
 const categories = new Router();
 
@@ -20,6 +21,7 @@ categories.get(
 
 categories.post(
     '/categories',
+    passportAuth,
     checkSchema({
         title: {
             in: ['body'],
@@ -42,6 +44,7 @@ categories.post(
 
 categories.put(
     '/categories/:categoryId',
+    passportAuth,
     checkSchema({
         categoryId: {
             in: ['params'],
@@ -61,6 +64,7 @@ categories.put(
 
 categories.delete(
     '/categories/:categoryId',
+    passportAuth,
     checkSchema({
         categoryId: {
             in: ['params'],

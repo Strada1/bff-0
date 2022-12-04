@@ -3,6 +3,7 @@ const {checkSchema} = require("express-validator");
 
 const { createDirector, getDirectors, updateDirector, deleteDirector } = require("../services/directorService");
 const checkError = require("../helpers/checkError");
+const {passportAuth} = require("../helpers/passportAuth");
 
 const directors = new Router();
 
@@ -19,6 +20,7 @@ directors.get(
 
 directors.post(
     '/directors',
+    passportAuth,
     checkSchema({
         name: {
             in: ['body'],
@@ -49,6 +51,7 @@ directors.post(
 
 directors.put(
     '/directors/:directorId',
+    passportAuth,
     checkSchema({
         directorId: {
             in: ['params'],
@@ -67,6 +70,7 @@ directors.put(
 
 directors.delete(
     '/directors/:directorId',
+    passportAuth,
     checkSchema({
         directorId: {
             in: ['params'],
