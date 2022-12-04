@@ -1,21 +1,24 @@
 const { User } = require('../models/user');
+const { tokenService } = require('../utils/token');
 
 class Service {
   create = async ( { email, username, password } ) => {
     const user = await User.findOne({ email });
     if (user) {
-      return undefined;
+      return null;
     }
 
-    return User.create({ email, username, password });
+    const token = await tokenService.encrypt({ email, password });
+
+    return User.create({ email, username, token });
   };
   get = () => {
     return User.find();
   };
-  update = ( userId, { username, password } ) => {
+  update = async ( userId, { username } ) => {
     return User.findByIdAndUpdate(
       userId,
-      { username, password },
+      { username },
       { new: true },
     );
   };
@@ -24,11 +27,15 @@ class Service {
   };
   authenticate = async ( { email, password } ) => {
     const user = await User.findOne({ email });
-    if (user.password === password) {
+    if (!user) return null;
+
+    const { email: encryptedEmail, password: encryptedPassword } = await tokenService.decrypt(user.token);
+
+    if (password === encryptedPassword) {
       return `${email} ${password}`;
     }
 
-    return undefined;
+    return null;
   };
 }
 

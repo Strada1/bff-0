@@ -8,6 +8,6 @@ userRouter.post('/', createUserValidator, userController.create);
 userRouter.get('/', userController.get);
 userRouter.put('/:userId', userIdValidator, userController.update);
 userRouter.delete('/:userId', userIdValidator, userController.delete);
-userRouter.post('/authenticate', authenticateUserValidator, userController.authenticate);
+userRouter.post('/auth', authenticateUserValidator, userController.authenticate);
 
 module.exports = { userRouter };
