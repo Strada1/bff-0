@@ -5,9 +5,23 @@ const moviesCacheKeys = {
   all: 'all',
 };
 
-const createMovie = ({ title, category, year, duration, director }) => {
+const createMovie = ({
+  title,
+  category,
+  year,
+  duration,
+  director,
+  description,
+}) => {
   moviesCache.del(moviesCacheKeys.all);
-  return Movie.create({ title, category, year, duration, director });
+  return Movie.create({
+    title,
+    category,
+    year,
+    duration,
+    director,
+    description,
+  });
 };
 
 const deleteMovie = (id) => {
@@ -15,7 +29,10 @@ const deleteMovie = (id) => {
   return Movie.findByIdAndDelete(id);
 };
 
-const updateMovie = (id, { title, category, year, duration, director }) => {
+const updateMovie = (
+  id,
+  { title, category, year, duration, director, description }
+) => {
   moviesCache.del(moviesCacheKeys.all);
   return Movie.findByIdAndUpdate(id, {
     title,
@@ -23,6 +40,7 @@ const updateMovie = (id, { title, category, year, duration, director }) => {
     year,
     duration,
     director,
+    description,
   });
 };
 

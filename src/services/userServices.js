@@ -7,7 +7,7 @@ const UserRoles = {
 };
 
 const getAllUsers = async () => {
-  const users = await User.find({}).lean();
+  const users = await User.find({}).populate('favorites').lean();
   return users;
 };
 
@@ -34,7 +34,9 @@ const authUser = async ({ email, password }) => {
 };
 
 const updateUser = async (id, { username, email }) => {
-  return User.findByIdAndUpdate(id, { username, email }, { new: true });
+  return User.findByIdAndUpdate(id, { username, email }, { new: true }).select(
+    'username email'
+  );
 };
 
 const updateUserRoles = async (id, { roles }) => {
@@ -45,11 +47,31 @@ const updateUserRoles = async (id, { roles }) => {
     return Object.values(UserRoles).includes(role);
   });
 
-  return User.findByIdAndUpdate(id, { roles: validRoles }, { new: true });
+  return User.findByIdAndUpdate(
+    id,
+    { roles: validRoles },
+    { new: true }
+  ).select('roles');
 };
 
 const deleteUser = async (id) => {
   return User.findByIdAndDelete(id);
+};
+
+const addFavorite = async (id, { movie }) => {
+  return User.findByIdAndUpdate(
+    id,
+    { $addToSet: { favorites: movie } },
+    { new: true }
+  ).select('favorites username');
+};
+
+const deleteFavorite = async (id, { movie }) => {
+  return User.findByIdAndUpdate(
+    id,
+    { $pull: { favorites: movie } },
+    { new: true }
+  ).select('favorites username');
 };
 
 module.exports = {
@@ -60,4 +82,6 @@ module.exports = {
   updateUser,
   updateUserRoles,
   deleteUser,
+  addFavorite,
+  deleteFavorite,
 };

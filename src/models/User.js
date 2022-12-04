@@ -1,3 +1,4 @@
+const { ObjectId } = require('mongodb');
 const mongoose = require('../db.js');
 
 const UserSchema = mongoose.Schema({
@@ -5,7 +6,7 @@ const UserSchema = mongoose.Schema({
   username: String,
   token: String,
   roles: [String],
-  favorites: [String],
+  favorites: [{ type: ObjectId, ref: 'Movie' }],
 });
 
 const User = mongoose.model('User', UserSchema);

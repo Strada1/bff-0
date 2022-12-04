@@ -71,6 +71,7 @@ router.post(
   body('year', 'Should be date').isDate(),
   body('director', 'Should be ObjectId').isMongoId(),
   body('category', 'Should be ObjectId').isMongoId(),
+  body('description', 'Should be string').isString().optional(),
   passport.authenticate('bearer', { session: false }),
   async (req, res) => {
     try {
@@ -119,11 +120,13 @@ router.delete(
 router.put(
   '/:id',
   validateParamId(),
-  body('title', 'Should be string').isString(),
-  body('duration', 'Should be integer').isInt(),
-  body('year', 'Should be date').isDate(),
-  body('director', 'Should be ObjectId').isMongoId(),
-  body('category', 'Should be ObjectId').isMongoId(),
+  body('title', 'Should be string').isString().optional(),
+  body('duration', 'Should be integer').isInt().optional(),
+  body('year', 'Should be date').isDate().optional(),
+  body('director', 'Should be ObjectId').isMongoId().optional(),
+  body('category', 'Should be ObjectId').isMongoId().optional(),
+  body('description', 'Should be string').isString().optional(),
+
   passport.authenticate('bearer', { session: false }),
   async (req, res) => {
     try {

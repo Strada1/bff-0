@@ -9,6 +9,8 @@ const {
   updateUser,
   UserRoles,
   getAllUsers,
+  addFavorite,
+  deleteFavorite,
 } = require('../services/userServices');
 const { checkRole } = require('../middlewares/checkRole');
 const passport = require('../middlewares/passport');
@@ -75,8 +77,8 @@ router.post('/auth', validate(['email', 'password']), async (req, res) => {
 
 router.put(
   '/:id/info',
-  validateParamId(),
   passport.authenticate('bearer', { session: false }),
+  validateParamId(),
   body('email', 'Should be valid mail')
     .isEmail()
     .optional()
@@ -106,9 +108,9 @@ router.put(
 
 router.put(
   '/:id/roles',
-  validateParamId(),
   passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
+  validateParamId(),
   body('roles', 'roles should be array').isArray(),
   async (req, res) => {
     try {
@@ -132,11 +134,66 @@ router.put(
   }
 );
 
+router.post(
+  '/:id/favorites',
+  passport.authenticate('bearer', { session: false }),
+  validateParamId(),
+  body('movie', 'roles should be ObjectId').isMongoId(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const { id } = req.params;
+
+      const user = await addFavorite(id, req.body);
+      if (!user) {
+        return res.status(404).send('user not found');
+      }
+
+      return res.status(200).json(user);
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to update favorites\nerror:' + error.message);
+    }
+  }
+);
+
+router.delete(
+  '/:id/favorites',
+  passport.authenticate('bearer', { session: false }),
+  validateParamId(),
+  body('movie', 'roles should be ObjectId').isMongoId(),
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+      }
+      const { id } = req.params;
+
+      const user = await deleteFavorite(id, req.body);
+      if (!user) {
+        return res.status(404).send('user not found');
+      }
+
+      return res.status(200).json(user);
+    } catch (error) {
+      console.log(error);
+      return res
+        .status(500)
+        .send('failed to delete favorites\nerror:' + error.message);
+    }
+  }
+);
+
 router.delete(
   '/:id',
-  validateParamId(),
   passport.authenticate('bearer', { session: false }),
   checkRole(UserRoles.admin),
+  validateParamId(),
   async (req, res) => {
     try {
       const errors = validationResult(req);
