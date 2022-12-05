@@ -5,7 +5,7 @@ const UserSchema = new db.Schema({
   username: String,
   roles: [String],
   token: String,
-  favorites: [String]
+  favorites: [{type: 'ObjectID', ref: 'Movie'}]
 })
 
 const userModel = db.model('User', UserSchema)

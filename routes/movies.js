@@ -103,7 +103,6 @@ router
   })
   .get('/:id', async (req, res, next) => {
     try {
-      console.log(getCache('allMovies'))
       const id = req.params.id
       const movie = await getMovie(id)
       if (!movie) {

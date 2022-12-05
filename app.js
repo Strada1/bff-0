@@ -20,12 +20,12 @@ app.use(
   express.json()
 )
 
-app.use('/movies', passport, moviesRoutes)
-app.use('/categories', passport, categoriesRoutes)
-app.use('/comments', passport, commentsRoutes)
-app.use('/directors', passport, directorsRoutes)
+app.use('/movies', passport(), moviesRoutes)
+app.use('/categories', passport(), categoriesRoutes)
+app.use('/comments', passport(), commentsRoutes)
+app.use('/directors', passport(), directorsRoutes)
 app.use('/users', usersRoutes)
-app.use('/', passport, root)
+app.use('/', passport(), root)
 app.use((err, req, res, next) => {
   console.error(err.stack)
   res.status(400).send('bad request')

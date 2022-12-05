@@ -55,7 +55,7 @@ router
       return next(error)
     }
   })
-  .get('/', passport, async (req, res, next) => {
+  .get('/', passport(), async (req, res, next) => {
     try {
       const users = await getUsers()
       return res.status(201).send(users)
@@ -65,7 +65,7 @@ router
   })
   .put(
     '/:id',
-    body('email').isEmail(),
+    body('username').not().isEmpty(),
     body(
       'old_password',
       'old_password length must be between 5 and 20 characters'
@@ -74,7 +74,7 @@ router
       'new_password',
       'new_password length must be between 5 and 20 characters'
     ).isLength({min: 5, max: 20}),
-    passport,
+    passport(),
     async (req, res, next) => {
       try {
         const errors = validationResult(req)
@@ -82,7 +82,7 @@ router
           return res.status(400).json({errors: errors.array()})
         }
 
-        const {email, old_password, new_password} = req.body
+        const {username, old_password, new_password} = req.body
         if (old_password === new_password) {
           return res
             .status(400)
@@ -93,30 +93,29 @@ router
         const user = await getUser(id)
         if (!user) return res.status(404).send('user not found')
 
+        const bearerToken = req.headers.authorization.split(' ')[1]
+        if (user.token !== bearerToken) {
+          return res.status(403).send("you don't have access")
+        }
+
         const decode = jwt.verify(user.token, process.env.JWT_SECRET)
         if (old_password !== decode.password) {
           return res.status(401).send('Incorrect login or password')
         }
 
         const token = jwt.sign(
-          {email, password: new_password, roles: user.roles},
+          {email: user.email, password: new_password, roles: user.roles},
           process.env.JWT_SECRET
         )
-        await updateUser(id, {email, token})
+        await updateUser(id, {username, token})
         return res.status(201).send('here is your new token  ' + token)
       } catch (error) {
         return next(error)
       }
     }
   )
-  .delete('/:id', passport, async (req, res, next) => {
+  .delete('/:id', passport(['admin']), async (req, res, next) => {
     try {
-      const token = req.headers.authorization.split(' ')[1]
-      const decode = jwt.verify(token, process.env.JWT_SECRET)
-
-      const isAdmin = decode.roles.includes('admin')
-      if (!isAdmin) return res.status(403).send("You aren't admin")
-
       const id = req.params.id
       const user = await deleteUser(id)
       if (!user) return res.status(404).send('user not found')

@@ -14,17 +14,25 @@ passport.use(
       return done(null, false)
     } catch (error) {
       if (error) {
-        return done(err, false)
+        return done(error, false)
       }
     }
   })
 )
 
-const passportBear = (req, res, next) => {
+const passportBear = roles => (req, res, next) => {
   passport.authenticate('bearer', config, (err, user) => {
     if (err) {
       return next(err)
     }
+
+    if (roles) {
+      const hasAccess = roles.some(role => user.roles.includes(role))
+      if (!hasAccess) {
+        return res.status(403).send("you don't have access")
+      }
+    }
+
     if (!user) {
       return res
         .status(401)
