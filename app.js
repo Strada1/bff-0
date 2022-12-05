@@ -28,7 +28,7 @@ app.use('/users', usersRoutes)
 app.use('/', passport, root)
 app.use((err, req, res, next) => {
   console.error(err.stack)
-  res.status(500).send('bad request')
+  res.status(400).send('bad request')
 })
 
 app.listen(port, () => {
