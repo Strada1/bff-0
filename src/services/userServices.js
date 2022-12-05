@@ -34,6 +34,10 @@ const authUser = async ({ email, password }) => {
 };
 
 const updateUser = async (id, { username, email }) => {
+  const isMailBusy = await User.findOne({ email });
+  if (isMailBusy) {
+    return false;
+  }
   return User.findByIdAndUpdate(id, { username, email }, { new: true }).select(
     'username email'
   );
@@ -58,9 +62,9 @@ const deleteUser = async (id) => {
   return User.findByIdAndDelete(id);
 };
 
-const addFavorite = async (id, { movie }) => {
+const addFavorite = async (userId, { movie }) => {
   return User.findByIdAndUpdate(
-    id,
+    userId,
     { $addToSet: { favorites: movie } },
     { new: true }
   ).select('favorites username');

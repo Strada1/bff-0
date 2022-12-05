@@ -28,6 +28,14 @@ router.get('/', checkAuth([UserRoles.admin]), async (req, res) => {
   }
 });
 
+router.get('/me', checkAuth(), async (req, res) => {
+  try {
+    return res.status(200).json(req.user);
+  } catch (error) {
+    return res.status(500).send('failed to get user\nerror: ' + error.message);
+  }
+});
+
 router.post(
   '/',
   validate(['email', 'username', 'password']),
@@ -69,8 +77,29 @@ router.post(
 );
 
 router.put(
-  '/:id/info',
+  '/me/info',
   checkAuth(),
+  body('username', 'Should be string').isString().optional().trim(),
+  validationErrorsHandler,
+  async (req, res) => {
+    try {
+      const { username } = req.body;
+      const user = await updateUser(req.user._id, { username });
+      if (!user) {
+        return res.status(404).send('Cant update user');
+      }
+      return res.status(200).json(user);
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to update user\nerror:' + error.message);
+    }
+  }
+);
+
+router.put(
+  '/:id/info',
+  checkAuth([UserRoles.admin]),
   validateParamId(),
   body('email', 'Should be valid mail')
     .isEmail()
@@ -85,7 +114,7 @@ router.put(
       const { username, email } = req.body;
       const user = await updateUser(id, { username, email });
       if (!user) {
-        return res.status(404).send('User not found');
+        return res.status(404).send('Cant update user');
       }
       return res.status(200).json(user);
     } catch (error) {
@@ -121,16 +150,13 @@ router.put(
 );
 
 router.post(
-  '/:id/favorites',
+  '/me/favorites',
   checkAuth(),
-  validateParamId(),
   body('movie', 'roles should be ObjectId').isMongoId(),
   validationErrorsHandler,
   async (req, res) => {
     try {
-      const { id } = req.params;
-
-      const user = await addFavorite(id, req.body);
+      const user = await addFavorite(req.user._id, req.body);
       if (!user) {
         return res.status(404).send('user not found');
       }
@@ -145,16 +171,13 @@ router.post(
 );
 
 router.delete(
-  '/:id/favorites',
+  '/me/favorites',
   checkAuth(),
-  validateParamId(),
   body('movie', 'roles should be ObjectId').isMongoId(),
   validationErrorsHandler,
   async (req, res) => {
     try {
-      const { id } = req.params;
-
-      const user = await deleteFavorite(id, req.body);
+      const user = await deleteFavorite(req.user._id, req.body);
       if (!user) {
         return res.status(404).send('user not found');
       }
