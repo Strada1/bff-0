@@ -26,7 +26,7 @@ const fieldValidators = [
 const paramValidator = param('movieId').isMongoId().withMessage('movieId must be MongoId');
 
 router.get('/movies',
-  passport.authenticate('bearer', { session: false }),
+  // passport.authenticate('bearer', { session: false }),
   async (req, res) => {
     try {
 
@@ -52,7 +52,7 @@ router.get('/movies',
   });
 
 router.get('/movies/:movieId',
-  passport.authenticate('bearer', { session: false }),
+  // passport.authenticate('bearer', { session: false }),
   paramValidator,
   async (req, res) => {
     try {
@@ -70,8 +70,8 @@ router.get('/movies/:movieId',
 
 router.post('/movies',
   validate(['title', 'year']),
-  passport.authenticate('bearer', { session: false }),
-  checkIsAdmin,
+  // passport.authenticate('bearer', { session: false }),
+  // checkIsAdmin,
   ...fieldValidators,
   async (req, res) => {
     try {
@@ -81,7 +81,7 @@ router.post('/movies',
       }
       movieCache.del('movies');
       const movie = await createMovie(req.body);
-      return res.status(201).send(`successfully created: ${movie}`);
+      return res.status(201).send(movie);
     } catch (e) {
       console.log(e);
       return res.status(500).send('can not create movie');
@@ -100,7 +100,7 @@ router.delete('/movies/:movieId',
       }
       movieCache.del('movies');
       const movie = await deleteMovie(req.params.movieId);
-      return res.status(200).send(`successfully deleted: ${movie}`);
+      return res.status(200).send(movie);
     } catch (e) {
       console.log(e);
       return res.status(500).send('can not delete movie');
@@ -108,8 +108,8 @@ router.delete('/movies/:movieId',
   });
 
 router.patch('/movies/:movieId',
-  passport.authenticate('bearer', { session: false }),
-  checkIsAdmin,
+  // passport.authenticate('bearer', { session: false }),
+  // checkIsAdmin,
   paramValidator,
   ...fieldValidators,
   async (req, res) => {
@@ -121,7 +121,7 @@ router.patch('/movies/:movieId',
       const { movieId } = req.params;
       movieCache.del('movies');
       const movie = await updateMovie(movieId, req.body);
-      return res.status(200).send(`successfully updated: ${movie}`);
+      return res.status(200).send(movie);
     } catch (e) {
       console.log(e);
       return res.status(500).send('can not patch movie');

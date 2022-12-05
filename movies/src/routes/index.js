@@ -3,7 +3,7 @@ const categories = require('./category');
 const comments = require('./comment');
 const directors = require('./director');
 const users = require('./user');
-const test = require('./test');
+const test = require('./testRoute');
 
 function useRoutes(app) {
   app.get('/', (req, res) => {
