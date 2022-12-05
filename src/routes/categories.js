@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { body } = require('express-validator');
-const { checkRole } = require('../middlewares/checkRole');
+const { checkAuth } = require('../middlewares/checkAuth');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
 const router = Router();
@@ -12,7 +12,6 @@ const {
   deleteCategory,
 } = require('../services/categoryServices');
 const { UserRoles } = require('../services/userServices');
-const passport = require('../middlewares/passport');
 const {
   validationErrorsHandler,
 } = require('../middlewares/validationErrorsHandler');
@@ -27,6 +26,7 @@ router.get('/', async (req, res) => {
       .send('failed to find categories\nerror: ' + error.message);
   }
 });
+
 router.get(
   '/:id',
   validateParamId(),
@@ -49,7 +49,7 @@ router.get(
 
 router.post(
   '/',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   validate(['title']),
   validationErrorsHandler,
   async (req, res) => {
@@ -67,7 +67,7 @@ router.post(
 
 router.put(
   '/:id',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   body('title', 'Should be string').isString().optional(),
   validateParamId(),
   validationErrorsHandler,
@@ -92,8 +92,7 @@ router.put(
 
 router.delete(
   '/:id',
-  passport.authenticate('bearer', { session: false }),
-  checkRole(UserRoles.admin),
+  checkAuth([UserRoles.admin]),
   validateParamId(),
   validationErrorsHandler,
   async (req, res) => {

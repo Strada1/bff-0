@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { query, body } = require('express-validator');
-const passport = require('../middlewares/passport');
+const { checkAuth } = require('../middlewares/checkAuth');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
 const {
@@ -19,6 +19,7 @@ const {
   deleteCommentFromMovie,
   addCommentInMovie,
 } = require('../services/movieServices');
+const { UserRoles } = require('../services/userServices');
 const router = Router();
 
 router.get(
@@ -65,8 +66,8 @@ router.get(
 
 router.post(
   '/',
-  passport.authenticate('bearer', { session: false }),
-  validate(['user', 'text', 'movie']),
+  checkAuth(),
+  validate(['text', 'movie']),
   validationErrorsHandler,
   async (req, res) => {
     try {
@@ -74,10 +75,16 @@ router.post(
       if (!movie) {
         return res.status(404).send('movie not found');
       }
-      const comment = await createComment(req.body);
+      console.log(req.user);
+      const comment = await createComment({
+        user: req.user._id,
+        text: req.body.text,
+        movie: movie._id,
+      });
       await addCommentInMovie(movie._id, comment.id);
       return res.status(201).json(comment);
     } catch (error) {
+      console.log(error);
       return res.status(500).send('Server error: ' + error.message);
     }
   }
@@ -85,8 +92,7 @@ router.post(
 
 router.put(
   '/:id',
-  passport.authenticate('bearer', { session: false }),
-  body('user', 'Should be string').isString().optional(),
+  checkAuth(),
   body('text', 'Should be string').isString().optional(),
   validateParamId(),
   validationErrorsHandler,
@@ -100,6 +106,13 @@ router.put(
           .send(`Comment id:"${req.params.id}" - Not found`);
       }
 
+      const notSameUser = req.user._id !== comment.user;
+      const notAdmin = !req.user.roles.includes(UserRoles.admin);
+
+      if (notSameUser && notAdmin) {
+        return res.status(403).send('You cant update this comment');
+      }
+
       return res.status(200).send('Comment updated successfully');
     } catch (error) {
       return res
@@ -111,7 +124,7 @@ router.put(
 
 router.delete(
   '/:id',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   validateParamId(),
   validationErrorsHandler,
   async (req, res) => {
@@ -122,6 +135,13 @@ router.delete(
           .status(404)
           .send(`Comment id:"${req.params.id}" - Not found`);
       }
+      const notSameUser = req.user._id !== comment.user;
+      const notAdmin = !req.user.roles.includes(UserRoles.admin);
+
+      if (notSameUser && notAdmin) {
+        return res.status(403).send('You cant update this comment');
+      }
+
       await deleteCommentFromMovie(comment.movie, comment.id);
       return res.status(200).send('Comment deleted');
     } catch (error) {

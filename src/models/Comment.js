@@ -2,7 +2,7 @@ const { ObjectId } = require('mongodb');
 const mongoose = require('../db.js');
 
 const CommentSchema = mongoose.Schema({
-  user: String,
+  user: { type: 'ObjectId', ref: 'User'},
   text: String,
   createdAt: {type: Date, default: Date.now},
   updatedAt: {type: Date},

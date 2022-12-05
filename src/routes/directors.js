@@ -1,7 +1,6 @@
 const { Router } = require('express');
 const { body } = require('express-validator');
-const { checkRole } = require('../middlewares/checkRole');
-const passport = require('../middlewares/passport');
+const { checkAuth } = require('../middlewares/checkAuth');
 const validate = require('../middlewares/validate');
 const validateParamId = require('../middlewares/validateParamId');
 const {
@@ -51,7 +50,7 @@ router.get(
 
 router.post(
   '/',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   validate(['firstName', 'lastName']),
   validationErrorsHandler,
   async (req, res) => {
@@ -68,7 +67,7 @@ router.post(
 
 router.put(
   '/:id',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   validateParamId(),
   body('firstName', 'Should be string').isString().optional(),
   body('lastName', 'Should be string').isString().optional(),
@@ -95,8 +94,7 @@ router.put(
 
 router.delete(
   '/:id',
-  passport.authenticate('bearer', { session: false }),
-  checkRole(UserRoles.admin),
+  checkAuth([UserRoles.admin]),
   validateParamId(),
   validationErrorsHandler,
   async (req, res) => {

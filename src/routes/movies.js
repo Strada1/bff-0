@@ -13,8 +13,7 @@ const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
 const { param, body } = require('express-validator');
 const validateParamId = require('../middlewares/validateParamId');
-const { checkRole } = require('../middlewares/checkRole');
-const passport = require('../middlewares/passport');
+const { checkAuth } = require('../middlewares/checkAuth');
 const { UserRoles } = require('../services/userServices');
 const {
   validationErrorsHandler,
@@ -68,7 +67,7 @@ router.get(
 
 router.post(
   '/',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   validate(['title', 'category', 'year', 'director', 'duration']),
   body('title', 'Should be string').isString(),
   body('duration', 'Should be integer').isInt(),
@@ -92,8 +91,7 @@ router.post(
 
 router.delete(
   '/:id',
-  passport.authenticate('bearer', { session: false }),
-  checkRole(UserRoles.admin),
+  checkAuth([UserRoles.admin]),
   validateParamId(),
   validationErrorsHandler,
   async (req, res) => {
@@ -115,7 +113,7 @@ router.delete(
 
 router.put(
   '/:id',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   validateParamId(),
   body('title', 'Should be string').isString().optional(),
   body('duration', 'Should be integer').isInt().optional(),

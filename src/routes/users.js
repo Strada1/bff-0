@@ -12,29 +12,21 @@ const {
   addFavorite,
   deleteFavorite,
 } = require('../services/userServices');
-const { checkRole } = require('../middlewares/checkRole');
-const passport = require('../middlewares/passport');
+const { checkAuth } = require('../middlewares/checkAuth');
 const validateParamId = require('../middlewares/validateParamId');
 const {
   validationErrorsHandler,
 } = require('../middlewares/validationErrorsHandler');
 const router = Router();
 
-router.get(
-  '/',
-  passport.authenticate('bearer', { session: false }),
-  checkRole(UserRoles.admin),
-  async (req, res) => {
-    try {
-      const users = await getAllUsers();
-      return res.status(200).json(users);
-    } catch (error) {
-      return res
-        .status(500)
-        .send('failed to get users\nerror: ' + error.message);
-    }
+router.get('/', checkAuth([UserRoles.admin]), async (req, res) => {
+  try {
+    const users = await getAllUsers();
+    return res.status(200).json(users);
+  } catch (error) {
+    return res.status(500).send('failed to get users\nerror: ' + error.message);
   }
-);
+});
 
 router.post(
   '/',
@@ -78,7 +70,7 @@ router.post(
 
 router.put(
   '/:id/info',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   validateParamId(),
   body('email', 'Should be valid mail')
     .isEmail()
@@ -106,8 +98,7 @@ router.put(
 
 router.put(
   '/:id/roles',
-  passport.authenticate('bearer', { session: false }),
-  checkRole(UserRoles.admin),
+  checkAuth([UserRoles.admin]),
   validateParamId(),
   body('roles', 'roles should be array').isArray(),
   validationErrorsHandler,
@@ -131,7 +122,7 @@ router.put(
 
 router.post(
   '/:id/favorites',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   validateParamId(),
   body('movie', 'roles should be ObjectId').isMongoId(),
   validationErrorsHandler,
@@ -155,7 +146,7 @@ router.post(
 
 router.delete(
   '/:id/favorites',
-  passport.authenticate('bearer', { session: false }),
+  checkAuth(),
   validateParamId(),
   body('movie', 'roles should be ObjectId').isMongoId(),
   validationErrorsHandler,
@@ -180,8 +171,7 @@ router.delete(
 
 router.delete(
   '/:id',
-  passport.authenticate('bearer', { session: false }),
-  checkRole(UserRoles.admin),
+  checkAuth([UserRoles.admin]),
   validateParamId(),
   validationErrorsHandler,
   async (req, res) => {
