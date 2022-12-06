@@ -35,9 +35,9 @@ router
       if (!errors.isEmpty()) {
         return res.status(400).json({errors: errors.array()})
       }
-      await createMovie(req.body)
+      const newMovie = await createMovie(req.body)
       deleteCache('allMovies')
-      return res.status(201).send('movie created')
+      return res.status(201).send(newMovie)
     } catch (error) {
       return next(error)
     }
@@ -121,11 +121,12 @@ router
       }
       const id = req.params.id
       const updatedMovie = await updateMovie(id, req.body)
+      console.log(updatedMovie)
       if (!updatedMovie) {
         return res.status(404).send('movie not found')
       }
       deleteCache('allMovies')
-      return res.status(201).send('changed movie')
+      return res.status(201).send(updatedMovie)
     } catch (error) {
       return next(error)
     }

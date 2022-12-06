@@ -20,6 +20,7 @@ app.use(
   express.json()
 )
 
+app.use('/movies', moviesRoutes)
 app.use('/movies', passport(), moviesRoutes)
 app.use('/categories', passport(), categoriesRoutes)
 app.use('/comments', passport(), commentsRoutes)
@@ -34,3 +35,5 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
   console.log(`server is working! http://${domain}:${port}`)
 })
+
+export default app

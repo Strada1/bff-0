@@ -56,7 +56,7 @@ const createMovies = payload => {
 }
 
 const updateMovie = (id, payload) => {
-  return Movies.findByIdAndUpdate(id, payload)
+  return Movies.findByIdAndUpdate(id, payload, {new: true})
 }
 
 const deleteMovie = id => {
