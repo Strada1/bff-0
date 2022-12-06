@@ -19,7 +19,9 @@ app.use(express.json());
 
 addRoutes(app);
 
-app.listen(PORT, () => {
+const appListener = app.listen(PORT, () => {
   console.log('App listening port:', PORT);
   console.log(`http://${ip.address()}:${PORT}`);
 });
+
+module.exports = appListener;

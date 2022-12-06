@@ -13,8 +13,8 @@ const { deleteAllMovieComments } = require('../services/commentServices');
 const validate = require('../middlewares/validate');
 const { param, body } = require('express-validator');
 const validateParamId = require('../middlewares/validateParamId');
-const { checkAuth } = require('../middlewares/checkAuth');
-const { UserRoles } = require('../services/userServices');
+// const { checkAuth } = require('../middlewares/checkAuth');
+// const { UserRoles } = require('../services/userServices');
 const {
   validationErrorsHandler,
 } = require('../middlewares/validationErrorsHandler');
@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
     if (movies) {
       return res.status(200).json(movies);
     }
-    movies = await getMovies(req.query);
+    movies = await getMovies();
     moviesCache.set(moviesCacheKeys.all, movies, twoHours);
     return res.status(200).json(movies);
   } catch (error) {
@@ -67,7 +67,7 @@ router.get(
 
 router.post(
   '/',
-  checkAuth(),
+  // checkAuth(),
   validate(['title', 'category', 'year', 'director', 'duration']),
   body('title', 'Should be string').isString(),
   body('duration', 'Should be integer').isInt(),
@@ -91,7 +91,7 @@ router.post(
 
 router.delete(
   '/:id',
-  checkAuth([UserRoles.admin]),
+  // checkAuth([UserRoles.admin]),
   validateParamId(),
   validationErrorsHandler,
   async (req, res) => {
@@ -113,9 +113,9 @@ router.delete(
 
 router.put(
   '/:id',
-  checkAuth(),
+  // checkAuth(),
   validateParamId(),
-  body('title', 'Should be string').isString().optional(),
+  body('title', 'Should be string').isString().isLength({min: 1}).optional(),
   body('duration', 'Should be integer').isInt().optional(),
   body('year', 'Should be date').isDate().optional(),
   body('director', 'Should be ObjectId').isMongoId().optional(),
@@ -130,7 +130,7 @@ router.put(
         return res.status(404).send(`Movie id:"${req.params.id}" - Not found`);
       }
 
-      return res.status(200).send('movie updated successfully');
+      return res.status(200).json(movie);
     } catch (error) {
       return res
         .status(500)

@@ -34,14 +34,18 @@ const updateMovie = (
   { title, category, year, duration, director, description }
 ) => {
   moviesCache.del(moviesCacheKeys.all);
-  return Movie.findByIdAndUpdate(id, {
-    title,
-    category,
-    year,
-    duration,
-    director,
-    description,
-  });
+  return Movie.findByIdAndUpdate(
+    id,
+    {
+      title,
+      category,
+      year,
+      duration,
+      director,
+      description,
+    },
+    { new: true }
+  ).lean();
 };
 
 const getMovie = (id) => {
