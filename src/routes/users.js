@@ -11,6 +11,7 @@ const {
   getAllUsers,
   addFavorite,
   deleteFavorite,
+  countFavorites,
 } = require('../services/userServices');
 const { checkAuth } = require('../middlewares/checkAuth');
 const validateParamId = require('../middlewares/validateParamId');
@@ -211,7 +212,8 @@ router.get(
   checkAuth([UserRoles.admin]),
   async (req, res) => {
     try {
-      return res.status(200).send('successfully');
+      const count = await countFavorites();
+      return res.status(200).send(count);
     } catch (error) {
       return res
         .status(500)

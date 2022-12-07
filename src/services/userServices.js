@@ -78,6 +78,28 @@ const deleteFavorite = async (id, { movie }) => {
   ).select('favorites username');
 };
 
+const countFavorites = async () => {
+  const counted = await User.aggregate([
+    {
+      $lookup: {
+        from: 'movies',
+        localField: 'favorites',
+        foreignField: '_id',
+        as: 'favoriteMovie',
+      },
+    },
+    { $unwind: '$favoriteMovie' },
+    {
+      $group: { _id: '$favoriteMovie.title', count: { $sum: 1 } },
+    },
+  ]);
+  const result = {};
+  counted.forEach((film) => {
+    result[film._id] = film.count;
+  });
+  return result;
+};
+
 module.exports = {
   getAllUsers,
   createUser,
@@ -88,4 +110,5 @@ module.exports = {
   deleteUser,
   addFavorite,
   deleteFavorite,
+  countFavorites,
 };

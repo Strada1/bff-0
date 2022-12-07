@@ -79,11 +79,11 @@ describe('/users', () => {
   });
 
   it('GET /favorites/count', async () => {
-    const { body } = await request(appListener)
+    const req = await request(appListener)
       .get('/users/favorites/count')
       .set(adminAuthorizationData.key, adminAuthorizationData.data)
       .expect(200);
-    expect(body[createTestFavorite().movie]).toBeGreaterThan(0);
+    expect(Object.values(req.body)[0]).toBeGreaterThan(0);
   });
 
   it('DELETE /me/favorites - should delete favorite', async () => {
