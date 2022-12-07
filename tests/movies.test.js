@@ -1,20 +1,16 @@
+jest.spyOn(console, 'log').mockImplementation(() => '');
 const request = require('supertest');
 const appListener = require('../src/app');
 const db = require('../src/db');
+const createTestMovie = require('./fixtures/createTestMovie');
+const invalidId = require('./fixtures/invalidId');
 
 describe('/movies', () => {
   let newMovie = null;
   const testTitle = 'Test title';
 
   it('POST', async () => {
-    const movie = {
-      title: 'The Shawshank Redemption',
-      year: '1994-10-14',
-      duration: 30,
-      director: '637bbc6d119112bc0e264ecc',
-      category: '637674c9bc74e1d6e40601a9',
-      description: 'The coolest story about jail',
-    };
+    const movie = createTestMovie();
     const { body } = await request(appListener)
       .post('/movies')
       .send(movie)
@@ -40,11 +36,9 @@ describe('/movies', () => {
   });
 
   it('PUT with invalid values (title, year)', async () => {
-    const title = '';
-    const year = 1994;
     const { body } = await request(appListener)
       .put(`/movies/${newMovie._id}`)
-      .send({ title, year })
+      .send(createTestMovie(true))
       .expect(400);
     expect(body.errors[0].param).toEqual('title');
     expect(body.errors[1].param).toEqual('year');
@@ -62,33 +56,27 @@ describe('/movies', () => {
   });
 
   it('DELETE unknown', async () => {
-    await request(appListener).delete(`/movies/${newMovie._id}`).expect(404);
+    await request(appListener)
+      .delete(`/movies/${invalidId}`)
+      .expect(404);
   });
 
   it('GET unknown', async () => {
-    await request(appListener).get(`/movies/${newMovie._id}`).expect(404);
+    await request(appListener).get(`/movies/${invalidId}`).expect(404);
   });
 
   it('PUT unknown', async () => {
     const title = testTitle + newMovie._id;
     await request(appListener)
-      .put(`/movies/${newMovie._id}`)
+      .put(`/movies/${invalidId}`)
       .send({ title })
       .expect(404);
   });
 
   it('POST with invalid title and date', async () => {
-    const movie = {
-      title: '',
-      year: 1994,
-      duration: 30,
-      director: '637bbc6d119112bc0e264ecc',
-      category: '637674c9bc74e1d6e40601a9',
-      description: 'The coolest story about jail',
-    };
     const { body } = await request(appListener)
       .post('/movies')
-      .send(movie)
+      .send(createTestMovie(true))
       .expect(400);
     expect(body.errors[0].param).toEqual('title');
     expect(body.errors[1].param).toEqual('year');
