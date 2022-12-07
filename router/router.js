@@ -3,7 +3,7 @@ const comments = require("./comments");
 const categories = require("./categories");
 const Router = require("express");
 const movies = require("./movies");
-const test = require("./test");
+const test = require("./other");
 const users = require("./user");
 const auth = require("./auth");
 

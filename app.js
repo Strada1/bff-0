@@ -20,11 +20,11 @@ app.use(cors({
     origin: allowedOrigins
 }));
 
-connectDataBase(MONGO_CONNECTION_STRING);
+connectDataBase(MONGO_CONNECTION_STRING).then(console.log);
 // readerFS(path)
 
 app.use('/api', router);
 
-app.listen(PORT, () => {
+module.exports = app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`)
 })

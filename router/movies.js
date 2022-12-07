@@ -40,7 +40,7 @@ movies.get(
 
 movies.post(
     '/movies',
-    passportAuth,
+    // passportAuth,
     checkSchema({
         title: {
             in: ['body'],

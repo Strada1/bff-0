@@ -51,11 +51,27 @@ directors.post(
 
 directors.put(
     '/directors/:directorId',
-    passportAuth,
+    // passportAuth,
     checkSchema({
         directorId: {
             in: ['params'],
             isMongoId: true,
+        },
+        name: {
+            in: ['body'],
+            isString: true,
+            isLength: {
+                errorMessage: 'Title should be at least 1 chars long',
+                options: { min: 1 },
+            },
+        },
+        firstname: {
+            in: ['body'],
+            isString: true,
+            isLength: {
+                errorMessage: 'Title should be at least 1 chars long',
+                options: { min: 1 },
+            },
         },
     }),
     checkError,
@@ -70,7 +86,7 @@ directors.put(
 
 directors.delete(
     '/directors/:directorId',
-    passportAuth,
+    // passportAuth,
     checkSchema({
         directorId: {
             in: ['params'],

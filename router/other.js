@@ -1,11 +1,11 @@
 const Router = require("express");
-const {getCountMoviesByDirectors, getCountMoviesBetweenDate} = require("../services/testService");
+const {getCountMoviesByDirectors, getCountMoviesBetweenDate} = require("../services/otherService");
 const {checkSchema} = require("express-validator");
 const checkError = require("../helpers/checkError");
 
-const test = new Router();
+const other = new Router();
 
-test.post(
+other.post(
     '/director/:directorId/countmovies',
     checkSchema({
         directorId: {
@@ -25,7 +25,7 @@ test.post(
     }
 );
 
-test.post(
+other.post(
     '/movies/count',
     checkSchema({
         yearStart: {
@@ -49,4 +49,4 @@ test.post(
     }
 );
 
-module.exports = test;
+module.exports = other;

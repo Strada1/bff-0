@@ -36,7 +36,7 @@ users.get(
 
 users.get(
     '/users/:userId',
-    passportAuth,
+    // passportAuth,
     checkSchema({
         userId: {
             in: ['params'],
@@ -48,6 +48,10 @@ users.get(
         try {
             const { userId } = req.params;
             const user = await getByIdUser(userId);
+            const isEmpty = _.isEmpty(user);
+            if (isEmpty) {
+                return res.status(404).send('user not found');
+            }
             return res.status(200).send(user);
         } catch (e) {
             return res.status(500).send(e.message);
