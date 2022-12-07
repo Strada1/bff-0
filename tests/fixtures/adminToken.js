@@ -1,0 +1,3 @@
+const adminToken =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InNlbWFzdGVwNEBnbWFpbC5jb20iLCJwYXNzd29yZCI6InBhc3MiLCJpYXQiOjE2Njk4MTMyMTJ9.JbOnUNm5duMLagjQcubMxA5j_ODl5Wj8C2Id1Puxguo';
+module.exports = adminToken;
