@@ -157,9 +157,6 @@ router.post(
   async (req, res) => {
     try {
       const user = await addFavorite(req.user._id, req.body);
-      if (!user) {
-        return res.status(404).send('user not found');
-      }
 
       return res.status(200).json(user);
     } catch (error) {
@@ -205,6 +202,20 @@ router.delete(
       return res
         .status(500)
         .send('failed to delete user\nerror:' + error.message);
+    }
+  }
+);
+
+router.get(
+  '/favorites/count',
+  checkAuth([UserRoles.admin]),
+  async (req, res) => {
+    try {
+      return res.status(200).send('successfully');
+    } catch (error) {
+      return res
+        .status(500)
+        .send('failed to count favorites\nerror:' + error.message);
     }
   }
 );

@@ -4,7 +4,7 @@ const appListener = require('../src/app');
 const db = require('../src/db');
 const { adminAuthorizationData } = require('./fixtures/authorizationData');
 const createTestMovie = require('./fixtures/createTestMovie');
-const invalidId = require('./fixtures/invalidId');
+const unknownId = require('./fixtures/unknownId');
 
 describe('/movies', () => {
   let newMovie = null;
@@ -64,19 +64,19 @@ describe('/movies', () => {
 
   it('DELETE unknown', async () => {
     await request(appListener)
-      .delete(`/movies/${invalidId}`)
+      .delete(`/movies/${unknownId}`)
       .set(adminAuthorizationData.key, adminAuthorizationData.data)
       .expect(404);
   });
 
   it('GET unknown', async () => {
-    await request(appListener).get(`/movies/${invalidId}`).expect(404);
+    await request(appListener).get(`/movies/${unknownId}`).expect(404);
   });
 
   it('PUT unknown', async () => {
     const title = testTitle + newMovie._id;
     await request(appListener)
-      .put(`/movies/${invalidId}`)
+      .put(`/movies/${unknownId}`)
       .set(adminAuthorizationData.key, adminAuthorizationData.data)
       .send({ title })
       .expect(404);
