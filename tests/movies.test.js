@@ -2,7 +2,7 @@ jest.spyOn(console, 'log').mockImplementation(() => '');
 const request = require('supertest');
 const appListener = require('../src/app');
 const db = require('../src/db');
-const adminAuthorizationData = require('./fixtures/authorizationData');
+const { adminAuthorizationData } = require('./fixtures/authorizationData');
 const createTestMovie = require('./fixtures/createTestMovie');
 const invalidId = require('./fixtures/invalidId');
 

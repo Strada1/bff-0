@@ -5,4 +5,9 @@ const adminAuthorizationData = {
   data: 'Bearer ' + adminToken,
 };
 
-module.exports = adminAuthorizationData;
+const getAuthorizationData = (token) => ({
+  key: 'Authorization',
+  data: 'Bearer '+ token,
+});
+
+module.exports = {adminAuthorizationData, getAuthorizationData};
