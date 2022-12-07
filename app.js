@@ -20,7 +20,7 @@ app.use(
   express.json()
 )
 
-app.use('/movies', moviesRoutes)
+// app.use('/movies', moviesRoutes)
 app.use('/movies', passport(), moviesRoutes)
 app.use('/categories', passport(), categoriesRoutes)
 app.use('/comments', passport(), commentsRoutes)

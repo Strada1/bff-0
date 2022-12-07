@@ -121,7 +121,6 @@ router
       }
       const id = req.params.id
       const updatedMovie = await updateMovie(id, req.body)
-      console.log(updatedMovie)
       if (!updatedMovie) {
         return res.status(404).send('movie not found')
       }

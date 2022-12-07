@@ -1,28 +1,32 @@
 import request from 'supertest'
 import app from '../app.js'
+import {jest} from '@jest/globals'
+import movieCreate from '../fixtures/movies/movieForCreate.json'
+import movieUpdate from '../fixtures/movies/movieForUpdate.json'
+import userCreate from '../fixtures/users/userForCreate.json'
+import passport from 'passport'
+
+jest.spyOn(console, 'log').mockImplementation(() => 'test')
+jest.spyOn(console, 'error').mockImplementation(() => 'test')
+jest.spyOn(passport, 'authenticate').mockImplementation(() => {
+  return (req, res, next) => {
+    next()
+  }
+})
 
 describe('/movies', () => {
   it('POST', async () => {
-    const movie = {
-      title: 'The Shawshank Redemption',
-      year: 1994,
-      rating: 9.2,
-      category: '63822396360e1575e73de99a',
-      duration: 105,
-      director: '63822396360e1575e73de99a'
-    }
-    const {body} = await request(app).post('/movies').send(movie).expect(201)
-    expect(body.title).toEqual(movie.title)
+    const {body} = await request(app)
+      .post('/movies')
+      .send(movieCreate)
+      .expect(201)
+    expect(body.title).toEqual(movieCreate.title)
   })
 })
 
 describe('/users', () => {
   it('POST', async () => {
-    const user = {
-      email: 'email@email.com',
-      password: '123456'
-    }
-    await request(app).post('/users').send(user).expect(201)
+    await request(app).post('/users').send(userCreate).expect(201)
   })
 })
 
@@ -35,37 +39,17 @@ describe('/movies', () => {
 describe('/movies/:id', () => {
   it('PUT', async () => {
     const id = '638f7d4b52852ae32f46ae27'
-    const movie = {
-      title: 'The Shawshank Redemption',
-      year: 1994,
-      rating: 9.2,
-      category: '63822396360e1575e73de99a',
-      duration: 110,
-      director: '63822396360e1575e73de99a'
-    }
     const {body} = await request(app)
       .put(`/movies/${id}`)
-      .send(movie)
+      .send(movieUpdate)
       .expect(201)
-    expect(body.duration).toEqual(movie.duration)
+    expect(body.duration).toEqual(movieUpdate.duration)
   })
 })
 
 describe('/movies/:id', () => {
   it('PUT', async () => {
     const id = '638f7d4b52852ae32f46ae2'
-    const movie = {
-      title: 'The Shawshank Redemption',
-      year: 1994,
-      rating: 9.2,
-      category: '63822396360e1575e73de99a',
-      duration: 110,
-      director: '63822396360e1575e73de99a'
-    }
-    const {body} = await request(app)
-      .put(`/movies/${id}`)
-      .send(movie)
-      .expect(400)
-    // expect(body.duration).toEqual(movie.duration)
+    await request(app).put(`/movies/${id}`).send(movieUpdate).expect(400)
   })
 })
