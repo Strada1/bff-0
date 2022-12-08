@@ -10,11 +10,18 @@ import {
   createMovie,
   createMovies,
   updateMovie,
-  deleteMovie
+  deleteMovie,
+  findMovie
 } from '../helpers/movies.js'
+import {
+  findUserAndAddToFavorite,
+  findUserAndDeleteFromFavorite,
+  getFavorites
+} from '../helpers/users.js'
 import {deleteAllComments} from '../helpers/comments.js'
 import {validate, validateObj} from '../helpers/validate.js'
 import {getCache, setCache, hasCache, deleteCache} from '../helpers/cache.js'
+import passport from '../middleware/passport.js'
 
 const router = express.Router()
 
@@ -60,6 +67,36 @@ router
       return next(error)
     }
   })
+  .post('/addToFavorite/:id', async (req, res, next) => {
+    try {
+      const id = req.params.id
+      const movie = await findMovie(id)
+      if (!movie) {
+        return res.status(404).send('movie not found')
+      }
+
+      const token = req.headers.authorization.split(' ')[1]
+      const me = await findUserAndAddToFavorite(token, id)
+      return res.status(201).send(me)
+    } catch (error) {
+      return next(error)
+    }
+  })
+  .post('/deleteFromFavorite/:id', async (req, res, next) => {
+    try {
+      const id = req.params.id
+      const movie = await findMovie(id)
+      if (!movie) {
+        return res.status(404).send('movie not found')
+      }
+
+      const token = req.headers.authorization.split(' ')[1]
+      const me = await findUserAndDeleteFromFavorite(token, id)
+      return res.status(201).send(me)
+    } catch (error) {
+      return next(error)
+    }
+  })
   .get('/', async (req, res, next) => {
     try {
       let allMovies
@@ -97,6 +134,15 @@ router
       const sortName = req.query.sortName
       const sortedMovie = await getSortedMovie(sortName)
       return res.status(201).send(sortedMovie)
+    } catch (error) {
+      return next(error)
+    }
+  })
+  .get('/favorites', passport(['admin']), async (req, res, next) => {
+    try {
+      const favorites = await getFavorites()
+      console.log(favorites)
+      return res.status(201).send(favorites)
     } catch (error) {
       return next(error)
     }
