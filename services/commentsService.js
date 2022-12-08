@@ -1,5 +1,4 @@
 const Comment = require('../models/CommentSchema');
-const {getByIdMovie, updateMovie} = require("./movieService.js");
 
 const createComment = ({ text }) => {
     return Comment.create({ text });

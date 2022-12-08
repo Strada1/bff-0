@@ -4,7 +4,7 @@ const UserSchema = new mongoose.Schema({
     email: String,
     username: String,
     roles: [String],
-    favorites: [],
+    favorites: [{type: 'ObjectId', ref: 'Movie'}],
     token: String
 });
 

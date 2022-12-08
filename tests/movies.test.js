@@ -2,9 +2,17 @@ const request = require('supertest');
 const app = require('../app');
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+
 const connectDataBase = require("../helpers/connectDataBase");
+const {getMovie} = require("./fixtures/moviesFixture");
+const {getUser} = require("./fixtures/userFixture");
+const {getDirector} = require("./fixtures/directorFixture");
 
 const { MONGO_CONNECTION_STRING } = dotenv.config().parsed;
+
+jest
+    .spyOn(console, 'log')
+    .mockImplementation(() => undefined);
 
 beforeEach(async () => {
     await mongoose.disconnect();
@@ -13,14 +21,7 @@ beforeEach(async () => {
 
 describe('movies', () => {
     it('POST', async () => {
-        const movie = {
-            'title': 'The Shawshank Redemption',
-            'year': 1994,
-            'rating': 9.2,
-            'description': 'The Shawshank Redemption',
-            "director": "6378b3244baef0bbefd65c79",
-            "category": "6378b31b4baef0bbefd65c76"
-        }
+        const movie = await getMovie();
         const { body } = await request(app)
             .post('/api/movies')
             .send(movie)
@@ -29,14 +30,7 @@ describe('movies', () => {
     })
 
     it('POST', async () => {
-        const movie = {
-            'title': 'The Shawshank Redemption',
-            'year': '3e',
-            'rating': 9.2,
-            'description': 'The Shawshank Redemption',
-            "director": "6378b3244baef0bbefd65c79",
-            "category": "6378b31b4baef0bbefd65c76"
-        }
+        const movie = await getMovie({year: true});
         const { body } = await request(app)
             .post('/api/movies')
             .send(movie)
@@ -47,11 +41,8 @@ describe('movies', () => {
 
 describe('users', () => {
     it('POST пользователь уже существует', async () => {
-        const user = {
-            "email": "test@test.ru",
-            "username": "tester",
-            "password": "zaqxsw123"
-        }
+        const user = await getUser({exists: true});
+        console.log(user)
         const { body } = await request(app)
             .post('/api/users')
             .send(user)
@@ -76,10 +67,7 @@ describe('directors', () => {
 
     it('PUT', async () => {
         const directorId = '6378b3244baef0bbefd65c79';
-        const director = {
-            "name": "name",
-            "firstname": "firstname"
-        }
+        const director = await getDirector();
         const { body } = await request(app)
             .put(`/api/directors/${directorId}`)
             .send(director)
