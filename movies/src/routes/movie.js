@@ -10,6 +10,7 @@ const { validate, checkIsAdmin } = require('../middlewares');
 const { validationResult, body, param } = require('express-validator');
 const NodeCache = require('node-cache');
 const passport = require('passport');
+const { getUserByToken, addMovieToFavorites, deleteMovieFromFavorites } = require('../services/userService');
 
 const router = express.Router();
 
@@ -129,4 +130,45 @@ router.patch('/movies/:movieId',
   }
 );
 
+router.patch('/movies/:movieId/add_to_favorites',
+  passport.authenticate('bearer', { session: false }),
+  paramValidator,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const { movieId } = req.params;
+      const token = req.headers.authorization?.split(' ')[1];
+      const user = await getUserByToken(token);
+      addMovieToFavorites(user._id, movieId);
+      return res.status(204);
+    } catch (e) {
+      console.log(e);
+      return res.status(500).send('can not add movie to favorites');
+    }
+  }
+);
+
+router.patch('/movies/:movieId/delete_from_favorites',
+  passport.authenticate('bearer', { session: false }),
+  paramValidator,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const { movieId } = req.params;
+      const token = req.headers.authorization?.split(' ')[1];
+      const user = await getUserByToken(token);
+      deleteMovieFromFavorites(user._id, movieId);
+      return res.status(204);
+    } catch (e) {
+      console.log(e);
+      return res.status(500).send('can not delete movie from favorites');
+    }
+  }
+);
 module.exports = router;

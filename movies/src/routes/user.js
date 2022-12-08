@@ -4,7 +4,8 @@ const {
   createUser,
   updateUser,
   deleteUser,
-  authUser
+  authUser,
+  getFavoriteMoviesCount
 } = require('../services/userService');
 const { validate, checkIsAdmin } = require('../middlewares');
 const { validationResult, body, param } = require('express-validator');
@@ -111,5 +112,22 @@ router.post('/auth', validate(['email', 'password']), ...fieldValidators, async 
     return res.status(500).send('can not auth user');
   }
 });
+
+router.get('/favorites_count',
+  passport.authenticate('bearer', { session: false }),
+  checkIsAdmin,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).send({ errors: errors.array() });
+      }
+      const result = await getFavoriteMoviesCount();
+      return res.status(200).send(result);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+);
 
 module.exports = router;

@@ -24,12 +24,10 @@ const updateMovie = (movieId, data) => {
 };
 
 const addCommentToMovie = (movieId, commentId) => {
-  console.log(movieId, commentId);
   return Movie.findByIdAndUpdate(movieId, { $push: { comments: commentId } }).lean();
 };
 
 const deleteCommentFromMovie = (movieId, commentId) => {
-  console.log(movieId, commentId);
   return Movie.findByIdAndUpdate(movieId, { $pull: { comments: commentId } }).lean();
 };
 

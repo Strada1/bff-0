@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const Movie = require('../models/Movie');
 
 const userRoles = { client: 'client', admin: 'admin' };
 
@@ -12,8 +13,8 @@ const createUser = ({ email, roles = [userRoles.client], token }) => {
 };
 
 const updateUser = (userId, data) => {
-  const { email, username, roles } = data;
-  return User.findByIdAndUpdate({ _id: userId }, { email, username, roles }, {
+  const { username, roles, favorites } = data;
+  return User.findByIdAndUpdate({ _id: userId }, { username, roles, favorites }, {
     new: true
   }).lean();
 };
@@ -37,6 +38,36 @@ const getUserByToken = async (token) => {
   return user;
 };
 
+const addMovieToFavorites = (userId, movieId) => {
+  return User.findByIdAndUpdate(userId, { $push: { favorites: movieId } }).lean();
+};
+
+const deleteMovieFromFavorites = (userId, movieId) => {
+  return User.findByIdAndUpdate(userId, { $pull: { favorites: movieId } }).lean();
+};
+
+const getFavoriteMoviesCount = async() => {
+  const counted = await User.aggregate([
+    {
+      $lookup: {
+        from: 'movies',
+        localField: 'favorites',
+        foreignField: '_id',
+        as: 'favoriteMovie',
+      },
+    },
+    { $unwind: '$favoriteMovie' },
+    {
+      $group: { _id: '$favoriteMovie.title', count: { $sum: 1 } },
+    },
+  ]);
+  const result = {};
+  counted.forEach((film) => {
+    result[film._id] = film.count;
+  });
+  return result;
+};
+
 module.exports = {
   userRoles,
   getUser,
@@ -44,5 +75,8 @@ module.exports = {
   updateUser,
   deleteUser,
   authUser,
-  getUserByToken
+  getUserByToken,
+  addMovieToFavorites,
+  deleteMovieFromFavorites,
+  getFavoriteMoviesCount
 };

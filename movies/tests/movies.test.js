@@ -1,3 +1,5 @@
+jest.spyOn(console, 'log').mockImplementation(() => null);
+
 const request = require('supertest');
 const app = require('../src/app');
 
@@ -18,6 +20,11 @@ describe('/movies', () => {
       .get('/movies?year=2022')
       .expect(200);
     expect(body[0].year).toEqual(2022);
+  });
+  it('add movie to favorites', async () => {
+    await request(app)
+      .patch('/movies/:id/add_to_favorites')
+      .expect(204);
   });
 });
 

@@ -1,4 +1,5 @@
 const mongoose = require('../db');
+const { ObjectId } = require('mongodb');
 
 const UserSchema = new mongoose.Schema(
   {
@@ -6,7 +7,7 @@ const UserSchema = new mongoose.Schema(
     username: String,
     roles: [String],
     token: String,
-    favorites: []
+    favorites: [{ type: ObjectId, ref: 'Movie' }]
   },
   {
     versionKey: false
