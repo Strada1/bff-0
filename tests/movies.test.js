@@ -1,9 +1,9 @@
 import request from 'supertest'
 import app from '../app.js'
 import {jest} from '@jest/globals'
-// import movieCreate from '../fixtures/movies/movieForCreate.json'
-// import movieUpdate from '../fixtures/movies/movieForUpdate.json'
-// import userCreate from '../fixtures/users/userForCreate.json'
+import movieCreate from '../fixtures/movies/movieForCreate.json'
+import movieUpdate from '../fixtures/movies/movieForUpdate.json'
+import userCreate from '../fixtures/users/userForCreate.json'
 import passport from 'passport'
 
 jest.spyOn(console, 'log').mockImplementation(() => 'test')
