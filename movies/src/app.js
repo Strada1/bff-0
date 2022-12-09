@@ -23,9 +23,7 @@ useRoutes(app);
 
 usePassport();
 
-app.listen(port, async () => {
+module.exports = app.listen(port, async () => {
   // await uploadMoviesToDB('movies.json')
   console.log(`app listening on port ${port}`);
 });
-
-module.exports = app;

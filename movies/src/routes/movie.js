@@ -27,7 +27,7 @@ const fieldValidators = [
 const paramValidator = param('movieId').isMongoId().withMessage('movieId must be MongoId');
 
 router.get('/movies',
-  // passport.authenticate('bearer', { session: false }),
+  passport.authenticate('bearer', { session: false }),
   async (req, res) => {
     try {
 
@@ -53,7 +53,7 @@ router.get('/movies',
   });
 
 router.get('/movies/:movieId',
-  // passport.authenticate('bearer', { session: false }),
+  passport.authenticate('bearer', { session: false }),
   paramValidator,
   async (req, res) => {
     try {
@@ -71,8 +71,8 @@ router.get('/movies/:movieId',
 
 router.post('/movies',
   validate(['title', 'year']),
-  // passport.authenticate('bearer', { session: false }),
-  // checkIsAdmin,
+  passport.authenticate('bearer', { session: false }),
+  checkIsAdmin,
   ...fieldValidators,
   async (req, res) => {
     try {
@@ -109,8 +109,8 @@ router.delete('/movies/:movieId',
   });
 
 router.patch('/movies/:movieId',
-  // passport.authenticate('bearer', { session: false }),
-  // checkIsAdmin,
+  passport.authenticate('bearer', { session: false }),
+  checkIsAdmin,
   paramValidator,
   ...fieldValidators,
   async (req, res) => {
@@ -142,8 +142,8 @@ router.patch('/movies/:movieId/add_to_favorites',
       const { movieId } = req.params;
       const token = req.headers.authorization?.split(' ')[1];
       const user = await getUserByToken(token);
-      addMovieToFavorites(user._id, movieId);
-      return res.status(204);
+      await addMovieToFavorites(user._id, movieId);
+      return res.status(201).send('movie added to favorites');
     } catch (e) {
       console.log(e);
       return res.status(500).send('can not add movie to favorites');
@@ -163,8 +163,8 @@ router.patch('/movies/:movieId/delete_from_favorites',
       const { movieId } = req.params;
       const token = req.headers.authorization?.split(' ')[1];
       const user = await getUserByToken(token);
-      deleteMovieFromFavorites(user._id, movieId);
-      return res.status(204);
+      await deleteMovieFromFavorites(user._id, movieId);
+      return res.status(201).send('successfully deleted');
     } catch (e) {
       console.log(e);
       return res.status(500).send('can not delete movie from favorites');

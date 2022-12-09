@@ -39,7 +39,7 @@ const getUserByToken = async (token) => {
 };
 
 const addMovieToFavorites = (userId, movieId) => {
-  return User.findByIdAndUpdate(userId, { $push: { favorites: movieId } }).lean();
+  return User.findByIdAndUpdate(userId, { $addToSet: { favorites: movieId } }).lean();
 };
 
 const deleteMovieFromFavorites = (userId, movieId) => {
