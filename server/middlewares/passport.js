@@ -26,20 +26,27 @@ passport.use(new BearerStrategy(
   }
 ));
 
-export const authorization = (role) => (req, res, next) => {
-    passport.authenticate('bearer', { session: false }, (err, user) => {
-      if (err) {
-        return next(err)
-      }
-      if (!user) {
-        return next(ApiError.Unauthorized());
-      }
+export const authorization = (roles) => (req, res, next) => {
+  passport.authenticate('bearer', { session: false }, (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return next(ApiError.Unauthorized());
+    }
 
-      const userNotHaveAllowedRole = !user.roles.includes(role) && !user.roles.includes(ROLES.ADMIN);
-      if (userNotHaveAllowedRole) {
-        return next(ApiError.Forbidden('You are not permitted to perform this action'));
-      }
+    if (!roles || roles.length === 0) {
+      return next();
+    }
 
-      next();
-    })(req, res, next);
+    const allowedRolesList = roles.filter(role => user.roles.includes(role));
+    const userNotHaveAllowedRole = roles.length > 0 && allowedRolesList.length === 0;
+
+    if (userNotHaveAllowedRole) {
+      return next(ApiError.Forbidden('You are not permitted to perform this action'));
+    }
+
+    req.user = user;
+    next();
+  })(req, res, next);
 };

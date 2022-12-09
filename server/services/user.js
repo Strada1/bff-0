@@ -1,7 +1,10 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+import jwt from 'jsonwebtoken';
+
 import User from '../models/User.js';
-import { generateToken, decodeToken } from './token.js';
-import ApiError from '../exceptions/apiError.js';
 import { ROLES } from '../middlewares/passport.js';
+import ApiError from '../exceptions/apiError.js';
 
 export async function createUser({ email, password, username }) {
   const isUsedEmail = await User.findOne({ email });
@@ -16,7 +19,7 @@ export async function createUser({ email, password, username }) {
 
   // TODO хешировать пароль
 
-  const token = await generateToken({ email, password });
+  const token = jwt.sign({ email, password }, process.env.JWT_SECRET, { expiresIn: '30d' });
   return User.create({ email, username, token, roles: [ROLES.USER] });
 }
 
@@ -29,7 +32,7 @@ export async function loginUser({ email, password }) {
     throw ApiError.BadRequest(ERROR_MESSAGE);
   }
 
-  const decodedToken = await decodeToken(user.token);
+  const decodedToken = await jwt.decode(user.token);
 
   if (password !== decodedToken.password) {
     throw ApiError.BadRequest(ERROR_MESSAGE);
@@ -38,8 +41,35 @@ export async function loginUser({ email, password }) {
   return user.token;
 }
 
-export function updateUser(id, { email, password, username, roles, token }) {
-  return User.findByIdAndUpdate(id, { email, password, username, roles, token }, {
+export async function updateUser({ token }, { password, username }) {
+  let newToken;
+  if (password) {
+    const decodeToken = await jwt.decode(token);
+    const oldPass = decodeToken.password;
+
+    if (password !== oldPass) {
+      newToken = jwt.sign({ password, email: decodeToken.email }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    }
+  }
+
+  return User.findOneAndUpdate({ token }, { username, token: newToken }, {
+    new: true,
+  });
+}
+
+export async function updateUserById({ userId }, { password, username, roles }) {
+  let newToken;
+  if (password) {
+    const user = await User.findOne({ _id: userId });
+    const decodeToken = await jwt.decode(user.token);
+    const oldPass = decodeToken.password;
+
+    if (password !== oldPass) {
+      newToken = jwt.sign({ password, email: user.email }, process.env.JWT_SECRET, { expiresIn: '30d' });
+    }
+  }
+
+  return User.findByIdAndUpdate(userId, { username, roles, token: newToken }, {
     new: true,
   });
 }

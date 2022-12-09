@@ -1,13 +1,12 @@
 import { Router } from 'express';
-
 import {
   createUser,
   loginUser,
   updateUser,
-  deleteUser,
+  deleteUser, updateUserById
 } from '../services/user.js';
 
-import { ROLES, authorization } from '../middlewares/passport.js';
+import { authorization, ROLES } from '../middlewares/passport.js';
 import ApiError from '../exceptions/apiError.js';
 
 const router = new Router();
@@ -35,13 +34,14 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
-router.put('/:userId/info',
+router.put('/me',
   authorization(ROLES.USER),
   async (req, res, next) => {
     try {
-      const { userId } = req.params;
-      const { email, password, username } = req.body;
-      const user = await updateUser(userId, { email, password, username });
+      const { password, username } = req.body;
+      const token = req.user.token;
+
+      const user = await updateUser({ token }, { password, username });
 
       if (!user) {
         return next( ApiError.NotFound('No user for this ID') );
@@ -55,11 +55,14 @@ router.put('/:userId/info',
 );
 
 router.put('/:userId',
-  authorization(ROLES.ADMIN),
+  // authorization(ROLES.ADMIN),
+  authorization([ROLES.ADMIN, ROLES.MODERATOR]),
   async (req, res, next) => {
     try {
       const { userId } = req.params;
-      const user = await updateUser(userId, req.body);
+      const { password, username, roles } = req.body;
+
+      const user = await updateUserById({ userId }, { password, username, roles });
 
       if (!user) {
         return next( ApiError.NotFound('No user for this ID') );

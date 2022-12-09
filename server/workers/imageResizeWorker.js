@@ -10,4 +10,4 @@ async function resize() {
 
   parentPort.postMessage({ done: true });
 }
-resize()
+resize();
