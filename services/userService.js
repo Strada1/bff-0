@@ -1,11 +1,11 @@
 const User = require('../models/UserSchema');
 
-const createUser = async ({ email, username, roles = ['user'], token }) => {
+const createUser = async ({ email, username, roles = ['user'], favorites = [], token }) => {
     const hasUser = await includeUser(email);
     if (hasUser) {
         return {}
     }
-    return User.create({ email, username, roles, token });
+    return User.create({ email, username, roles, favorites, token });
 }
 
 const includeUser = async (email) => {
@@ -32,8 +32,8 @@ const getByIdUser = (id) => {
     return User.findById(id);
 }
 
-const updateUser = ({ userId, email, username }) => {
-    return User.findByIdAndUpdate(userId, { email, username }, { new: true, rawResult: true });
+const updateUser = ({ userId, email, username, favorites }) => {
+    return User.findByIdAndUpdate(userId, { email, username, favorites }, { new: true, rawResult: true });
 }
 
 const deleteUser = (userId) => {

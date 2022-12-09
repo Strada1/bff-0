@@ -1,11 +1,11 @@
 const request = require('supertest');
-const app = require('../app');
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
+const app = require('../app');
 const connectDataBase = require("../helpers/connectDataBase");
 const {getMovie} = require("./fixtures/moviesFixture");
-const {getUser} = require("./fixtures/userFixture");
+const {getUserFixture} = require("./fixtures/userFixture");
 const {getDirector} = require("./fixtures/directorFixture");
 
 const { MONGO_CONNECTION_STRING } = dotenv.config().parsed;
@@ -30,7 +30,7 @@ describe('movies', () => {
     })
 
     it('POST', async () => {
-        const movie = await getMovie({year: true});
+        const movie = await getMovie({errors: { year: true }});
         const { body } = await request(app)
             .post('/api/movies')
             .send(movie)
@@ -41,8 +41,7 @@ describe('movies', () => {
 
 describe('users', () => {
     it('POST пользователь уже существует', async () => {
-        const user = await getUser({exists: true});
-        console.log(user)
+        const user = await getUserFixture({exists: true});
         const { body } = await request(app)
             .post('/api/users')
             .send(user)
@@ -72,7 +71,6 @@ describe('directors', () => {
             .put(`/api/directors/${directorId}`)
             .send(director)
             .expect(200);
-        console.log(body)
     })
 });
 

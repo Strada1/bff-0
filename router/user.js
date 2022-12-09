@@ -6,6 +6,8 @@ const checkError = require("../helpers/checkError");
 const { createUser, getUsers, updateUser, deleteUser, getByIdUser } = require("../services/userService");
 const {generateToken} = require("../helpers/token");
 const { passportAuth, passportRole } = require("../helpers/passportAuth");
+const {getFavoritesStatistic} = require("../services/statisticService");
+const {ObjectId} = require("mongodb");
 
 const users = new Router();
 
@@ -122,6 +124,9 @@ users.put(
         roles: {
             isArray: true,
         },
+        favorites: {
+            isArray: true,
+        },
         password: {
             in: ['body'],
             isString: true,
@@ -163,4 +168,84 @@ users.delete(
         }
     });
 
+users.put(
+    '/users/:userId/favorites/:movieId',
+    // passportAuth,
+    checkSchema({
+        userId: {
+            in: ['params'],
+            isMongoId: true,
+        },
+        movieId: {
+            in: ['params'],
+            isMongoId: true,
+        },
+    }),
+    checkError,
+    async (req, res) => {
+        try {
+            const { userId, movieId } = req.params;
+
+            const user = await getByIdUser(userId);
+            const { favorites } = user;
+
+            const hasInFavorites = favorites.includes(ObjectId(movieId));
+            if (!hasInFavorites) {
+                favorites.push(ObjectId(movieId));
+                await updateUser({ userId, ...user, favorites });
+                return res.status(200).send(favorites)
+            } else {
+                return res.status(409).send('the movie is already in favorites');
+            }
+        } catch (e) {
+            return res.status(500).send(e.message);
+        }
+    })
+
+users.delete(
+    '/users/:userId/favorites/:movieId',
+    // passportAuth,
+    checkSchema({
+        userId: {
+            in: ['params'],
+            isMongoId: true,
+        },
+        movieId: {
+            in: ['params'],
+            isMongoId: true,
+        },
+    }),
+    checkError,
+    async (req, res) => {
+        try {
+            const { userId, movieId } = req.params;
+
+            const user = await getByIdUser(userId);
+            const { favorites } = user;
+
+            const hasInFavorites = favorites.includes(ObjectId(movieId));
+            if (hasInFavorites) {
+                const result = favorites.filter((item) => (item.toString() !== movieId));
+                await updateUser({ userId, ...user, favorites: result });
+                return res.status(200).send(result);
+            } else {
+                return res.status(400).send('the movie ');
+            }
+        } catch (e) {
+            return res.status(500).send(e.message);
+        }
+    })
+
+
+
+users.get(
+    '/info/statistic/favorites',
+    async (req, res) => {
+        try {
+            const statistic = await getFavoritesStatistic();
+            return res.status(200).send(statistic);
+        } catch (e) {
+            return res.status(500).send(e.message);
+        }
+    })
 module.exports = users;
