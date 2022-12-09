@@ -46,11 +46,24 @@ const getFavorites = async () => {
         count: true,
         _id: 0
       }
+    },
+    {
+      $replaceRoot: {
+        newRoot: {
+          $arrayToObject: [
+            [
+              {
+                k: '$title',
+                v: '$count'
+              }
+            ]
+          ]
+        }
+      }
     }
   ])
-  const obj = {}
-  countFavorites.forEach(item => (obj[item.title] = item.count))
-  return obj
+
+  return Object.assign(...countFavorites)
 }
 
 const checkAuthUser = token => {
