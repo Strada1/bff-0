@@ -1,32 +1,34 @@
 import request from 'supertest';
-import { app } from '../server.js';
+import mongoose from 'mongoose';
+
+import { app, serverListener }  from '../server.js';
+import {
+  dataForNewUser,
+  alreadyUserDataForUser,
+} from './fixtures/users.js';
+
+import.meta.jest.spyOn(console, 'log').mockImplementation(() => undefined);
 
 describe('/users', () => {
 
-  it('POST / should register user and return status 201', async () => {
-    const user = {
-      "email": "test@test.ru",
-      "password": "somepass",
-      "username": "holy_pancake",
-    };
+  afterAll(() => {
+    mongoose.connection.close();
+    serverListener.close();
+  });
 
+  it('POST / should register user and return status 201', async () => {
     const { body } = await request(app)
       .post('/api/users/registration')
-      .send(user)
+      .send(dataForNewUser)
       .expect(201);
 
-    expect(body.email).toBe(user.email);
+    expect(body.email).toBe(dataForNewUser.email);
   });
 
   it('POST / should return 404 BadRequest if email or username already exists', async () => {
-    const user = {
-      "email": "admin@test.ru",
-      "username": "admin",
-    };
-
     await request(app)
       .post('/api/users/registration')
-      .send(user)
+      .send(alreadyUserDataForUser)
       .expect(400);
   });
 

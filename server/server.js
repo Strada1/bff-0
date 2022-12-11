@@ -6,7 +6,7 @@ import router from './routers/router.js';
 import connectDB from './connectDB.js';
 import ErrorMiddleware from './middlewares/errorMiddleware.js';
 
-export const app = express();
+const app = express();
 dotenv.config();
 
 const PORT = process.env.PORT || 3000;
@@ -26,6 +26,11 @@ app.use(express.json());
 app.use('/api', router);
 app.use(ErrorMiddleware);
 
-app.listen(PORT, () => {
+const serverListener = app.listen(PORT, () => {
   console.log(`Web server listening on port ${PORT}`);
 });
+
+export {
+  app,
+  serverListener,
+}

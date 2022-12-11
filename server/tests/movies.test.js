@@ -1,41 +1,45 @@
 import request from 'supertest';
-import { app } from '../server.js';
+import mongoose from 'mongoose';
 
-describe('/movies', () => { // тестируем роут movies
+import { app, serverListener }  from '../server.js';
+import {
+  dataForNewMovie,
+  dataForUpdateMovie,
+  getMovieId,
+} from './fixtures/movies.js';
 
-  it('POST / should create movie and return status 200', async () => { // проверяем метод POST для этого роута
-    // это условный код, в котором пока нет реального запроса
-    const movie = {
-      "title": "Космическая одиссея",
-      "year": 2001,
-      "duration": 149,
-    };
+import.meta.jest
+  .spyOn(console, 'log')
+  .mockImplementation(() => undefined);
 
-    const { body } = await request(app) // делаем запрос к нашему серверу
-      .post('/api/movies') // по нужному роуту
-      .send(movie) // отправляем объект с новым фильмом
-      .expect(201); // и ожидаем в ответ статус 201 - Created
+describe('/movies', () => {
 
-    expect(body.title).toEqual(movie.title); // проверяем что в ответе отдается созданный фильм
+  afterAll(() => {
+    mongoose.connection.close();
+    serverListener.close();
+  });
+
+  it('POST / should create movie and return status 200', async () => {
+    const { body } = await request(app)
+      .post('/api/movies')
+      .send(dataForNewMovie)
+      .expect(201);
+
+    expect(body.title).toEqual(dataForNewMovie.title); // проверяем что в ответе отдается созданный фильм
   });
 
   it('GET / should return movie and status 200', async() => {
-    const movieId = '63822340e7e7ba66c4f7a0a9';
-    const movie = {
-      "title": "Убить Билла",
-      "year": 2003,
-      "duration": 111,
-    }
+    const movieId = getMovieId();
 
     const { body } = await request(app)
       .get(`/api/movies/${movieId}`)
       .expect(200);
 
-    expect(body.title).toBe(movie.title);
+    expect(body._id).toBe(movieId);
   });
 
   it('GET / should return status 404', async () => {
-    const badMovieId = '63822340e7e7ba66c4f7a999';
+    const badMovieId = getMovieId(false);
 
     await request(app)
       .get(`/api/movies/${badMovieId}`)
@@ -43,19 +47,14 @@ describe('/movies', () => { // тестируем роут movies
   });
 
   it('PUT / should return updated movie and status 200', async () => {
-    const movieId = '63822340e7e7ba66c4f7a0a9';
-    const newDataForMovie = {
-      description: 'Some text',
-    };
+    const movieId = getMovieId();
 
     const { body } = await request(app)
       .put(`/api/movies/${movieId}`)
-      .send(newDataForMovie)
+      .send(dataForUpdateMovie)
       .expect(200);
 
-    expect(body.description).toBe(newDataForMovie.description);
+    expect(body.description).toBe(dataForUpdateMovie.description);
   });
 
 });
-
-// Тесты на плохие запросы

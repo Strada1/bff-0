@@ -55,7 +55,6 @@ router.put('/me',
 );
 
 router.put('/:userId',
-  // authorization(ROLES.ADMIN),
   authorization([ROLES.ADMIN, ROLES.MODERATOR]),
   async (req, res, next) => {
     try {
