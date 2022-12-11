@@ -36,8 +36,8 @@ export function getMovies({ filters, sort } = {}) {
   return movies;
 }
 
-export function updateMovie(id, { title, year, duration, categories, director }) {
-  return Movie.findByIdAndUpdate(id, { title, year, duration, categories, director }, {
+export function updateMovie(id, { title, year, duration, categories, director, description }) {
+  return Movie.findByIdAndUpdate(id, { title, year, duration, categories, director, description }, {
     new: true,
   });
 }

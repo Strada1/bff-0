@@ -17,7 +17,8 @@ import ApiError from '../exceptions/apiError.js';
 const router = new Router();
 const moviesCache = new Cache();
 
-router.post('/', async (req, res, next) => {
+router.post('/',
+  async (req, res, next) => {
   try {
     const { title, year, duration, categories, directors } = req.body;
     const movie = await createMovie({ title, year, duration, categories, directors });
@@ -71,7 +72,7 @@ router.get('/',
 );
 
 router.put('/:movieId',
-  authorization([ROLES.MODERATOR]),
+  // authorization([ROLES.MODERATOR]), // Раскоментировать!!!
   async (req, res, next) => {
     try {
       const { movieId } = req.params;
