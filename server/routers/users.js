@@ -3,7 +3,11 @@ import {
   createUser,
   loginUser,
   updateUser,
-  deleteUser, updateUserById
+  deleteUser,
+  updateUserById,
+  addMovieInFavorites,
+  deleteMovieFromFavorites,
+  getCountFavoritesFromAllUsers,
 } from '../services/user.js';
 
 import { authorization, ROLES } from '../middlewares/passport.js';
@@ -86,6 +90,51 @@ router.delete('/:userId',
       }
 
       return res.status(200).send(deletedUser);
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+router.post('/:userId/favorites', async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { movieId } = req.query;
+    const user = await addMovieInFavorites(userId, movieId);
+
+    if (!user) {
+      return next(ApiError.NotFound('No user for this ID'));
+    }
+
+    return res.status(201).send(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/:userId/favorites', async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { movieId } = req.query;
+    const user = await deleteMovieFromFavorites(userId, movieId);
+
+    if (!user) {
+      return next(ApiError.NotFound('No user for this ID'));
+    }
+
+    return res.status(200).send(user);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get('/favorites/aggregation/countFavoritesFromAllUsers',
+  authorization([ROLES.ADMIN]),
+  async (req, res, next) => {
+    try {
+      const result = await getCountFavoritesFromAllUsers();
+
+      return res.status(200).send(result);
     } catch (err) {
       next(err);
     }

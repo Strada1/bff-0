@@ -3,6 +3,7 @@ dotenv.config();
 import jwt from 'jsonwebtoken';
 
 import User from '../models/User.js';
+import Movie from '../models/Movie.js';
 import { ROLES } from '../middlewares/passport.js';
 import ApiError from '../exceptions/apiError.js';
 
@@ -76,4 +77,47 @@ export async function updateUserById({ userId }, { password, username, roles }) 
 
 export function deleteUser(id) {
   return User.findByIdAndDelete(id);
+}
+
+export async function addMovieInFavorites(userId, movieId) {
+  const movie = await Movie.findById(movieId);
+  if (!movie) {
+    throw ApiError.NotFound('No movie for this ID');
+  }
+
+  return User.findByIdAndUpdate(userId, {
+    $addToSet: { favorites: movieId },
+  }, {
+    new: true,
+  });
+}
+
+export async function deleteMovieFromFavorites(userId, movieId) {
+  return User.findByIdAndUpdate(userId, {
+    $pull: { favorites: movieId },
+  }, {
+    new: true,
+  });
+}
+
+export function getCountFavoritesFromAllUsers() {
+  return User.aggregate([
+    {
+      // Добавляет в массив совпадающий документ из `from` коллекции
+      $lookup: {
+        from: 'movies',
+        localField: 'favorites',
+        foreignField: '_id',
+        as: 'movie',
+      },
+    },
+    // Отделяет документ для каждого элемента и возвращает полученный документ
+    { $unwind: '$movie' },
+    {
+      $group: {
+        _id: '$movie.title',
+        requestsCount: { $sum: 1 },
+      }
+    },
+  ]);
 }

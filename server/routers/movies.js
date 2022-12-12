@@ -72,7 +72,7 @@ router.get('/',
 );
 
 router.put('/:movieId',
-  // authorization([ROLES.MODERATOR]), // Раскоментировать!!!
+  // authorization([ROLES.MODERATOR]),
   async (req, res, next) => {
     try {
       const { movieId } = req.params;

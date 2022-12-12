@@ -56,5 +56,4 @@ describe('/movies', () => {
 
     expect(body.description).toBe(dataForUpdateMovie.description);
   });
-
 });
