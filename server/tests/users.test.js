@@ -81,7 +81,7 @@ describe('/users', () => {
           .set('Authorization', `Bearer ${adminToken}`)
           .expect(200);
 
-        expect(body['Убить Билла']).toBe(1);
+        expect(body['Сияние']).toBeDefined();
       });
     });
   });
