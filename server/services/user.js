@@ -100,8 +100,8 @@ export async function deleteMovieFromFavorites(userId, movieId) {
   });
 }
 
-export function getCountFavoritesFromAllUsers() {
-  return User.aggregate([
+export async function getCountFavoritesFromAllUsers() {
+  const arr = await User.aggregate([
     {
       // Добавляет в массив совпадающий документ из `from` коллекции
       $lookup: {
@@ -120,4 +120,9 @@ export function getCountFavoritesFromAllUsers() {
       }
     },
   ]);
+
+  return arr.reduce((accumulator, value) => {
+    accumulator[value._id] = value.requestsCount;
+    return accumulator;
+  }, {})
 }
