@@ -124,5 +124,5 @@ export async function getCountFavoritesFromAllUsers() {
   return arr.reduce((accumulator, value) => {
     accumulator[value._id] = value.requestsCount;
     return accumulator;
-  }, {})
+  }, {});
 }
