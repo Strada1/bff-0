@@ -3,9 +3,6 @@ const {getUsers, getByIdUser} = require("../../services/userService");
 async function getUserFixture({ exists } = { exists: false }) {
     if (exists) {
         const { _id, email, username, roles, favorites } = (await getUsers())[0]
-        //TODO: нужно ли расшифровывать и добавлять реальный?
-        //      а для чего тебе нужен реальный, тебе он вообще нужен?
-        //TODO: а если никакого users нет?
         return { _id, email, username, roles, favorites, password: 'wqe12f54w' };
     } else {
         return {

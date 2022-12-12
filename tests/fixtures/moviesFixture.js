@@ -7,7 +7,6 @@ async function getMovie({
                             exists = false,
                         } = {}) {
     if (exists) {
-        //TODO: а если никакого movie нет?
         return (await getMovies())[0];
     } else {
         const title = 'The Shawshank Redemption',
