@@ -75,7 +75,7 @@ describe('/users', () => {
     });
 
     describe('aggregation', () => {
-      it('some description', async () => {
+      it('should return object with count favorite movies users', async () => {
         const { body } = await request(app)
           .get('/api/users/favorites/aggregation/countFavoritesFromAllUsers')
           .set('Authorization', `Bearer ${adminToken}`)
