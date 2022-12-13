@@ -2,8 +2,8 @@ import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 
-import ConnectDB from './connectDB.js'
 import router from './routers/router.js';
+import connectDB from './connectDB.js';
 import errorMiddleware from './middlewares/errorMiddleware.js';
 
 const app = express();
@@ -15,14 +15,14 @@ const {
   MONGO_CONNECTION_STRING,
 } = process.env;
 
-ConnectDB(MONGO_CONNECTION_STRING);
+connectDB(MONGO_CONNECTION_STRING);
 
 const allowedOrigins = [CLIENT_URL];
 
 app.use(cors({
   origin: allowedOrigins,
 }));
-app.use(express.json);
+app.use(express.json());
 app.use('/api', router);
 app.use(errorMiddleware);
 
