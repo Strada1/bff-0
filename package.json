@@ -7,7 +7,7 @@
     "start": "node ./src/app.js",
     "dev": "nodemon ./src/app.js",
     "checkLint": "npx eslint ./src",
-    "test": "jest --maxWorkers=1"
+    "test": "jest --maxWorkers=1 --detectOpenHandles"
   },
   "author": "semastep96",
   "license": "ISC",

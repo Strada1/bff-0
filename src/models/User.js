@@ -6,6 +6,7 @@ const UserSchema = mongoose.Schema({
   username: String,
   token: String,
   chats: [{ type: ObjectId, ref: 'Chat' }],
+  roles: [String],
 });
 
 const User = mongoose.model('User', UserSchema);
