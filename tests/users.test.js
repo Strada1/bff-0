@@ -4,6 +4,7 @@ const appListener = require('../src/app');
 const db = require('../src/db');
 const Chat = require('../src/models/Chat');
 const User = require('../src/models/User');
+const createChat = require('./fixtures/createChat');
 const createUser = require('./fixtures/createUser');
 const createUserData = require('./fixtures/createUserData');
 const getAuthorizationData = require('./fixtures/getAuthorizationData');
@@ -141,7 +142,7 @@ describe('/api/users/me/chats', () => {
 
   it('Get', async () => {
     const user = await createUser();
-    const chat = await Chat.create({ title: 'jest chat', users: [user._id] });
+    const chat = await createChat(user._id);
     const auth = getAuthorizationData(user.token);
 
     await User.findByIdAndUpdate(user._id, {
@@ -161,7 +162,7 @@ describe('/api/users/me/chats', () => {
 
   it('ADD', async () => {
     const user = await createUser();
-    const chat = await Chat.create({ title: 'jest chat', users: [user._id] });
+    const chat = await createChat(user._id);
     const auth = getAuthorizationData(user.token);
 
     const { body } = await request(appListener)
@@ -178,7 +179,7 @@ describe('/api/users/me/chats', () => {
 
   it('Delete chat', async () => {
     const user = await createUser();
-    const chat = await Chat.create({ title: 'jest chat', users: [user._id] });
+    const chat = await createChat(user._id);
     const auth = getAuthorizationData(user.token);
 
     await User.findByIdAndUpdate(user._id, {
