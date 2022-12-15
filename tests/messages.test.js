@@ -8,19 +8,8 @@ const User = require('../src/models/User');
 const createChat = require('./fixtures/createChat');
 const createMessage = require('./fixtures/createMessage');
 const createUser = require('./fixtures/createUser');
+const { dropUsersCollection, dropChatsCollection, dropMessagesCollection } = require('./fixtures/dropCollections');
 const getAuthorizationData = require('./fixtures/getAuthorizationData');
-
-async function dropUsersCollection() {
-  await User.deleteMany({});
-}
-
-async function dropChatsCollection() {
-  await Chat.deleteMany({});
-}
-
-async function dropMessagesCollection() {
-  await Message.deleteMany({});
-}
 
 beforeAll(async () => {
   await dropUsersCollection();

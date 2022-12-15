@@ -3,28 +3,18 @@ const request = require('supertest');
 const appListener = require('../src/app');
 const db = require('../src/db');
 const Chat = require('../src/models/Chat');
-const Message = require('../src/models/Message');
 const User = require('../src/models/User');
 const createChat = require('./fixtures/createChat');
 const createUser = require('./fixtures/createUser');
 const getAuthorizationData = require('./fixtures/getAuthorizationData');
-
-async function dropUsersCollection() {
-  await User.deleteMany({});
-}
-
-async function dropChatsCollection() {
-  await Chat.deleteMany({});
-}
-
-async function dropMessagesCollection() {
-  await Message.deleteMany({});
-}
+const {
+  dropUsersCollection,
+  dropChatsCollection,
+} = require('./fixtures/dropCollections');
 
 beforeAll(async () => {
   await dropUsersCollection();
   await dropChatsCollection();
-  await dropMessagesCollection();
 });
 
 afterAll(async () => {
