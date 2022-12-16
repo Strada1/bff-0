@@ -4,7 +4,7 @@ const createUserData = require('./createUserData');
 
 async function createUser(admin = false) {
   const userData = createUserData();
-  const token = jwt.sign({ email: userData.email }, process.env.JWT_SECRET);
+  const token = jwt.sign({ email: userData.email, random: Math.random() }, process.env.JWT_SECRET);
   userData.token = token;
   userData.roles = ['user'];
   if (admin) {

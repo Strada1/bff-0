@@ -27,7 +27,7 @@ describe('/api/users', () => {
   const usersApiPath = '/api/users';
 
   it('GET', async () => {
-    const admin = createUser(true);
+    const admin = await createUser(true);
     const auth = getAuthorizationData(admin.token);
     const usersCount = (await User.find({})).length;
 
@@ -39,7 +39,7 @@ describe('/api/users', () => {
       .expect(200);
 
     expect(body.length).toBe(usersCount + 1);
-    expect(body.map((user) => user._id)).toContainEqual(user._id);
+    expect(body.map((user) => user._id)).toContainEqual(user._id.toString());
     await User.findByIdAndDelete(user._id);
   });
 
@@ -52,7 +52,7 @@ describe('/api/users', () => {
 
     expect(body.token).toBeTruthy();
     expect(body._id).toBeTruthy();
-    expect(body.email).toBe(userData.email);
+    expect(body.email).toBe(userData.email.toLocaleLowerCase());
     expect(body.username).toBe(userData.username);
     expect(Array.isArray(body.chats)).toBe(true);
 
@@ -60,15 +60,15 @@ describe('/api/users', () => {
   });
 
   it('GET /:id', async () => {
-    const admin = createUser(true);
+    const admin = await createUser(true);
     const auth = getAuthorizationData(admin.token);
 
     const { body } = await request(appListener)
-      .get(`${usersApiPath}${admin._id}`)
+      .get(`${usersApiPath}/${admin._id}`)
       .set(auth.key, auth.value)
       .expect(200);
 
-    expect(body._id).toBe(admin._id);
+    expect(body._id).toBe(admin._id.toString());
     await User.findByIdAndDelete(admin._id);
   });
 
@@ -78,13 +78,13 @@ describe('/api/users', () => {
     const username = admin.username + 'UPDATED';
 
     const { body } = await request(appListener)
-      .put(`${usersApiPath}${admin._id}`)
+      .put(`${usersApiPath}/${admin._id}`)
       .send({ username })
       .set(auth.key, auth.value)
-      .expect(204);
+      .expect(200);
 
     expect(body.username).toBe(username);
-    expect(body._id).toBe(admin._id);
+    expect(body._id).toBe(admin._id.toString());
     await User.findByIdAndDelete(admin._id);
   });
 
@@ -93,9 +93,11 @@ describe('/api/users', () => {
     const auth = getAuthorizationData(admin.token);
 
     await request(appListener)
-      .delete(usersApiPath + admin._id)
+      .delete(usersApiPath + `/${admin._id}`)
       .set(auth.key, auth.value)
       .expect(200);
+
+    expect(await User.findById(admin._id)).toBeFalsy();
   });
 });
 
@@ -111,7 +113,7 @@ describe('/api/users/me', () => {
       .set(auth.key, auth.value)
       .expect(200);
 
-    expect(body._id).toBe(user._id);
+    expect(body._id).toBe(user._id.toString());
     await User.findByIdAndDelete(user._id);
   });
 
@@ -124,10 +126,10 @@ describe('/api/users/me', () => {
       .put(apiPath)
       .send({ username })
       .set(auth.key, auth.value)
-      .expect(204);
+      .expect(200);
 
     expect(body.username).toBe(username);
-    expect(body._id).toBe(user._id);
+    expect(body._id).toBe(user._id.toString());
 
     await User.findByIdAndDelete(user._id);
   });
@@ -150,7 +152,7 @@ describe('/api/users/me/chats', () => {
       .set(auth.key, auth.value)
       .expect(200);
 
-    expect(body).toContainEqual(chat._id);
+    expect(body).toContainEqual(chat._id.toString());
 
     await Chat.findByIdAndDelete(chat._id);
     await User.findByIdAndDelete(user._id);
@@ -167,7 +169,7 @@ describe('/api/users/me/chats', () => {
       .set(auth.key, auth.value)
       .expect(200);
 
-    expect(body.chats).toContainEqual(chat._id);
+    expect(body.chats).toContainEqual(chat._id.toString());
 
     await Chat.findByIdAndDelete(chat._id);
     await User.findByIdAndDelete(user._id);
@@ -188,7 +190,7 @@ describe('/api/users/me/chats', () => {
       .set(auth.key, auth.value)
       .expect(200);
 
-    expect(body.chats).not.toContainEqual(chat._id);
+    expect(body.chats).not.toContainEqual(chat._id.toString());
 
     await Chat.findByIdAndDelete(chat._id);
     await User.findByIdAndDelete(user._id);
