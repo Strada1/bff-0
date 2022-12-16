@@ -2,6 +2,7 @@ const express = require('express');
 const { body, param, query } = require('express-validator');
 const { checkAuth } = require('../middlewares/checkAuth');
 const { validationErrorsHandler } = require('../middlewares/validationErrorsHandler');
+const { createMessage, deleteMessage, updateMessage, getMessages } = require('../services/messageServices');
 const router = express.Router();
 
 router.post(
@@ -13,6 +14,9 @@ router.post(
   async (req, res) => {
     try {
       const message = await createMessage(req.body, req.user._id);
+      if (!message) {
+        return res.status(400).send('Bad request');
+      }
       return res.status(201).json(message);
     } catch (error) {
       return res
@@ -56,7 +60,7 @@ router.put(
       if (!message) {
         return res.status(400).send('Bad request.');
       }
-      return res.status(204).json(message);
+      return res.status(200).json(message);
     } catch (error) {
       return res
         .status(500)
@@ -72,7 +76,7 @@ router.get(
   validationErrorsHandler,
   async (req, res) => {
     try {
-      const messages = await getMessages(req.query, req.user);
+      const messages = await getMessages(req.query.chat, req.user);
       if (!messages) {
         return res.status(400).send('Bad request.');
       }

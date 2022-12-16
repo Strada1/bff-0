@@ -8,7 +8,11 @@ const User = require('../src/models/User');
 const createChat = require('./fixtures/createChat');
 const createMessage = require('./fixtures/createMessage');
 const createUser = require('./fixtures/createUser');
-const { dropUsersCollection, dropChatsCollection, dropMessagesCollection } = require('./fixtures/dropCollections');
+const {
+  dropUsersCollection,
+  dropChatsCollection,
+  dropMessagesCollection,
+} = require('./fixtures/dropCollections');
 const getAuthorizationData = require('./fixtures/getAuthorizationData');
 
 beforeAll(async () => {
@@ -37,8 +41,8 @@ describe('/api/messages', () => {
       .set(auth.key, auth.value)
       .expect(201);
 
-    expect(body.user).toBe(user._id);
-    expect(body.chat).toBe(chat._id);
+    expect(body.user).toBe(user._id.toString());
+    expect(body.chat).toBe(chat._id.toString());
     expect(body.text).toBe(text);
 
     await User.findByIdAndDelete(user._id);
@@ -75,9 +79,9 @@ describe('/api/messages', () => {
       .put(apiPath + `/${message._id}`)
       .send({ text: updatedText })
       .set(auth.key, auth.value)
-      .expect(204);
+      .expect(200);
 
-    expect(body._id).toBe(message._id);
+    expect(body._id).toBe(message._id.toString());
     expect(body.text).toBe(updatedText);
 
     await User.findByIdAndDelete(user._id);
@@ -99,9 +103,11 @@ describe('/api/messages', () => {
 
     expect(Array.isArray(body)).toBe(true);
     expect(body.length).toBe(2);
-    expect(body.map((message) => message._id)).toContainEqual(firstMessage._id);
     expect(body.map((message) => message._id)).toContainEqual(
-      secondMessage._id
+      firstMessage._id.toString()
+    );
+    expect(body.map((message) => message._id)).toContainEqual(
+      secondMessage._id.toString()
     );
 
     await User.findByIdAndDelete(user._id);
