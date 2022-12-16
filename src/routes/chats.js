@@ -2,8 +2,18 @@ const express = require('express');
 const { body, param } = require('express-validator');
 const userRoles = require('../helpers/userRoles');
 const { checkAuth } = require('../middlewares/checkAuth');
-const { validationErrorsHandler } = require('../middlewares/validationErrorsHandler');
-const { createChat } = require('../services/chatsServices');
+const {
+  validationErrorsHandler,
+} = require('../middlewares/validationErrorsHandler');
+const {
+  createChat,
+  deleteChat,
+  updateChat,
+  getChats,
+  getChat,
+  addUsers,
+  deleteUsers,
+} = require('../services/chatsServices');
 const router = express.Router();
 
 router.post(
@@ -33,7 +43,7 @@ router.delete(
   validationErrorsHandler,
   async (req, res) => {
     try {
-      const chat = await deleteChat(req.params._id, req.user);
+      const chat = await deleteChat(req.params.id, req.user);
       if (!chat) {
         return res.status(403).send('Authorization fail.');
       }
@@ -52,13 +62,15 @@ router.put(
   param('id', 'Should be ObjectId').isMongoId(),
   body('title', 'Should be string, greater then 1 symbol')
     .isString()
-    .isLength({ min: 1 }),
+    .isLength({ min: 1 })
+    .optional(),
+  body('owner', 'Should be ObjectId').isMongoId().optional(),
   validationErrorsHandler,
   async (req, res) => {
     try {
-      const chat = await updateChat(req.params._id, req.body, req.user);
+      const chat = await updateChat(req.params.id, req.body, req.user);
       if (!chat) {
-        return res.status(400).send('Bad request.');
+        return res.status(403).send('Authorization fail.');
       }
       return res.status(200).json(chat);
     } catch (error) {
@@ -109,7 +121,7 @@ router.post(
     try {
       const chat = await addUsers(req.params.id, req.body, req.user);
       if (!chat) {
-        return res.status(400).send('Bad request.');
+        return res.status(403).send('Authorization fail.');
       }
       return res.status(200).json(chat);
     } catch (error) {

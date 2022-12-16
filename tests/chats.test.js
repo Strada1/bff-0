@@ -76,7 +76,7 @@ describe('/api/chats', () => {
       .set(auth.key, auth.value)
       .expect(200);
 
-    expect(body._id).toBe(chat._id);
+    expect(body._id).toBe(chat._id.toString());
     expect(body.title).toBe(title);
 
     await User.findByIdAndDelete(user._id);
@@ -96,8 +96,12 @@ describe('/api/chats', () => {
 
     expect(Array.isArray(body)).toBe(true);
     expect(body.length >= 2).toBe(true);
-    expect(body.map((chat) => chat._id)).toContainEqual(firstChat._id);
-    expect(body.map((chat) => chat._id)).toContainEqual(secondChat._id);
+    expect(body.map((chat) => chat._id)).toContainEqual(
+      firstChat._id.toString()
+    );
+    expect(body.map((chat) => chat._id)).toContainEqual(
+      secondChat._id.toString()
+    );
 
     await User.findByIdAndDelete(admin._id);
     await Chat.findByIdAndDelete(firstChat._id);
@@ -114,7 +118,7 @@ describe('/api/chats', () => {
       .set(auth.key, auth.value)
       .expect(200);
 
-    expect(body._id).toBe(chat._id);
+    expect(body._id).toBe(chat._id.toString());
     expect(body.title).toBe(chat.title);
 
     await User.findByIdAndDelete(user._id);
@@ -136,8 +140,8 @@ describe('/api/chats/:id/users', () => {
       .set(auth.key, auth.value)
       .expect(200);
 
-    expect(body.users).toContainEqual(secondUser._id);
-    expect(body.users).toContainEqual(thirdUser._id);
+    expect(body.users).toContainEqual(secondUser._id.toString());
+    expect(body.users).toContainEqual(thirdUser._id.toString());
 
     await User.findByIdAndDelete(firstUser._id);
     await User.findByIdAndDelete(secondUser._id);
