@@ -1,12 +1,6 @@
 const passport = require("passport");
 const BearerStrategy = require('passport-http-bearer');
 
-const ROLES = {
-    USER: 'user',
-    ADMIN: 'admin',
-    MODERATOR: 'moderator',
-};
-
 passport.use(
     new BearerStrategy(
         async function(token, done) {
