@@ -4,6 +4,7 @@ const app = express();
 const cors = require('cors');
 const PORT = process.env.PORT;
 const ip = require('ip');
+const router = require('./routes/router');
 
 const allowedOrigins = ['semastep.com', 'semastep-monchegorsk.ru'];
 
@@ -15,6 +16,8 @@ app.use(
 );
 
 app.use(express.json());
+
+app.use(router);
 
 const appListener = app.listen(PORT, () => {
   console.log('App listening port:', PORT);
