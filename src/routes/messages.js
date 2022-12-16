@@ -1,5 +1,6 @@
 const express = require('express');
 const { body, param, query } = require('express-validator');
+const { validationErrorsHandler } = require('../middlewares/validationErrorsHandler');
 const router = express.Router();
 
 router.post(
