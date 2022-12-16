@@ -38,10 +38,10 @@ describe('/api/chats', () => {
       .set(auth.key, auth.value)
       .expect(201);
 
-    expect(body.users).toContainEqual(firstUser._id);
-    expect(body.users).toContainEqual(secondUser._id);
+    expect(body.users).toContainEqual(firstUser._id.toString());
+    expect(body.users).toContainEqual(secondUser._id.toString());
     expect(body.title).toBe(title);
-    expect(body.owner).toBe(firstUser._id);
+    expect(body.owner).toBe(firstUser._id.toString());
 
     await User.findByIdAndDelete(firstUser._id);
     await User.findByIdAndDelete(secondUser._id);

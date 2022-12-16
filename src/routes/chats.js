@@ -3,6 +3,7 @@ const { body, param } = require('express-validator');
 const userRoles = require('../helpers/userRoles');
 const { checkAuth } = require('../middlewares/checkAuth');
 const { validationErrorsHandler } = require('../middlewares/validationErrorsHandler');
+const { createChat } = require('../services/chatsServices');
 const router = express.Router();
 
 router.post(
@@ -16,10 +17,7 @@ router.post(
   async (req, res) => {
     try {
       const chat = await createChat(req.user._id, req.body);
-      if (!chat) {
-        return res.status(400).send('Bad request.');
-      }
-      return res.status(200).json(chat);
+      return res.status(201).json(chat);
     } catch (error) {
       return res
         .status(500)
