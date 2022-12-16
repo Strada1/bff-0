@@ -35,7 +35,6 @@ const updateMessage = async (messageId, { text }, user) => {
 
 const getMessages = async (chatId, user) => {
   const chat = await Chat.find({ _id: chatId, users: user });
-  console.log(chat);
   const canGet = chat.length || user.roles.includes(userRoles.admin);
   if (!canGet) {
     return false;
