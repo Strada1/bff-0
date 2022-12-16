@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 
 const app = require('../app');
+const { MONGO_CONNECTION_STRING } = dotenv.config().parsed;
 const connectDataBase = require("../helpers/connectDataBase");
 const {
     getChatFixture,
@@ -11,9 +12,7 @@ const {
     getExistChatFixture,
     getUpdatedChatFixture,
 } = require("./fixture/chatFixture");
-const {getUpdatedUserFixture, getByIdUserFixture} = require("./fixture/userFixture");
 
-const { MONGO_CONNECTION_STRING } = dotenv.config().parsed;
 
 jest
     .spyOn(console, 'log')
