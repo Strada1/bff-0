@@ -41,6 +41,7 @@ describe('/api/chats', () => {
     expect(body.users).toContainEqual(firstUser._id);
     expect(body.users).toContainEqual(secondUser._id);
     expect(body.title).toBe(title);
+    expect(body.owner).toBe(firstUser._id);
 
     await User.findByIdAndDelete(firstUser._id);
     await User.findByIdAndDelete(secondUser._id);
@@ -131,7 +132,7 @@ describe('/api/chats/:id/users', () => {
 
     const { body } = await request(appListener)
       .post(apiPath + `/${chat._id}/users`)
-      .send([secondUser._id, thirdUser._id])
+      .send({ users: [secondUser._id, thirdUser._id] })
       .set(auth.key, auth.value)
       .expect(200);
 
@@ -156,7 +157,7 @@ describe('/api/chats/:id/users', () => {
 
     const { body } = await request(appListener)
       .delete(apiPath + `/${chat._id}/users`)
-      .send([secondUser._id])
+      .send({ users: [secondUser._id] })
       .set(auth.key, auth.value)
       .expect(200);
 
