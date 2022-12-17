@@ -1,11 +1,12 @@
 const passport = require("passport");
 const BearerStrategy = require('passport-http-bearer');
+const {getByTokenUserService} = require("../service/userService");
 
 passport.use(
     new BearerStrategy(
         async function(token, done) {
+            const user = await getByTokenUserService(token);
             try {
-                const user = await getByTokenUserService(token);
                 if (user) {
                     return done(null, user)
                 }
@@ -39,5 +40,5 @@ const authorization = (roles = []) => (req, res, next) => {
 }
 
 module.exports = {
-    authorization
+    passport, authorization
 };

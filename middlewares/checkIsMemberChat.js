@@ -1,7 +1,10 @@
 const {ObjectId} = require("mongodb");
+const getTokenHeaders = require("../helpers/getTokenHeaders");
+const {getByTokenUserService} = require("../service/userService");
+const {getByIdChatService} = require("../service/chatService");
 const checkIsMemberChat = async (req, res, next) => {
     try {
-        const token = req.headers.authorization;
+        const token = getTokenHeaders(req);
         const user = await getByTokenUserService(token);
         const { chatId } = req.params;
         const chat = await getByIdChatService(chatId);

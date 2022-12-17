@@ -1,10 +1,11 @@
 const {getExistUserFixture, getUserNotInChatFixture} = require("./userFixture");
+const {getByIdChatService, getChatsService, createChatService} = require("../../service/chatService");
+const {getUsersService, updateUserService} = require("../../service/userService");
+const {ObjectId} = require("mongodb");
 
 async function getChatFixture() {
-    const { userId } = await getExistUserFixture();
     return {
-        title: 'string@test.ru',
-        users: [ userId ],
+        title: 'string',
     }
 }
 
@@ -14,17 +15,33 @@ async function getIdChatFixture() {
 }
 
 async function getByIdChatFixture(chatId) {
-    return await getByIdChatService(chatId)
+    return getByIdChatService(chatId);
 }
 
 async function getExistChatFixture() {
-    return (await getChatService())[0];
+    const user = await getExistUserFixture();
+    const {chats} = user;
+    const isEmpty = chats.length === 0;
+    if (isEmpty) {
+        const { title } = await getChatFixture();
+        const chat = await createChatService({ title, users: [ ObjectId(user._id) ] });
+        await updateUserService({userId: user._id, username: user.username, chats: [ ObjectId(chat._id) ]});
+        return chat;
+    }
+    const chatId = chats[0]._id.toString()
+    const chat = await getByIdChatService(chatId);
+    if (!chat) {
+        const chats = user.chats.filter((item) => item.toString() !== chatId);
+        const updatedUser = await updateUserService({ userId: user._id, ...user, chats });
+        return getExistChatFixture();
+    }
+    console.log('1', chat, chatId, chats, user);
+    return chat;
 }
 
 async function getUpdatedChatFixture(chat) {
-    const newUser = await getUserNotInChatFixture(chat._id);
-    const { title, user } = chat;
-    return { ...chat, title: `a${title}`, user: [...user, newUser ] }
+    const { title, users } = chat;
+    return { title: `a${title}`, users }
 }
 
 module.exports = {

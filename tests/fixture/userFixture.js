@@ -1,4 +1,6 @@
 const {ObjectId} = require("mongodb");
+const {getByIdUserService, createUserService, getUsersService} = require("../../service/userService");
+const {generateToken} = require("../../helpers/token");
 
 async function getUserFixture() {
     return {
@@ -14,20 +16,30 @@ async function getIdUserFixture() {
 }
 
 async function getByIdUserFixture(userId) {
-    return await getByIdUserService(userId)
+    return getByIdUserService(userId);
+}
+
+async function getTokenUserFixture() {
+    return (await getExistUserFixture()).token
 }
 
 async function getExistUserFixture() {
-    return (await getUserService())[0];
+    let user = (await getUsersService())[0];
+    if (!user) {
+        const { email, username, password } = await getUserFixture();
+        const token = await generateToken({email, password})
+        user = await createUserService({email, username, token});
+    }
+    return user;
 }
 
-async function getUpdatedUserFixture(user) {
-    const { email, username } = user;
-    return { ...user, email: `a${email}`, username: `a${username}` }
+function getUpdatedUserFixture(user) {
+    const { username, chats } = user;
+    return { username: `a${username}`, chats }
 }
 
 async function getUserNotInChatFixture(chatId) {
-    const users = await getUserService();
+    const users = await getUsersService();
     return users.find((_user) => !_user.chatId.includes(ObjectId(chatId))) ?? await createUserService(await getUserFixture())
 }
 
@@ -38,4 +50,5 @@ module.exports = {
     getExistUserFixture,
     getUpdatedUserFixture,
     getUserNotInChatFixture,
+    getTokenUserFixture,
 }

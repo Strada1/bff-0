@@ -3,6 +3,15 @@ const {checkSchema} = require("express-validator");
 const isEmptyObject = require("../helpers/isEmptyObject");
 const checkError = require("../middlewares/checkErrors");
 const {authorization} = require("../middlewares/passport");
+const {
+    deleteUserService,
+    updateUserService,
+    createUserService,
+    getByIdUserService,
+    getByTokenUserService,
+    getUsersService
+} = require("../service/userService");
+const {generateToken} = require("../helpers/token");
 
 const users = new Router();
 
@@ -24,7 +33,7 @@ users.get(
     async (req, res) => {
         try {
             const token = req.headers.authorization;
-            const [user] = await getByTokenUserService(token);
+            const user = await getByTokenUserService(token);
             return res.status(200).send(user);
         } catch (e) {
             return res.status(500).send(e.message);
@@ -94,18 +103,14 @@ users.post(
         }
     });
 
-//TODO: разбить на несколько?
+//TODO: разбить на несколько, отдельно менять данные с токеном
 users.put(
     '/users/:userId',
-    authorization(['admin']),
+    authorization(),
     checkSchema({
         userId: {
             in: ['params'],
             isMongoId: true,
-        },
-        email: {
-            in: ['body'],
-            isEmail: true,
         },
         username: {
             in: ['body'],
@@ -118,14 +123,6 @@ users.put(
         chats: {
             //TODO: element is object id
             isArray: true,
-        },
-        password: {
-            in: ['body'],
-            isString: true,
-            isLength: {
-                errorMessage: 'Password should be at least 8 chars long',
-                options: { min: 8 },
-            },
         },
     }),
     checkError,
@@ -141,7 +138,7 @@ users.put(
 
 users.delete(
     '/users/:userId',
-    authorization(['admin']),
+    authorization(),
     checkSchema({
         userId: {
             in: ['params'],

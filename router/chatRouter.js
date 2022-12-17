@@ -3,10 +3,13 @@ const {checkSchema} = require("express-validator");
 const {ObjectId} = require("mongodb");
 const {authorization} = require("../middlewares/passport");
 const checkError = require("../middlewares/checkErrors");
+const checkIsMemberChat = require("../middlewares/checkIsMemberChat");
+const {deleteChatService, updateChatService, createChatService, getByIdChatService} = require("../service/chatService");
+const {updateUserService, getByTokenUserService} = require("../service/userService");
+const getTokenHeaders = require("../helpers/getTokenHeaders");
+const {getByIdChatFixture} = require("../tests/fixture/chatFixture");
 
 const chats = new Router();
-
-//TODO: getByTokenUserService
 
 chats.get(
     '/chats',
@@ -14,9 +17,22 @@ chats.get(
     async (req, res) => {
         try {
             const token = req.headers.authorization;
-            const [user] = await getUsersService({ token });
+            const user = await getByTokenUserService(token);
             const { chats } = user;
             return res.status(200).send(chats);
+        } catch (e) {
+            return res.status(500).send(e.message);
+        }
+    });
+
+chats.get(
+    '/chats/:chatId',
+    authorization(),
+    async (req, res) => {
+        try {
+            const { chatId } = req.params
+            const chat = await getByIdChatService(chatId)
+            return res.status(200).send(chat);
         } catch (e) {
             return res.status(500).send(e.message);
         }
@@ -38,15 +54,13 @@ chats.post(
     checkError,
     async (req, res) => {
         try {
-            const token = req.headers.authorization;
-            const [ user ] = await getUsersService({ token });
+            const token = getTokenHeaders(req);
+            const user = await getByTokenUserService(token);
             const { title } = req.body;
             const { chats } = user;
-
             const newChat = await createChatService({ title, users: [ ObjectId(user._id) ] });
             chats.push(ObjectId(newChat._id));
             const updatedUser = await updateUserService({ userId: user._id, ...user, chats });
-
             return res.status(201).send(newChat);
         } catch (e) {
             return res.status(500).send(e.message);
@@ -55,7 +69,7 @@ chats.post(
 
 chats.put(
     '/chats/:chatId',
-    authorization(['admin']),
+    authorization(),
     checkSchema({
         chatId: {
             in: ['params'],
@@ -74,19 +88,12 @@ chats.put(
         },
     }),
     checkError,
+    checkIsMemberChat,
     async (req, res) => {
         try {
-            const token = req.headers.authorization;
-            const [ user ] = await getUsersService({ token });
             const { chatId } = req.params;
-            const chat = await getByIdChatService(chatId);
-
-            const isMemberChat = chat.users.includes(ObjectId(user._id));
-            if (isMemberChat) {
-                const chat = await updateChatService({ chatId, ...req.body });
-                return res.status(200).send(chat);
-            }
-            return res.status(403).send('Forbidden');
+            const chat = await updateChatService({ chatId, ...req.body });
+            return res.status(200).send(chat);
         } catch (e) {
             return res.status(500).send(e.message);
         }
@@ -94,7 +101,7 @@ chats.put(
 
 chats.delete(
     '/chats/:chatId',
-    authorization(['admin']),
+    authorization(),
     checkSchema({
         chatId: {
             in: ['params'],
@@ -102,19 +109,16 @@ chats.delete(
         },
     }),
     checkError,
+    checkIsMemberChat,
     async (req, res) => {
         try {
-            const token = req.headers.authorization;
-            const [ user ] = await getUsersService({ token });
+            const token = getTokenHeaders(req);
+            const user = await getByTokenUserService(token);
             const { chatId } = req.params;
-            const chat = await getByIdChatService(chatId);
-
-            const isMemberChat = chat.users.includes(ObjectId(user._id));
-            if (isMemberChat) {
-                const chat = await deleteChatService({ chatId, ...req.body });
-                return res.status(200).send('this chat has been deleted');
-            }
-            return res.status(403).send('Forbidden');
+            const chat = await deleteChatService(chatId);
+            const chats = user.chats.filter((item) => item.toString() !== chatId);
+            const updatedUser = await updateUserService({ userId: user._id, ...user, chats });
+            return res.status(200).send('this chat has been deleted');
         } catch (e) {
             return res.status(500).send(e.message);
         }

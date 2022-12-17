@@ -1,4 +1,5 @@
 const {getExistUserFixture} = require("./userFixture");
+const {getExistChatFixture} = require("./chatFixture");
 
 async function getMessageFixture() {
     const user = await getExistUserFixture();
@@ -11,28 +12,6 @@ async function getMessageFixture() {
     }
 }
 
-async function getIdMessageFixture(chatId) {
-    const { _id } = await getExistMessageFixture(chatId);
-    return _id
-}
-
-async function getByIdMessageFixture(MessageId) {
-    return await getByIdMessageService(MessageId)
-}
-
-async function getExistMessageFixture(chatId) {
-    return (await getMessageService(chatId))[0];
-}
-
-async function getUpdatedMessageFixture(message) {
-    const { text } = message;
-    return { ...message, text: `a${text}` }
-}
-
 module.exports = {
     getMessageFixture,
-    getIdMessageFixture,
-    getByIdMessageFixture,
-    getExistMessageFixture,
-    getUpdatedMessageFixture
 }
