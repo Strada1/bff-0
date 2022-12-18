@@ -1,4 +1,5 @@
 const express = require('express');
+const {getMessages, getMessage, createMessage, deleteMessage, updateMessage} = require("../services/message");
 const router = express.Router();
 
 router.get('/messages', async (req, res) => {

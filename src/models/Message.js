@@ -6,6 +6,7 @@ const MessageSchema = new mongoose.Schema(
         user: ObjectId,
         text: String,
         createdAt: Date,
+        updatedAt: Date,
         chatId: ObjectId
     },
     {

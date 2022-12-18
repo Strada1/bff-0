@@ -1,4 +1,7 @@
 const express = require('express');
+const { getChats, getChat, createChat, deleteChat, updateChat } = require("../services/chat");
+const { checkRole } = require("../utils/auth");
+const { userRoles } = require("../services/user");
 const router = express.Router();
 
 router.get('/chats', async (req, res) => {
@@ -32,7 +35,7 @@ router.post('/chats', async (req, res) => {
   }
 });
 
-router.delete('/chats/:id', async (req, res) => {
+router.delete('/chats/:id', checkRole(userRoles.admin), async (req, res) => {
   try {
     const { id } = req.params;
     const chat = await deleteChat(id);

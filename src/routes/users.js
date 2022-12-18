@@ -1,4 +1,7 @@
 const express = require('express');
+const { getUsers, getUser, createUser, deleteUser, updateUser, userRoles } = require("../services/user");
+const { createToken, checkRole } = require("../utils/auth");
+const User = require('../models/User');
 const router = express.Router();
 
 router.get('/users', async (req, res) => {
@@ -24,7 +27,13 @@ router.get('/users/:id', async (req, res) => {
 
 router.post('/users', async (req, res) => {
   try {
-    const user = await createUser(req.body);
+    const { email, password, username } = req.body
+    const isEmailBusy = await User.findOne({ email })
+    if (isEmailBusy) {
+      return res.status(500).send('User with this email already exists')
+    }
+    const token = await createToken(email, password)
+    const user = await createUser({ email, username, token });
     return res.status(201).send(user);
   } catch (e) {
     console.log(e);
@@ -32,7 +41,7 @@ router.post('/users', async (req, res) => {
   }
 });
 
-router.delete('/users/:id', async (req, res) => {
+router.delete('/users/:id', checkRole(userRoles.admin), async (req, res) => {
   try {
     const { id } = req.params;
     const user = await deleteUser(id);
