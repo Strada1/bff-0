@@ -5,6 +5,7 @@ const cors = require('cors');
 const PORT = process.env.PORT;
 const ip = require('ip');
 const router = require('./routes/router');
+require('./wss');
 
 const allowedOrigins = ['semastep.com', 'semastep-monchegorsk.ru'];
 

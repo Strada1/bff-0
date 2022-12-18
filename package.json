@@ -29,6 +29,7 @@
     "node-cache": "^5.1.2",
     "passport": "^0.6.0",
     "passport-http-bearer": "^1.0.1",
-    "supertest": "^6.3.2"
+    "supertest": "^6.3.2",
+    "ws": "^8.11.0"
   }
 }

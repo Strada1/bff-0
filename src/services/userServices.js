@@ -42,6 +42,10 @@ const addChat = async (userId, chatId) => {
   );
 };
 
+const getUserByToken = async (token) => {
+  return User.findOne({ token });
+};
+
 const deleteChat = async (userId, chatId) => {
   return User.findByIdAndUpdate(
     userId,
@@ -58,4 +62,5 @@ module.exports = {
   deleteUser,
   addChat,
   deleteChat,
+  getUserByToken,
 };
