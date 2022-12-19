@@ -10,6 +10,11 @@ const { createChat, deleteChat } = require('./fixtures/chats');
 passport.use('bearer', new MockStrategy());
 jest.spyOn(console, 'log').mockImplementation(() => null);
 
+afterAll(async () => {
+  app.close();
+  db.connection.close();
+});
+
 describe('/messages', () => {
   it('get message', async () => {
     const message = await createMessage();
@@ -66,9 +71,4 @@ describe('/messages', () => {
     await deleteUser(user._id);
   });
 
-  afterAll((done) => {
-    db.connection.close();
-    app.close();
-    done();
-  });
 });

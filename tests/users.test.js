@@ -5,6 +5,11 @@ const { createUser, deleteUser, memberData } = require('./fixtures/users');
 const { createAuthData } = require('./fixtures/auth');
 jest.spyOn(console, 'log').mockImplementation(() => null);
 
+afterAll(async () => {
+  app.close();
+  db.connection.close();
+});
+
 describe('/users', () => {
   it('get user', async () => {
     const user = await createUser();
@@ -46,11 +51,5 @@ describe('/users', () => {
       .delete(`/users/${admin._id}`)
       .set(adminAuthData.key, adminAuthData.value)
       .expect(200);
-  });
-
-  afterAll((done) => {
-    db.connection.close();
-    app.close();
-    done();
   });
 });

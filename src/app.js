@@ -28,6 +28,6 @@ app.get('/', (req, res) => {
 });
 app.use(chats, messages, users);
 
-module.exports = app.listen(port, async () => {
+module.exports = app.listen(port, () => {
   console.log(`app listening on port ${port}`);
 });
