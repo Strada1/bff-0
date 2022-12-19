@@ -25,7 +25,7 @@ router.get('/users/:id', checkAuth(), async (req, res) => {
   }
 });
 
-router.post('/users', checkAuth(), async (req, res) => {
+router.post('/users', async (req, res) => {
   try {
     const { email, password, username, roles } = req.body;
     const isEmailBusy = await User.findOne({ email });

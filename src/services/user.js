@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-const userRoles = { client: 'client', admin: 'admin' };
+const userRoles = { member: 'member', admin: 'admin' };
 
 const getUsers = () => {
   return User.find().lean();

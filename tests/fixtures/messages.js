@@ -1,9 +1,10 @@
 const Message = require('../../src/models/Message');
 
-const createMessage = async () => {
-  return await Message.create({
+const createMessage = (userId, chatId) => {
+  return Message.create({
+    user: userId ?? undefined,
     text: 'test message',
-    createdAt: new Date(),
+    chatId: chatId ?? undefined
   });
 };
 

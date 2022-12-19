@@ -1,8 +1,8 @@
 const Chat = require('../../src/models/Chat');
 
-const createChat = async () => {
-  return await Chat.create({
-    users: [],
+const createChat = (users = []) => {
+  return Chat.create({
+    users: [...users],
     title: 'test',
     messages: [],
   });

@@ -1,11 +1,29 @@
 const User = require('../../src/models/User');
+const jwt = require('jsonwebtoken');
 
-const createUser = async () => {
-  return await User.create({
-    email: 'test@mail.com',
-    username: 'testusername',
-    chats: [],
-  });
+const memberData = {
+  email: 'testmailmember@mail.com',
+  username: 'testusername',
+  password: 'testpassword',
+  chats: [],
+  roles: ['member']
+};
+
+const adminData = {
+  email: 'testmailadmin@mail.com',
+  username: 'testusername',
+  password: 'testpassword',
+  chats: [],
+  roles: ['admin']
+};
+
+const createUser = (isAdmin = false) => {
+  const data = isAdmin ? adminData : memberData;
+  data.token = jwt.sign(
+    { email: data.email, password: data.password },
+    'secretkeyfortest'
+  );
+  return User.create(data);
 };
 
 const deleteUser = (id) => {
@@ -17,6 +35,8 @@ const updateUser = (id, { username }) => {
 };
 
 module.exports = {
+  memberData,
+  adminData,
   createUser,
   deleteUser,
   updateUser

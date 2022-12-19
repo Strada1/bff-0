@@ -57,7 +57,7 @@ router.delete('/messages/:id', checkAuth(), async (req, res) => {
 router.patch('/messages/:id', checkAuth(),  async (req, res) => {
   try {
     const { id } = req.params;
-    const message = await updateMessage(id, req.body);
+    const message = await updateMessage(req.user, id, req.body);
     if (message) {
       return res.status(200).send(message);
     }

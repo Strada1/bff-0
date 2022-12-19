@@ -16,7 +16,7 @@ const getMessage = (id) => {
 
 const createMessage = async (data) => {
   const { user, text, chatId } = data;
-  const chat = await Chat.find({_id: chatId});
+  const chat = await Chat.findById({ _id: chatId });
   if (chat.users.includes(user)) {
     return Message.create({ user, text, chatId, createdAt: new Date() });
   }

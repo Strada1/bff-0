@@ -1,40 +1,51 @@
 const request = require('supertest');
 const app = require('../src/app');
 const db = require('../src/db');
-const { createUser, deleteUser } = require('./fixtures/users');
-const passport = require('passport');
-const MockStrategy = require('passport-mock-strategy');
-passport.use('bearer', new MockStrategy());
+const { createUser, deleteUser, memberData } = require('./fixtures/users');
+const { createAuthData } = require('./fixtures/auth');
+jest.spyOn(console, 'log').mockImplementation(() => null);
 
 describe('/users', () => {
   it('get user', async () => {
     const user = await createUser();
-    const { body } = await request(app).get(`/users/${user._id}`).expect(200);
+    const memberAuthData = createAuthData(user.token);
+    const { body } = await request(app)
+      .get(`/users/${user._id}`)
+      .set(memberAuthData.key, memberAuthData.value)
+      .expect(200);
     expect(body.username).toEqual(user.username);
     await deleteUser(user._id);
   });
 
   it('post user', async () => {
-    const user = await createUser();
-    const { body } = await request(app).post('/users').send(user).expect(201);
-    expect(body.username).toEqual(user.username);
-    await deleteUser(user._id);
+    const { body } = await request(app)
+      .post('/users')
+      .send(memberData)
+      .expect(201);
+    expect(body.username).toEqual(memberData.username);
+    await deleteUser(body._id);
   });
 
   it('update user', async () => {
-    const user = await createUser();
+    const admin = await createUser(true);
+    const adminAuthData = createAuthData(admin.token);
     const newData = { username: 'new test username' };
     const { body } = await request(app)
-      .patch(`/users/${user._id}`)
+      .patch(`/users/${admin._id}`)
+      .set(adminAuthData.key, adminAuthData.value)
       .send(newData)
       .expect(200);
     expect(body.username).toEqual(newData.username);
-    await deleteUser(user._id);
+    await deleteUser(admin._id);
   });
 
   it('delete user', async () => {
-    const user = await createUser();
-    await request(app).delete(`/users/${user._id}`).expect(200);
+    const admin = await createUser(true);
+    const adminAuthData = createAuthData(admin.token);
+    await request(app)
+      .delete(`/users/${admin._id}`)
+      .set(adminAuthData.key, adminAuthData.value)
+      .expect(200);
   });
 
   afterAll((done) => {
