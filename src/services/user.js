@@ -1,34 +1,42 @@
-const User = require('../models/User')
+const User = require('../models/User');
 
 const userRoles = { client: 'client', admin: 'admin' };
 
 const getUsers = () => {
-    return User.find().lean()
-}
+  return User.find().lean();
+};
 
 const getUser = (id) => {
-    return User.findById({ _id: id }).lean()
-}
+  return User.findById({ _id: id }).lean();
+};
 
 const createUser = ({ username, email, token, roles = [userRoles.admin] }) => {
-    return User.create({ username, email, token, roles })
-}
+  return User.create({ username, email, token, roles });
+};
 
-const deleteUser = (id) => {
-    return User.findByIdAndDelete({ _id: id }).lean()
-}
+const deleteUser = async (currentUser, id) => {
+  const user = await User.findById({ _id: id });
+  if (user._id === currentUser._id || currentUser.roles.includes(userRoles.admin)) {
+    return User.findByIdAndDelete({ _id: id }).lean();
+  }
+  return false;
+};
 
-const updateUser = (id, { username }) => {
+const updateUser = async (currentUser, id, { username }) => {
+  const user = await User.findById({ _id: id });
+  if (user._id === currentUser._id || currentUser.roles.includes(userRoles.admin)) {
     return User.findByIdAndUpdate({ _id: id }, { username }, {
-        new: true
-    }).lean()
-}
+      new: true
+    }).lean();
+  }
+  return false;
+};
 
 module.exports = {
-    userRoles,
-    getUsers,
-    getUser,
-    createUser,
-    deleteUser,
-    updateUser
-}
+  userRoles,
+  getUsers,
+  getUser,
+  createUser,
+  deleteUser,
+  updateUser
+};

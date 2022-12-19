@@ -1,7 +1,10 @@
 const request = require('supertest');
-const app = require('src/app');
-const db = require('src/db');
+const app = require('../src/app');
+const db = require('../src/db');
 const { createMessage, deleteMessage } = require('./fixtures/messages');
+const passport = require('passport');
+const MockStrategy = require('passport-mock-strategy');
+passport.use('bearer', new MockStrategy());
 
 describe('/messages', () => {
   it('get message', async () => {

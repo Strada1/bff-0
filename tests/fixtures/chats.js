@@ -1,4 +1,4 @@
-const Chat = require('src/models/Chat');
+const Chat = require('../../src/models/Chat');
 
 const createChat = async () => {
   return await Chat.create({

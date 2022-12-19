@@ -26,6 +26,7 @@
     "node-cache": "^5.1.2",
     "passport": "^0.6.0",
     "passport-http-bearer": "^1.0.1",
+    "passport-mock-strategy": "^2.0.0",
     "supertest": "^6.3.2"
   }
 }
