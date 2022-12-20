@@ -5,20 +5,22 @@ const { userRoles } = require('./user');
 const getMessages = async (user, id) => {
   const chat = await Chat.findById({ _id: id });
   if (chat.users.includes(user._id) || user.roles.includes(userRoles.admin)) {
-    return Message.find({ chat: id }).lean();
+    return Message.find({ chat: id }).lean().populate('user');
   } 
   return false;
 };
 
 const getMessage = (id) => {
-  return Message.findById({ _id: id }).lean();
+  return Message.findById({ _id: id }).lean().populate('user');
 };
 
 const createMessage = async (data) => {
   const { user, text, chatId } = data;
   const chat = await Chat.findById({ _id: chatId });
   if (chat.users.includes(user)) {
-    return Message.create({ user, text, chatId, createdAt: new Date() });
+    const message = await Message.create({ user, text, chatId, createdAt: new Date() });
+    await Chat.findByIdAndUpdate(chatId, { $push: { messages: message._id } });
+    return message;
   }
   return false;
 };

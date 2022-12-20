@@ -7,7 +7,7 @@ const getUsers = () => {
 };
 
 const getUser = (id) => {
-  return User.findById({ _id: id }).lean();
+  return User.findById({ _id: id }).lean().populate('chats');
 };
 
 const createUser = ({ username, email, token, roles = [userRoles.admin] }) => {

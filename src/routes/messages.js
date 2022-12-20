@@ -3,9 +3,11 @@ const {getMessages, getMessage, createMessage, deleteMessage, updateMessage} = r
 const { checkAuth } = require('../utils/auth');
 const router = express.Router();
 
-router.get('/messages', checkAuth(), async (req, res) => {
+router.get('/chat/:id/messages', checkAuth(), async (req, res) => {
   try {
-    const messages = await getMessages();
+    const { id } = req.params;
+    const user = req.user;
+    const messages = await getMessages(user, id);
     if (messages) {
       return res.status(200).send(messages);
     }

@@ -7,7 +7,7 @@ const getChats = () => {
 };
 
 const getChat = (id) => {
-  return Chat.findById({ _id: id }).lean();
+  return Chat.findById({ _id: id }).lean().populate('messages');
 };
 
 const createChat = async (id, { title, users }) => {
