@@ -53,8 +53,6 @@ describe('/messages', () => {
     await Chat.findByIdAndDelete(chat.id);
   });
 
-  // GET '/api/messages?chatId=123123123123' authorization()
-  // проверять, состоит ли юзер в чате
   it('GET / should return all chat messages', async () => {
     const user = await createUser();
     const admin = await createUser({
