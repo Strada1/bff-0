@@ -44,7 +44,6 @@ export async function updateChat(chatId, user, { title }) {
 
   const userIsCannotUpdate = !chat.owner && chat.owner !== user._id && !user.roles.includes(ROLES.ADMIN);
   if (userIsCannotUpdate) {
-    console.log(1111111111111111111);
     throw ApiError.Forbidden_403('You are not permitted to perform this action');
   }
 
