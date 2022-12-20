@@ -2,7 +2,8 @@
   "scripts": {
     "start": "node app.js",
     "server": "nodemon app.js",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --detectOpenHandles",
+    "websocket": "nodemon websocket.js"
   },
   "name": "1",
   "version": "1.0.0",
@@ -24,6 +25,7 @@
     "nodemon": "^2.0.20",
     "passport": "^0.6.0",
     "passport-http-bearer": "^1.0.1",
-    "supertest": "^6.3.2"
+    "supertest": "^6.3.2",
+    "ws": "^8.11.0"
   }
 }

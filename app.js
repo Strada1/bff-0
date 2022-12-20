@@ -1,11 +1,11 @@
 const express = require('express');
 const cors = require("cors");
-
 const connectDataBase = require("./helpers/connectDataBase");
 const router = require("./router/router");
-
 const dotenv = require('dotenv');
 const { MONGO_CONNECTION_STRING, PORT } = dotenv.config().parsed;
+
+require('./websocket.js');
 
 const app = express();
 app.use(express.json());
