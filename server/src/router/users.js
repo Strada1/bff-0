@@ -9,8 +9,8 @@ import {
   deleteUser,
 } from '../services/users.js';
 
-import { configUserData } from '../viewmodels/configUserData.js';
 import { authorization, ROLES } from '../middlewares/passport.js';
+import { configUserData } from '../viewmodels/configUserData.js';
 import ApiError, { HTTP_STATUSES } from '../exceptions/apiError.js';
 
 const router = new Router();

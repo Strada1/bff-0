@@ -65,7 +65,7 @@ describe('/users', () => {
     const user = await createUser();
 
     const { body } = await request(app)
-      .get(`/api/users/${user._id}`)
+      .get(`/api/users/${user.id}`)
       .set('Authorization', `Bearer ${admin.token}`)
       .expect(200);
 

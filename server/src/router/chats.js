@@ -108,7 +108,7 @@ router.put('/:chatId',
 
 router.post('/:chatId/users/me',
   // TODO validations
-  authorization(),
+  authorization([ROLES.USER]),
   async (req, res, next) => {
     try {
       const { chatId } = req.params;
@@ -131,7 +131,7 @@ router.post('/:chatId/users/me',
 
 router.delete('/:chatId/users/me',
   // TODO validations
-  authorization(),
+  authorization([ROLES.USER]),
   async (req, res, next) => {
     try {
       const { chatId } = req.params;
