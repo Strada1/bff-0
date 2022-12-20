@@ -10,6 +10,10 @@ const getUser = (id) => {
   return User.findById({ _id: id }).lean().populate('chats');
 };
 
+const getUserByToken = (token) => {
+  return User.findOne({ token }).lean();
+};
+
 const createUser = ({ username, email, token, roles = [userRoles.admin] }) => {
   return User.create({ username, email, token, roles });
 };
@@ -36,6 +40,7 @@ module.exports = {
   userRoles,
   getUsers,
   getUser,
+  getUserByToken,
   createUser,
   deleteUser,
   updateUser
