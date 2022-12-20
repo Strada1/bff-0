@@ -2,7 +2,7 @@ import * as dotenv from 'dotenv';
 import express from 'express';
 import cors from 'cors';
 
-import router from './routers/router.js';
+import router from './router/router.js';
 import connectDB from './connectDB.js';
 import errorMiddleware from './middlewares/errorMiddleware.js';
 

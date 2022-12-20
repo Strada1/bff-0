@@ -1,3 +1,13 @@
+export const HTTP_STATUSES = {
+  OK_200: 200,
+  CREATED_201: 201,
+  NO_CONTENT_204: 204,
+  BAD_REQUEST_400: 400,
+  UNAUTHORIZED_401: 401,
+  FORBIDDEN_403: 403,
+  NOT_FOUND_404: 404,
+};
+
 class ApiError extends Error {
   status;
   errors;
@@ -8,20 +18,20 @@ class ApiError extends Error {
     this.errors = errors;
   }
 
-  static BadRequest(message, errors = []) {
-    return new ApiError(400, message, errors);
+  static BadRequest_404(message, errors = []) {
+    return new ApiError(HTTP_STATUSES.BAD_REQUEST_400, message, errors);
   }
 
-  static Unauthorized() {
-    return new ApiError(401, 'User not authorized');
+  static Unauthorized_401() {
+    return new ApiError(HTTP_STATUSES.UNAUTHORIZED_401, 'User not authorized');
   }
 
-  static Forbidden(message) {
-    return new ApiError(403, message);
+  static Forbidden_403(message) {
+    return new ApiError(HTTP_STATUSES.FORBIDDEN_403, message);
   }
 
-  static NotFound(message) {
-    return new ApiError(404, message);
+  static NotFound_404(message) {
+    return new ApiError(HTTP_STATUSES.NOT_FOUND_404, message);
   }
 }
 

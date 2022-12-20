@@ -27,7 +27,6 @@
     "mongoose": "^6.7.2",
     "node-cache": "^5.1.2",
     "passport": "^0.6.0",
-    "passport-http-bearer": "^1.0.1",
-    "sharp": "^0.31.2"
+    "passport-http-bearer": "^1.0.1"
   }
 }

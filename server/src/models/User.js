@@ -26,7 +26,7 @@ const UserSchema = new mongoose.Schema({
   }],
   // avatarUrl: {
   //   type: String,
-  //   default: 'путь до дефолтная картинка или пустая строка и будет аватар в виде первых двух букв username'
+  //   default: '',
   // },
 }, {
   timestamps: true,
