@@ -7,7 +7,6 @@ const checkIsMemberChat = require("../middlewares/checkIsMemberChat");
 const {deleteChatService, updateChatService, createChatService, getByIdChatService} = require("../service/chatService");
 const {updateUserService, getByTokenUserService} = require("../service/userService");
 const getTokenHeaders = require("../helpers/getTokenHeaders");
-const {getByIdChatFixture} = require("../tests/fixture/chatFixture");
 
 const chats = new Router();
 
@@ -117,7 +116,7 @@ chats.delete(
             const { chatId } = req.params;
             const chat = await deleteChatService(chatId);
             const chats = user.chats.filter((item) => item.toString() !== chatId);
-            const updatedUser = await updateUserService({ userId: user._id, ...user, chats });
+            const updatedUser = await updateUserService({ userId: user._id.toString(), ...user, chats });
             return res.status(200).send('this chat has been deleted');
         } catch (e) {
             return res.status(500).send(e.message);

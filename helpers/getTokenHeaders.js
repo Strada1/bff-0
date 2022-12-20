@@ -1,6 +1,5 @@
 function getTokenHeaders(req) {
-    const token = (req.headers.authorization).split(' ')[1];
-    return token
+    return (req.headers.authorization).split(' ')[1]
 }
 
 module.exports = getTokenHeaders;

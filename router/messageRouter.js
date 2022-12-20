@@ -10,8 +10,6 @@ const {createMessageService, getInChatMessageService} = require("../service/mess
 
 const messages = new Router();
 
-//TODO: isMemberChat function
-
 messages.get(
     '/chat/:chatId/message',
     authorization(),
@@ -59,7 +57,6 @@ messages.post(
             const user = await getByTokenUserService(token);
             const { text } = req.body;
             const { chatId } = req.params;
-
             const messages = await createMessageService({ text, userId: ObjectId(user._id), chatId: ObjectId(chatId) });
             return res.status(201).send(messages);
         } catch (e) {

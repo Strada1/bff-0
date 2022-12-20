@@ -3,6 +3,7 @@ const {checkSchema} = require("express-validator");
 
 const {decodeToken} = require("../helpers/token");
 const checkError = require("../middlewares/checkErrors");
+const {getUsersService} = require("../service/userService");
 
 const auth = new Router();
 
@@ -27,7 +28,7 @@ auth.post(
         try {
             const errorMessage = 'email or password is wrong';
             const { email, password } = req.body;
-            const [ user ] = await getUsers({ email });
+            const [ user ] = await getUsersService({ email });
 
             const hasNotUser = !user;
             if (hasNotUser) {

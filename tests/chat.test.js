@@ -24,9 +24,9 @@ const {dropChatsCollection, dropMessagesCollection, dropUsersCollection} = requi
 //         })(req, res, next)
 // })
 
-jest
-    .spyOn(console, 'log')
-    .mockImplementation(() => undefined);
+// jest
+//     .spyOn(console, 'log')
+//     .mockImplementation(() => undefined);
 
 beforeEach(async () => {
     await connectDataBase(MONGO_CONNECTION_STRING)
