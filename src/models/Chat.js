@@ -4,7 +4,7 @@ const { ObjectId } = require('mongodb');
 const ChatSchema = new mongoose.Schema(
   {
     users: [{ type: ObjectId, ref: 'User' }],
-    owner: ObjectId,
+    owner: { type: ObjectId, ref: 'User' },
     title: String,
     messages: [{ type: ObjectId, ref: 'Message' }]
   },
