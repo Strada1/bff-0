@@ -5,6 +5,7 @@ const db = require('../src/db');
 const Chat = require('../src/models/Chat');
 const Message = require('../src/models/Message');
 const User = require('../src/models/User');
+const { wss } = require('../src/wss');
 const createChat = require('./fixtures/createChat');
 const createMessage = require('./fixtures/createMessage');
 const createUser = require('./fixtures/createUser');
@@ -24,6 +25,7 @@ beforeAll(async () => {
 afterAll(async () => {
   appListener.close();
   db.connection.close();
+  wss.close();
 });
 
 describe('/api/messages', () => {

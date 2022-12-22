@@ -136,4 +136,4 @@ const updateWsUsersChats = async (users = []) => {
   }
 };
 
-module.exports = updateWsUsersChats;
+module.exports = {updateWsUsersChats, wss};

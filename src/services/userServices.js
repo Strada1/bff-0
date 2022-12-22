@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 const userRoles = require('../helpers/userRoles');
+const Chat = require('../models/Chat');
 
 const getUsers = async () => {
   return User.find({});
@@ -34,19 +35,12 @@ const deleteUser = async (userId) => {
   return User.findByIdAndDelete(userId);
 };
 
-const addChat = async (userId, chatId) => {
-  return User.findByIdAndUpdate(
-    userId,
-    { $addToSet: { chats: chatId } },
-    { new: true }
-  );
-};
-
 const getUserByToken = async (token) => {
   return User.findOne({ token });
 };
 
 const deleteChat = async (userId, chatId) => {
+  await Chat.findByIdAndUpdate(chatId, { $pull: { users: userId } });
   return User.findByIdAndUpdate(
     userId,
     { $pull: { chats: chatId } },
@@ -60,7 +54,6 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-  addChat,
   deleteChat,
   getUserByToken,
 };

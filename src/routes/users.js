@@ -11,9 +11,9 @@ const {
   createUser,
   updateUser,
   deleteUser,
-  addChat,
   deleteChat,
 } = require('../services/userServices');
+const { updateWsUsersChats } = require('../wss');
 const router = express.Router();
 
 router.get('/me', checkAuth(), async (req, res) => {
@@ -56,23 +56,6 @@ router.get('/me/chats', checkAuth(), async (req, res) => {
   }
 });
 
-router.post(
-  '/me/chats',
-  checkAuth(),
-  body('chat', 'Should be ObjectId').isMongoId(),
-  validationErrorsHandler,
-  async (req, res) => {
-    try {
-      const user = await addChat(req.user._id, req.body.chat);
-      return res.status(200).json(user);
-    } catch (error) {
-      return res
-        .status(500)
-        .send('Can not add chat in user info\nerror: ' + error.message);
-    }
-  }
-);
-
 router.delete(
   '/me/chats',
   checkAuth(),
@@ -81,6 +64,7 @@ router.delete(
   async (req, res) => {
     try {
       const user = await deleteChat(req.user._id, req.body.chat);
+      await updateWsUsersChats([user._id]);
       return res.status(200).json(user);
     } catch (error) {
       return res

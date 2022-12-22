@@ -12,6 +12,7 @@ const {
   dropUsersCollection,
   dropChatsCollection,
 } = require('./fixtures/dropCollections');
+const { wss } = require('../src/wss');
 
 beforeAll(async () => {
   await dropUsersCollection();
@@ -21,6 +22,7 @@ beforeAll(async () => {
 afterAll(async () => {
   appListener.close();
   db.connection.close();
+  wss.close();
 });
 
 describe('/api/users', () => {
@@ -153,23 +155,6 @@ describe('/api/users/me/chats', () => {
       .expect(200);
 
     expect(body).toContainEqual(chat._id.toString());
-
-    await Chat.findByIdAndDelete(chat._id);
-    await User.findByIdAndDelete(user._id);
-  });
-
-  it('ADD', async () => {
-    const user = await createUser();
-    const chat = await createChat(user._id);
-    const auth = getAuthorizationData(user.token);
-
-    const { body } = await request(appListener)
-      .post(apiPath)
-      .send({ chat: chat._id })
-      .set(auth.key, auth.value)
-      .expect(200);
-
-    expect(body.chats).toContainEqual(chat._id.toString());
 
     await Chat.findByIdAndDelete(chat._id);
     await User.findByIdAndDelete(user._id);

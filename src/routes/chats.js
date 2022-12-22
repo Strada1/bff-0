@@ -14,7 +14,7 @@ const {
   addUsers,
   deleteUsers,
 } = require('../services/chatsServices');
-const updateWsUsersChats = require('../wss');
+const { updateWsUsersChats } = require('../wss');
 const router = express.Router();
 
 router.post(

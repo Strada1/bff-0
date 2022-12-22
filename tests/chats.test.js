@@ -11,6 +11,7 @@ const {
   dropUsersCollection,
   dropChatsCollection,
 } = require('./fixtures/dropCollections');
+const { wss } = require('../src/wss');
 
 beforeAll(async () => {
   await dropUsersCollection();
@@ -20,6 +21,7 @@ beforeAll(async () => {
 afterAll(async () => {
   appListener.close();
   db.connection.close();
+  wss.close();
 });
 
 const apiPath = '/api/chats';
