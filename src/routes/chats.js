@@ -14,6 +14,7 @@ const {
   addUsers,
   deleteUsers,
 } = require('../services/chatsServices');
+const updateWsUsersChats = require('../wss');
 const router = express.Router();
 
 router.post(
@@ -27,6 +28,7 @@ router.post(
   async (req, res) => {
     try {
       const chat = await createChat(req.user._id, req.body);
+      await updateWsUsersChats([req.user._id, ...req.body.users]);
       return res.status(201).json(chat);
     } catch (error) {
       return res
@@ -47,6 +49,7 @@ router.delete(
       if (!chat) {
         return res.status(403).send('Authorization fail.');
       }
+      await updateWsUsersChats(chat.users);
       return res.status(200).send(`Chat ${chat.title} deleted.`);
     } catch (error) {
       return res
@@ -123,6 +126,7 @@ router.post(
       if (!chat) {
         return res.status(403).send('Authorization fail.');
       }
+      await updateWsUsersChats([req.body.users]);
       return res.status(200).json(chat);
     } catch (error) {
       return res
@@ -144,6 +148,7 @@ router.delete(
       if (!chat) {
         return res.status(400).send('Bad request.');
       }
+      await updateWsUsersChats([req.body.users]);
       return res.status(200).json(chat);
     } catch (error) {
       return res
